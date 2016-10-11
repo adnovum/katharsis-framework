@@ -16,15 +16,16 @@ public class ComputedAttributeQuerydslTest extends ComputedAttributeTestBase {
 	protected JpaQueryFactory createQueryFactory(EntityManager em) {
 		QuerydslQueryFactory factory = QuerydslQueryFactory.newInstance();
 
-		factory.registerComputedAttribute(TestEntity.class, ATTR_VIRTUAL_VALUE, String.class,
-				new QuerydslExpressionFactory<QTestEntity>() {
-
-					@Override
-					public Expression<?> getExpression(QTestEntity test, JPAQuery<?> query) {
-						return test.stringValue.toUpperCase();
-					}
-				});
-
+		factory.registerComputedAttribute()
+			.onTarget(TestEntity.class)
+			.withName(ATTR_VIRTUAL_VALUE)
+			.withType(String.class)
+			.withFactory(new QuerydslExpressionFactory<QTestEntity>() {
+				@Override
+				public Expression<?> getExpression(QTestEntity test, JPAQuery<?> query) {
+					return test.stringValue.toUpperCase();
+				}
+			});
 		return factory;
 	}
 }

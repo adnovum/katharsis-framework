@@ -6,6 +6,7 @@ import java.util.List;
 import io.katharsis.jpa.internal.JpaQueryFactoryBase;
 import io.katharsis.jpa.internal.query.backend.querydsl.QuerydslQueryImpl;
 import io.katharsis.jpa.query.JpaQueryFactory;
+import io.katharsis.jpa.query.querydsl.ComputedAttributeRegistration.TargetStep;
 
 public class QuerydslQueryFactory extends JpaQueryFactoryBase implements JpaQueryFactory {
 
@@ -25,6 +26,10 @@ public class QuerydslQueryFactory extends JpaQueryFactoryBase implements JpaQuer
 	@Override
 	public <T> QuerydslQuery<T> query(Class<?> entityClass, String attrName, List<?> entityIds) {
 		return new QuerydslQueryImpl(metaLookup, em, entityClass, computedAttrs, attrName, entityIds);
+	}
+
+	public TargetStep registerComputedAttribute() {
+		return ComputedAttributeRegistration.start(this);
 	}
 
 	public void registerComputedAttribute(Class<?> targetClass, String attributeName, Type attributeType,

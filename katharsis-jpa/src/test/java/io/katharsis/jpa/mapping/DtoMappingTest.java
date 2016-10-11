@@ -70,12 +70,24 @@ public class DtoMappingTest extends AbstractJpaJerseyTest {
 			};
 
 			QuerydslQueryFactory queryFactory = (QuerydslQueryFactory) module.getQueryFactory();
-			queryFactory.registerComputedAttribute(TestEntity.class, TestDTO.ATTR_COMPUTED_UPPER_STRING_VALUE, String.class,
-					basicComputedValueFactory);
-			queryFactory.registerComputedAttribute(TestEntity.class, TestDTO.ATTR_COMPUTED_NUMBER_OF_SMALLER_IDS, Long.class,
-					complexComputedValueFactory);
-			module.addMappedEntityClass(TestEntity.class, TestDTO.class, new TestDTOMapper(entityManager));
-			module.addMappedEntityClass(RelatedEntity.class, RelatedDTO.class, new RelatedDTOMapper(entityManager));
+			queryFactory.registerComputedAttribute()
+				.onTarget(TestEntity.class)
+				.withName(TestDTO.ATTR_COMPUTED_UPPER_STRING_VALUE)
+				.withType(String.class)
+				.withFactory(basicComputedValueFactory);
+			queryFactory.registerComputedAttribute()
+				.onTarget(TestEntity.class)
+				.withName(TestDTO.ATTR_COMPUTED_NUMBER_OF_SMALLER_IDS)
+				.withType(Long.class)
+				.withFactory(complexComputedValueFactory);
+			module.addMappedEntityClass()
+				.entityClass(TestEntity.class)
+				.dtoClass(TestDTO.class)
+				.mapper(new TestDTOMapper(entityManager));
+			module.addMappedEntityClass()
+				.entityClass(RelatedEntity.class)
+				.dtoClass(RelatedDTO.class)
+				.mapper(new RelatedDTOMapper(entityManager));
 
 			module.addFilter(new JpaRepositoryFilterBase() {
 

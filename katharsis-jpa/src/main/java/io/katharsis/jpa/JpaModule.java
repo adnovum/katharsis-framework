@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import io.katharsis.dispatcher.filter.AbstractFilter;
 import io.katharsis.dispatcher.filter.FilterChain;
 import io.katharsis.dispatcher.filter.FilterRequestContext;
+import io.katharsis.jpa.RegisterMapping.EntityStep;
 import io.katharsis.jpa.internal.JpaResourceInformationBuilder;
 import io.katharsis.jpa.internal.OptimisticLockExceptionMapper;
 import io.katharsis.jpa.internal.meta.MetaAttribute;
@@ -240,6 +241,10 @@ public class JpaModule implements Module {
 	public void addEntityClass(Class<?> entityClass) {
 		checkNotInitialized();
 		entityClasses.add(entityClass);
+	}
+
+	public EntityStep addMappedEntityClass() {
+		return RegisterMapping.start(this);
 	}
 
 	/**
