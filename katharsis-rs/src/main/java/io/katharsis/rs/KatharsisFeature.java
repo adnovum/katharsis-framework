@@ -19,6 +19,7 @@ import io.katharsis.internal.boot.KatharsisBoot;
 import io.katharsis.internal.boot.PropertiesProvider;
 import io.katharsis.locator.JsonServiceLocator;
 import io.katharsis.module.Module;
+import io.katharsis.module.ServiceDiscovery;
 import io.katharsis.queryParams.QueryParamsBuilder;
 import io.katharsis.queryspec.QuerySpecDeserializer;
 import io.katharsis.repository.information.ResourceRepositoryInformation;
@@ -147,6 +148,10 @@ public class KatharsisFeature implements Feature {
 			RequestDispatcher requestDispatcher) {
 		return new KatharsisFilter(boot.getObjectMapper(), resourceRegistry, requestDispatcher, parameterProviderRegistry,
 				webPathPrefix);
+	}
+	
+	public void setServiceDiscover(ServiceDiscovery serviceDiscovery){
+		this.boot.setServiceDiscovery(serviceDiscovery);
 	}
 	
 	public ObjectMapper getObjectMapper(){
