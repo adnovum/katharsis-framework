@@ -21,4 +21,8 @@ public interface MovieRepository extends ResourceRepositoryV2<Movie, String> {
 	@Path("{id}/vote")
 	public String vote(@PathParam("id") String id, @QueryParam(value = "stars") int stars);
 
+	@POST
+	@Path("voteall")
+	String voteall(@QueryParam(value = "stars") int stars);
+
 }

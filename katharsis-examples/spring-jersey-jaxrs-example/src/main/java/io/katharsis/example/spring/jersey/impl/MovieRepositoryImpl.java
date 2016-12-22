@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import io.katharsis.example.spring.jersey.intf.MovieRepository;
 import io.katharsis.example.spring.jersey.model.Actor;
@@ -67,5 +68,15 @@ public class MovieRepositoryImpl extends ResourceRepositoryBase<Movie, String> i
 			return "updated";
 		}
 		return "ignored";
+	}
+
+	@Override
+	public String voteall(int stars) {
+		Set<String> movieIds = movies.keySet();
+		for (String movieId : movieIds) {
+			Movie movie = movies.get(movieId);
+			movie.getMeta().setAverageStars(stars);
+		}
+		return "all updated";
 	}
 }
