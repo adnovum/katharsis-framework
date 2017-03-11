@@ -1,5 +1,8 @@
 package io.katharsis.rs;
 
+import java.io.Serializable;
+import java.util.Collection;
+
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.WebApplicationException;
@@ -11,19 +14,22 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.katharsis.dispatcher.RequestDispatcher;
-import io.katharsis.internal.boot.KatharsisBoot;
-import io.katharsis.internal.boot.PropertiesProvider;
-import io.katharsis.locator.JsonServiceLocator;
+import io.katharsis.core.internal.boot.KatharsisBoot;
+import io.katharsis.core.internal.boot.PropertiesProvider;
+import io.katharsis.core.internal.dispatcher.RequestDispatcher;
+import io.katharsis.core.internal.repository.adapter.ResourceRepositoryAdapter;
+import io.katharsis.legacy.locator.JsonServiceLocator;
+import io.katharsis.legacy.queryParams.QueryParamsBuilder;
 import io.katharsis.module.Module;
-import io.katharsis.queryParams.QueryParamsBuilder;
 import io.katharsis.queryspec.QuerySpecDeserializer;
-import io.katharsis.resource.field.ResourceFieldNameTransformer;
+import io.katharsis.repository.information.ResourceRepositoryInformation;
+import io.katharsis.resource.information.ResourceFieldNameTransformer;
+import io.katharsis.resource.registry.RegistryEntry;
 import io.katharsis.resource.registry.ResourceRegistry;
 import io.katharsis.resource.registry.ServiceUrlProvider;
 import io.katharsis.rs.internal.JaxrsModule;
-import io.katharsis.rs.parameterProvider.RequestContextParameterProviderRegistry;
-import io.katharsis.rs.parameterProvider.RequestContextParameterProviderRegistryBuilder;
+import io.katharsis.rs.internal.parameterProvider.RequestContextParameterProviderRegistry;
+import io.katharsis.rs.internal.parameterProvider.RequestContextParameterProviderRegistryBuilder;
 import io.katharsis.rs.resource.registry.UriInfoServiceUrlProvider;
 
 /**
@@ -106,8 +112,29 @@ public class KatharsisFeature implements Feature {
 			throw new WebApplicationException(e);
 		}
 		context.register(katharsisFilter);
+		
+		registerActionRepositories(context, boot);
 
 		return true;
+	}
+
+	/**
+	 * All repositories with JAX-RS action need to be registered with JAX-RS as singletons.
+	 * 
+	 * @param context of jaxrs
+	 * @param boot of katharsis
+	 */
+	private void registerActionRepositories(FeatureContext context, KatharsisBoot boot) {
+		ResourceRegistry resourceRegistry = boot.getResourceRegistry();
+		Collection<RegistryEntry> registryEntries = resourceRegistry.getResources();
+		for(RegistryEntry registryEntry : registryEntries){
+			ResourceRepositoryInformation repositoryInformation = registryEntry.getRepositoryInformation();
+			if(!repositoryInformation.getActions().isEmpty()){
+				ResourceRepositoryAdapter<?, Serializable> repositoryAdapter = registryEntry.getResourceRepository(null);
+				Object resourceRepository = repositoryAdapter.getResourceRepository();
+				context.register(resourceRepository);
+			}
+		}		
 	}
 
 	private RequestContextParameterProviderRegistry buildParameterProviderRegistry() {
@@ -121,5 +148,20 @@ public class KatharsisFeature implements Feature {
 		return new KatharsisFilter(boot.getObjectMapper(), resourceRegistry, requestDispatcher, parameterProviderRegistry,
 				webPathPrefix);
 	}
+	
+	public ObjectMapper getObjectMapper(){
+		return boot.getObjectMapper();
+	}
+	
+	public void setDefaultPageLimit(Long defaultPageLimit){
+		boot.setDefaultPageLimit(defaultPageLimit);
+	}
 
+	public QuerySpecDeserializer getQuerySpecDeserializer() {
+		return boot.getQuerySpecDeserializer();
+	}
+	
+	public KatharsisBoot getBoot(){
+	  return boot;
+	}
 }

@@ -1,21 +1,27 @@
 package io.katharsis.resource.registry.repository;
 
-import io.katharsis.locator.JsonServiceLocator;
-import io.katharsis.locator.SampleJsonServiceLocator;
-import io.katharsis.repository.RepositoryInstanceBuilder;
-import io.katharsis.repository.annotations.JsonApiRelationshipRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.katharsis.legacy.locator.JsonServiceLocator;
+import io.katharsis.legacy.locator.SampleJsonServiceLocator;
+import io.katharsis.legacy.registry.AnnotatedRelationshipEntryBuilder;
+import io.katharsis.legacy.registry.RepositoryInstanceBuilder;
+import io.katharsis.legacy.repository.annotations.JsonApiRelationshipRepository;
+import io.katharsis.module.ModuleRegistry;
 
 @SuppressWarnings("unchecked")
 public class AnnotatedRelationshipEntryBuilderTest {
+	
+	private ModuleRegistry moduleRegistry = new ModuleRegistry();
+	
 
     @Test
     public void onInstanceOfAnnotatedRelationshipRepositoryShouldReturnTargetClass() {
 
         // GIVEN
-        final AnnotatedRelationshipEntryBuilder builder = new AnnotatedRelationshipEntryBuilder(
+        final AnnotatedRelationshipEntryBuilder builder = new AnnotatedRelationshipEntryBuilder(moduleRegistry,
             new RepositoryInstanceBuilder(new SampleJsonServiceLocator(), SimpleRelationshipRepository.class));
 
 
@@ -30,7 +36,7 @@ public class AnnotatedRelationshipEntryBuilderTest {
     public void onInstanceOfAnonymousDescendantOfAnnotatedRelationshipRepositoryShouldReturnTargetClass() {
 
         // GIVEN
-        final AnnotatedRelationshipEntryBuilder builder = new AnnotatedRelationshipEntryBuilder(
+        final AnnotatedRelationshipEntryBuilder builder = new AnnotatedRelationshipEntryBuilder(moduleRegistry,
             new RepositoryInstanceBuilder(new JsonServiceLocator() {
                 @Override
                 public <T> T getInstance(Class<T> clazz) {
@@ -51,7 +57,7 @@ public class AnnotatedRelationshipEntryBuilderTest {
     public void onInstanceOfNonAnnotatedClassShouldThrowIllegalArgumentException() {
 
         // GIVEN
-        final AnnotatedRelationshipEntryBuilder builder = new AnnotatedRelationshipEntryBuilder(
+        final AnnotatedRelationshipEntryBuilder builder = new AnnotatedRelationshipEntryBuilder(moduleRegistry,
             new RepositoryInstanceBuilder(new JsonServiceLocator() {
                 @Override
                 public <T> T getInstance(Class<T> clazz) {

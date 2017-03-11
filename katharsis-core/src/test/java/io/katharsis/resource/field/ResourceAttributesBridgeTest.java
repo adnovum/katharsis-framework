@@ -1,22 +1,26 @@
 package io.katharsis.resource.field;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.katharsis.resource.exception.ResourceException;
-import io.katharsis.resource.exception.init.InvalidResourceException;
-import io.katharsis.resource.mock.models.OtherPojo;
-import io.katharsis.resource.mock.models.Pojo;
-import io.katharsis.resource.mock.models.Task;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.MapEntry.entry;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.data.MapEntry.entry;
+import org.junit.Test;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.katharsis.core.internal.resource.ResourceAttributesBridge;
+import io.katharsis.core.internal.resource.ResourceFieldImpl;
+import io.katharsis.errorhandling.exception.InvalidResourceException;
+import io.katharsis.errorhandling.exception.ResourceException;
+import io.katharsis.resource.information.ResourceField;
+import io.katharsis.resource.information.ResourceFieldType;
+import io.katharsis.resource.mock.models.Task;
 
 public class ResourceAttributesBridgeTest {
 
@@ -25,29 +29,29 @@ public class ResourceAttributesBridgeTest {
     @Test
     public void onValidClassShouldInitializeResourceAttributesBridge() throws Exception {
         // WHEN
-        new ResourceAttributesBridge<>(Collections.<ResourceField>emptySet(), DynamicResource.class);
+        new ResourceAttributesBridge<>(Collections.<ResourceField>emptyList(), DynamicResource.class);
     }
 
     @Test(expected = InvalidResourceException.class)
     public void onClassWithoutAnyGetterShouldThrowException() throws Exception {
         // WHEN
-        new ResourceAttributesBridge<>(Collections.<ResourceField>emptySet(), ClassWithoutAnyGetter.class);
+        new ResourceAttributesBridge<>(Collections.<ResourceField>emptyList(), ClassWithoutAnyGetter.class);
     }
 
     @Test(expected = InvalidResourceException.class)
     public void onClassWithoutAnySetterShouldThrowException() throws Exception {
         // WHEN
-        new ResourceAttributesBridge<>(Collections.<ResourceField>emptySet(), ClassWithoutAnySetter.class);
+        new ResourceAttributesBridge<>(Collections.<ResourceField>emptyList(), ClassWithoutAnySetter.class);
     }
 
     @Test
     public void onSimpleAttributesShouldPutInstanceValues() throws Exception {
         // GIVEN
-        ResourceField field = new ResourceField("name", "name", String.class, String.class);
+        ResourceField field = new ResourceFieldImpl("name", "name", ResourceFieldType.ATTRIBUTE, String.class, String.class, null);
         ResourceAttributesBridge<Task> sut =
-            new ResourceAttributesBridge<>(Collections.singleton(field), Task.class);
-        JsonNode attributes = objectMapper.createObjectNode()
-            .put("name", "value");
+            new ResourceAttributesBridge<>(Collections.singletonList(field), Task.class);
+        HashMap<String, JsonNode> attributes = new HashMap<String, JsonNode>();
+        attributes.put("name", objectMapper.readTree("\"value\""));
         Task task = new Task();
 
         // WHEN
@@ -61,9 +65,9 @@ public class ResourceAttributesBridgeTest {
     public void onDynamicAttributesShouldPutInstanceValues() throws Exception {
         // GIVEN
         ResourceAttributesBridge<DynamicResource> sut =
-            new ResourceAttributesBridge<>(Collections.<ResourceField>emptySet(), DynamicResource.class);
-        JsonNode attributes = objectMapper.createObjectNode()
-            .put("name", "value");
+            new ResourceAttributesBridge<>(Collections.<ResourceField>emptyList(), DynamicResource.class);
+        HashMap<String, JsonNode> attributes = new HashMap<String, JsonNode>();
+        attributes.put("name", objectMapper.readTree("\"value\""));
         DynamicResource resource = new DynamicResource();
 
         // WHEN
@@ -78,9 +82,9 @@ public class ResourceAttributesBridgeTest {
     public void onDynamicAttributesReadingShouldThrowException() throws Exception {
         // GIVEN
         ResourceAttributesBridge<DynamicResourceWithSetterException> sut =
-            new ResourceAttributesBridge<>(Collections.<ResourceField>emptySet(), DynamicResourceWithSetterException.class);
-        JsonNode attributes = objectMapper.createObjectNode()
-            .put("name", "value");
+            new ResourceAttributesBridge<>(Collections.<ResourceField>emptyList(), DynamicResourceWithSetterException.class);
+        HashMap<String, JsonNode> attributes = new HashMap<String, JsonNode>();
+        attributes.put("name", objectMapper.readTree("\"value\""));
 
         // WHEN
         sut.setProperties(objectMapper, new DynamicResourceWithSetterException(), attributes);
@@ -89,13 +93,14 @@ public class ResourceAttributesBridgeTest {
     @Test(expected = ResourceException.class)
     public void onDynamicAttributesWritingShouldThrowException() throws Exception {
         // GIVEN
-        ResourceAttributesBridge<DynamicResourceWithGetterException> sut =
-            new ResourceAttributesBridge<>(Collections.<ResourceField>emptySet(), DynamicResourceWithGetterException.class);
-        JsonNode attributes = objectMapper.createObjectNode()
-            .put("name", "value");
+        ResourceAttributesBridge<DynamicResourceWithSetterException> sut =
+            new ResourceAttributesBridge<>(Collections.<ResourceField>emptyList(), DynamicResourceWithSetterException.class);
+        
+        HashMap<String, JsonNode> attributes = new HashMap<String, JsonNode>();
+        attributes.put("name", objectMapper.readTree("\"value\""));
 
         // WHEN
-        sut.setProperties(objectMapper, new DynamicResourceWithGetterException(), attributes);
+        sut.setProperties(objectMapper, new DynamicResourceWithSetterException(), attributes);
     }
 
     public static class DynamicResource {

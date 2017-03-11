@@ -1,11 +1,13 @@
 package io.katharsis.locator;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Arrays;
+import io.katharsis.legacy.locator.SampleJsonServiceLocator;
 
 public class SampleJsonServiceLocatorTest {
 

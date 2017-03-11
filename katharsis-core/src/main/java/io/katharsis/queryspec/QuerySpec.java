@@ -1,13 +1,17 @@
 package io.katharsis.queryspec;
 
-import io.katharsis.utils.CompareUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import io.katharsis.core.internal.utils.CompareUtils;
+import io.katharsis.resource.information.ResourceInformation;
+import io.katharsis.resource.list.DefaultResourceList;
+import io.katharsis.resource.list.ResourceList;
+import io.katharsis.resource.meta.DefaultPagedMetaInformation;
 
 public class QuerySpec {
 
@@ -39,15 +43,40 @@ public class QuerySpec {
 	 * Evaluates this querySpec against the provided list in memory. It supports
 	 * sorting, filter and paging.
 	 * <p>
-	 * TODO currently ignores relations and inclusions, has room for improvements
+	 * TODO currently ignores relations and inclusions, has room for
+	 * improvements
 	 *
-	 * @param <T>       the type of resources in this Iterable
-	 * @param resources resources
+	 * @param <T>
+	 *            the type of resources in this Iterable
+	 * @param resources
+	 *            resources
 	 * @return sorted, filtered list.
 	 */
-	public <T> List<T> apply(Iterable<T> resources) {
+	public <T> DefaultResourceList<T> apply(Iterable<T> resources) {
+		DefaultResourceList<T> resultList = new DefaultResourceList<>();
+		resultList.setMeta(new DefaultPagedMetaInformation());
+		apply(resources, resultList);
+		return resultList;
+	}
+
+	/**
+	 * Evaluates this querySpec against the provided list in memory. It supports
+	 * sorting, filter and paging. Make sure that the resultList carries meta
+	 * and links information of type PagedMetaInformation resp.
+	 * PagedLinksInformation to let Katharsis compute pagination links.
+	 * <p>
+	 * TODO currently ignores relations and inclusions
+	 *
+	 * @param <T>
+	 *            resource type
+	 * @param resources
+	 *            to apply the querySpec to
+	 * @param resultList
+	 *            used to return the result (including paging meta information)
+	 */
+	public <T> void apply(Iterable<T> resources, ResourceList<T> resultList) {
 		InMemoryEvaluator eval = new InMemoryEvaluator();
-		return eval.eval(resources, this);
+		eval.eval(resources, this, resultList);
 	}
 
 	@Override
@@ -72,10 +101,8 @@ public class QuerySpec {
 			return false;
 		QuerySpec other = (QuerySpec) obj;
 		return CompareUtils.isEquals(filters, other.filters) // NOSONAR
-				&& CompareUtils.isEquals(includedFields, other.includedFields)
-				&& CompareUtils.isEquals(includedRelations, other.includedRelations) && CompareUtils.isEquals(limit, other.limit)
-				&& CompareUtils.isEquals(offset, other.offset) && CompareUtils.isEquals(relatedSpecs, other.relatedSpecs)
-				&& CompareUtils.isEquals(sort, other.sort);
+				&& CompareUtils.isEquals(includedFields, other.includedFields) && CompareUtils.isEquals(includedRelations, other.includedRelations) && CompareUtils.isEquals(limit, other.limit)
+				&& CompareUtils.isEquals(offset, other.offset) && CompareUtils.isEquals(relatedSpecs, other.relatedSpecs) && CompareUtils.isEquals(sort, other.sort);
 	}
 
 	public Long getLimit() {
@@ -151,9 +178,10 @@ public class QuerySpec {
 	}
 
 	/**
-	 * @param resourceClass resource class
+	 * @param resourceClass
+	 *            resource class
 	 * @return QuerySpec for the given class, either the root QuerySpec or any
-	 * related QuerySpec.
+	 *         related QuerySpec.
 	 */
 	public QuerySpec getQuerySpec(Class<?> resourceClass) {
 		if (resourceClass.equals(this.resourceClass))
@@ -192,5 +220,13 @@ public class QuerySpec {
 			copy.relatedSpecs.put(entry.getKey(), entry.getValue().duplicate());
 		}
 		return copy;
+	}
+
+	public QuerySpec getQuerySpec(ResourceInformation resourceInformation) {
+		return getQuerySpec(resourceInformation.getResourceClass());
+	}
+
+	public QuerySpec getOrCreateQuerySpec(ResourceInformation resourceInformation) {
+		return getOrCreateQuerySpec(resourceInformation.getResourceClass());
 	}
 }

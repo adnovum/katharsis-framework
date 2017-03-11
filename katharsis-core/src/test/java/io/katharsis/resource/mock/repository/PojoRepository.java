@@ -1,14 +1,16 @@
 package io.katharsis.resource.mock.repository;
 
-import io.katharsis.queryParams.QueryParams;
-import io.katharsis.repository.ResourceRepository;
+import io.katharsis.legacy.queryParams.QueryParams;
+import io.katharsis.legacy.repository.ResourceRepository;
 import io.katharsis.resource.mock.models.Pojo;
 
 public class PojoRepository implements ResourceRepository<Pojo, Long> {
 
-    @Override
+    private static Pojo entity;
+
+	@Override
     public Pojo findOne(Long aLong, QueryParams queryParams) {
-        return null;
+        return entity;
     }
 
     @Override
@@ -23,6 +25,7 @@ public class PojoRepository implements ResourceRepository<Pojo, Long> {
 
     @Override
     public <S extends Pojo> S save(S entity) {
+    	this.entity = entity;
         entity.setId(1L);
         return entity;
     }

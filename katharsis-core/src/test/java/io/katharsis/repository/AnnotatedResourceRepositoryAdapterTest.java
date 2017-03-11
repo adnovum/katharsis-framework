@@ -11,17 +11,19 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.queryParams.QueryParams;
-import io.katharsis.queryspec.internal.QueryParamsAdapter;
-import io.katharsis.repository.annotated.AnnotatedResourceRepositoryAdapter;
-import io.katharsis.repository.annotations.JsonApiDelete;
-import io.katharsis.repository.annotations.JsonApiFindAll;
-import io.katharsis.repository.annotations.JsonApiFindAllWithIds;
-import io.katharsis.repository.annotations.JsonApiFindOne;
-import io.katharsis.repository.annotations.JsonApiResourceRepository;
-import io.katharsis.repository.annotations.JsonApiSave;
-import io.katharsis.repository.exception.RepositoryAnnotationNotFoundException;
-import io.katharsis.repository.exception.RepositoryMethodException;
+import io.katharsis.errorhandling.exception.RepositoryAnnotationNotFoundException;
+import io.katharsis.errorhandling.exception.RepositoryMethodException;
+import io.katharsis.legacy.internal.AnnotatedResourceRepositoryAdapter;
+import io.katharsis.legacy.internal.ParametersFactory;
+import io.katharsis.legacy.internal.QueryParamsAdapter;
+import io.katharsis.legacy.queryParams.QueryParams;
+import io.katharsis.legacy.repository.annotations.JsonApiDelete;
+import io.katharsis.legacy.repository.annotations.JsonApiFindAll;
+import io.katharsis.legacy.repository.annotations.JsonApiFindAllWithIds;
+import io.katharsis.legacy.repository.annotations.JsonApiFindOne;
+import io.katharsis.legacy.repository.annotations.JsonApiResourceRepository;
+import io.katharsis.legacy.repository.annotations.JsonApiSave;
+import io.katharsis.module.ModuleRegistry;
 import io.katharsis.repository.mock.NewInstanceRepositoryMethodParameterProvider;
 import io.katharsis.resource.mock.models.Project;
 
@@ -34,7 +36,7 @@ public class AnnotatedResourceRepositoryAdapterTest {
     public void setUp() throws Exception {
         queryParams = new QueryParams();
         queryAdapter = new QueryParamsAdapter(queryParams);
-        parameterProvider = new ParametersFactory(new NewInstanceRepositoryMethodParameterProvider());
+        parameterProvider = new ParametersFactory(new ModuleRegistry(), new NewInstanceRepositoryMethodParameterProvider());
     }
 
     @Test(expected = RepositoryAnnotationNotFoundException.class)
@@ -69,7 +71,7 @@ public class AnnotatedResourceRepositoryAdapterTest {
         // THEN
         verify(repo).findOne(eq(1L), eq(queryParams), eq(""));
         assertThat(result).isNotNull();
-        assertThat(((Project)result).getId()).isEqualTo(1L);
+        assertThat(((Project) result).getId()).isEqualTo(1L);
     }
 
     @Test(expected = RepositoryAnnotationNotFoundException.class)
@@ -93,9 +95,9 @@ public class AnnotatedResourceRepositoryAdapterTest {
 
         // THEN
         verify(repo).findAll(eq(queryParams), eq(""));
-        assertThat(((Iterable<Project>)result)).hasSize(1);
-        assertThat(((Iterable<Project>)result).iterator().next()).isNotNull();
-        assertThat(((Iterable<Project>)result).iterator().next().getId()).isEqualTo(1L);
+        assertThat(((Iterable<Project>) result)).hasSize(1);
+        assertThat(((Iterable<Project>) result).iterator().next()).isNotNull();
+        assertThat(((Iterable<Project>) result).iterator().next().getId()).isEqualTo(1L);
     }
 
     @Test(expected = RepositoryAnnotationNotFoundException.class)
@@ -130,8 +132,8 @@ public class AnnotatedResourceRepositoryAdapterTest {
 
         // THEN
         verify(repo).findAll(eq(ids), eq(queryParams), eq(""));
-        assertThat(((Iterable<Project>)result)).hasSize(1);
-        assertThat(((Iterable<Project>)result).iterator().next().getId()).isEqualTo(1L);
+        assertThat(((Iterable<Project>) result)).hasSize(1);
+        assertThat(((Iterable<Project>) result).iterator().next().getId()).isEqualTo(1L);
     }
 
     @Test(expected = RepositoryAnnotationNotFoundException.class)
@@ -167,14 +169,14 @@ public class AnnotatedResourceRepositoryAdapterTest {
         // THEN
         verify(repo).save(eq(entity), eq(""));
         assertThat(result).isNotNull();
-        assertThat(((Project)(result)).getId()).isEqualTo(1L);
+        assertThat(((Project) (result)).getId()).isEqualTo(1L);
     }
 
     @Test(expected = RepositoryAnnotationNotFoundException.class)
     public void onClassWithoutDeleteShouldThrowException() throws Exception {
         // GIVEN
         ResourceRepositoryWithoutAnyMethods repo = new ResourceRepositoryWithoutAnyMethods();
-        
+
         AnnotatedResourceRepositoryAdapter<Project, Long> sut = new AnnotatedResourceRepositoryAdapter<>(repo, parameterProvider);
 
         // WHEN
@@ -204,6 +206,33 @@ public class AnnotatedResourceRepositoryAdapterTest {
         verify(repo).delete(eq(1L), eq(""));
     }
 
+    @Test(expected = RuntimeException.class)
+    public void handleRuntimeException() throws Exception {
+        // GIVEN
+        ResourceRepositoryWithRuntimeException repo = new ResourceRepositoryWithRuntimeException();
+        AnnotatedResourceRepositoryAdapter<Project, Long> sut = new AnnotatedResourceRepositoryAdapter<>(repo, parameterProvider);
+        // WHEN
+        sut.findOne(1L, queryAdapter);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void handleCheckedException() throws Exception {
+        // GIVEN
+        ResourceRepositoryWithCheckedException repo = new ResourceRepositoryWithCheckedException();
+        AnnotatedResourceRepositoryAdapter<Project, Long> sut = new AnnotatedResourceRepositoryAdapter<>(repo, parameterProvider);
+        // WHEN
+        sut.findOne(1L, queryAdapter);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void handleError() throws Exception {
+        // GIVEN
+        ResourceRepositoryWithError repo = new ResourceRepositoryWithError();
+        AnnotatedResourceRepositoryAdapter<Project, Long> sut = new AnnotatedResourceRepositoryAdapter<>(repo, parameterProvider);
+        // WHEN
+        sut.findOne(1L, queryAdapter);
+    }
+
     @JsonApiResourceRepository(Project.class)
     public static class ResourceRepositoryWithoutAnyMethods {
     }
@@ -223,7 +252,7 @@ public class AnnotatedResourceRepositoryAdapterTest {
         @JsonApiFindOne
         public Project findOne(Long id, QueryParams queryParams, String someString) {
             return new Project()
-                .setId(id);
+                    .setId(id);
         }
     }
 
@@ -269,7 +298,7 @@ public class AnnotatedResourceRepositoryAdapterTest {
         @JsonApiSave
         public Project save(Project project, String s) {
             return project
-                .setId(1L);
+                    .setId(1L);
         }
     }
 
@@ -286,6 +315,35 @@ public class AnnotatedResourceRepositoryAdapterTest {
 
         @JsonApiDelete
         public void delete(Long id, String s) {
+        }
+    }
+
+
+    @JsonApiResourceRepository(Project.class)
+    public static class ResourceRepositoryWithRuntimeException {
+
+        @JsonApiFindOne
+        public void findOne(Long id, QueryParams queryParams) {
+            throw new RuntimeException("test runtime exception");
+        }
+    }
+
+    @JsonApiResourceRepository(Project.class)
+    public static class ResourceRepositoryWithCheckedException {
+
+        @JsonApiFindOne
+        public void findOne(Long id, QueryParams queryParams) throws Exception {
+            throw new Exception("test checked exception");
+        }
+    }
+
+
+    @JsonApiResourceRepository(Project.class)
+    public static class ResourceRepositoryWithError {
+
+        @JsonApiFindOne
+        public void findOne(Long id, QueryParams queryParams) throws Exception {
+            throw new Error("test checked exception");
         }
     }
 }

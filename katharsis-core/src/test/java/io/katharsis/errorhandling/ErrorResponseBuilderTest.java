@@ -1,8 +1,8 @@
 package io.katharsis.errorhandling;
 
-import org.junit.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.Test;
 
 public class ErrorResponseBuilderTest {
 
@@ -23,7 +23,7 @@ public class ErrorResponseBuilderTest {
                 .setSingleErrorData(ErrorDataMother.fullyPopulatedErrorData())
                 .build();
 
-        assertThat((Iterable<?>) response.getResponse().getEntity())
+        assertThat((Iterable<ErrorData>) response.getResponse().getEntity())
                 .hasSize(1)
                 .containsExactly(ErrorDataMother.fullyPopulatedErrorData());
     }
@@ -34,7 +34,7 @@ public class ErrorResponseBuilderTest {
                 .setErrorData(ErrorDataMother.oneSizeCollectionOfErrorData())
                 .build();
 
-        assertThat((Iterable<?>) response.getResponse().getEntity())
+        assertThat((Iterable<ErrorData>) response.getResponse().getEntity())
                 .hasSize(1)
                 .containsExactly(ErrorDataMother.fullyPopulatedErrorData());
     }

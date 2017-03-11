@@ -28,19 +28,19 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.katharsis.dispatcher.RequestDispatcher;
+import io.katharsis.core.internal.dispatcher.RequestDispatcher;
+import io.katharsis.core.internal.dispatcher.path.ActionPath;
+import io.katharsis.core.internal.dispatcher.path.JsonPath;
+import io.katharsis.core.internal.dispatcher.path.PathBuilder;
+import io.katharsis.core.internal.exception.KatharsisExceptionMapper;
+import io.katharsis.errorhandling.exception.JsonDeserializationException;
 import io.katharsis.errorhandling.exception.KatharsisMappableException;
 import io.katharsis.errorhandling.exception.KatharsisMatchingException;
-import io.katharsis.errorhandling.mapper.KatharsisExceptionMapper;
-import io.katharsis.jackson.exception.JsonDeserializationException;
-import io.katharsis.request.dto.RequestBody;
-import io.katharsis.request.path.JsonPath;
-import io.katharsis.request.path.PathBuilder;
+import io.katharsis.resource.Document;
 import io.katharsis.resource.registry.ResourceRegistry;
 import io.katharsis.resource.registry.ServiceUrlProvider;
-import io.katharsis.response.BaseResponseContext;
-import io.katharsis.rs.parameterProvider.JaxRsParameterProvider;
-import io.katharsis.rs.parameterProvider.RequestContextParameterProviderRegistry;
+import io.katharsis.rs.internal.parameterProvider.JaxRsParameterProvider;
+import io.katharsis.rs.internal.parameterProvider.RequestContextParameterProviderRegistry;
 import io.katharsis.rs.resource.registry.UriInfoServiceUrlProvider;
 import io.katharsis.rs.type.JsonApiMediaType;
 
@@ -108,7 +108,7 @@ public class KatharsisFilter implements ContainerRequestFilter {
         }
 
         try {
-            dispatchRequest(requestContext);
+        	dispatchRequest(requestContext);
         } catch (WebApplicationException e) {
         	LOGGER.error("failed to dispatch request", e);
             throw e;
@@ -120,12 +120,12 @@ public class KatharsisFilter implements ContainerRequestFilter {
 
     private void dispatchRequest(ContainerRequestContext requestContext) throws Exception {
         UriInfo uriInfo = requestContext.getUriInfo();
-        BaseResponseContext katharsisResponse = null;
+        io.katharsis.repository.response.Response katharsisResponse = null;
         boolean passToMethodMatcher = false;
         ServiceUrlProvider serviceUrlProvider = resourceRegistry.getServiceUrlProvider();
         try {
             String path = buildPath(uriInfo);
-
+            
             if(serviceUrlProvider instanceof UriInfoServiceUrlProvider){
             	// TODO not a particular nice way of doing this. With Katharsis 3.0 and the serialization
             	// refacotring there should be a better way achieving this. At that point
@@ -133,19 +133,30 @@ public class KatharsisFilter implements ContainerRequestFilter {
             	((UriInfoServiceUrlProvider)serviceUrlProvider).onRequestStarted(uriInfo);
             }
 
-            JsonPath jsonPath = new PathBuilder(resourceRegistry).buildPath(path);
-
+            JsonPath jsonPath = new PathBuilder(resourceRegistry).build(path);
             Map<String, Set<String>> parameters = getParameters(uriInfo);
-
             String method = requestContext.getMethod();
-            RequestBody requestBody = inputStreamToBody(requestContext.getEntityStream());
-
-            JaxRsParameterProvider parameterProvider = new JaxRsParameterProvider(objectMapper, requestContext, parameterProviderRegistry);
-            katharsisResponse = requestDispatcher
-                .dispatchRequest(jsonPath, method, parameters, parameterProvider, requestBody);
+            
+            if(jsonPath instanceof ActionPath){
+            	// inital implementation, has to improve
+            	requestDispatcher.dispatchAction(jsonPath, method, parameters);
+            	
+            	// nothing further done, forward the call to JAX-RS
+            	passToMethodMatcher = true;
+            }else if(jsonPath != null){
+	            Document requestBody = inputStreamToBody(requestContext.getEntityStream());
+	
+	            JaxRsParameterProvider parameterProvider = new JaxRsParameterProvider(objectMapper, requestContext, parameterProviderRegistry);
+	            katharsisResponse = requestDispatcher
+	                .dispatchRequest(jsonPath, method, parameters, parameterProvider, requestBody);
+            }else{
+            	// no repositories invoked, we do nothing and forward the call to JAX-RS
+            	passToMethodMatcher = true;
+            }
+       
         } catch (KatharsisMappableException e) {
             // log error in KatharsisMappableException mapper.
-            katharsisResponse = new KatharsisExceptionMapper().toErrorResponse(e);
+            katharsisResponse = new KatharsisExceptionMapper().toErrorResponse(e).toResponse();
         } catch (KatharsisMatchingException e) {
         	LOGGER.warn("failed to process request", e);
             passToMethodMatcher = true;
@@ -179,12 +190,12 @@ public class KatharsisFilter implements ContainerRequestFilter {
         }
     }
 
-    private void abortWithResponse(ContainerRequestContext requestContext, BaseResponseContext katharsisResponse)
+    private void abortWithResponse(ContainerRequestContext requestContext, io.katharsis.repository.response.Response katharsisResponse)
         throws IOException {
         Response response;
         if (katharsisResponse != null) {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            objectMapper.writeValue(os, katharsisResponse);
+            objectMapper.writeValue(os, katharsisResponse.getDocument());
             response = Response
                 .status(katharsisResponse.getHttpStatus())
                 .entity(new ByteArrayInputStream(os.toByteArray()))
@@ -198,7 +209,7 @@ public class KatharsisFilter implements ContainerRequestFilter {
 
 
 
-    public RequestBody inputStreamToBody(InputStream is) throws IOException {
+    public Document inputStreamToBody(InputStream is) throws IOException {
         if (is == null) {
             return null;
         }
@@ -208,7 +219,7 @@ public class KatharsisFilter implements ContainerRequestFilter {
             return null;
         }
         try {
-            return objectMapper.readValue(requestBody, RequestBody.class);
+            return objectMapper.readValue(requestBody, Document.class);
         } catch (IOException e) {
             throw new JsonDeserializationException(e.getMessage());
         }

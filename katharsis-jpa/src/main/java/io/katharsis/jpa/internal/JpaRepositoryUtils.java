@@ -1,18 +1,26 @@
 package io.katharsis.jpa.internal;
 
+import java.lang.reflect.Type;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Set;
 
-import io.katharsis.jpa.internal.meta.MetaAttribute;
-import io.katharsis.jpa.internal.meta.MetaEntity;
-import io.katharsis.jpa.internal.meta.MetaKey;
+import io.katharsis.core.internal.utils.PreconditionUtil;
+import io.katharsis.core.internal.utils.PropertyUtils;
+import io.katharsis.jpa.annotations.JpaMergeRelations;
+import io.katharsis.jpa.meta.MetaJpaDataObject;
 import io.katharsis.jpa.query.JpaQuery;
 import io.katharsis.jpa.query.JpaQueryExecutor;
+import io.katharsis.meta.MetaLookup;
+import io.katharsis.meta.model.MetaAttribute;
+import io.katharsis.meta.model.MetaDataObject;
+import io.katharsis.meta.model.MetaKey;
 import io.katharsis.queryspec.FilterSpec;
 import io.katharsis.queryspec.IncludeSpec;
 import io.katharsis.queryspec.QuerySpec;
 import io.katharsis.queryspec.SortSpec;
-import io.katharsis.utils.PreconditionUtil;
 
 public class JpaRepositoryUtils {
 
@@ -20,11 +28,13 @@ public class JpaRepositoryUtils {
 	}
 
 	/**
-	 * @param meta of the entity
-	 * @return Gets the primary key attribute of the given entity. Assumes a primary key
-	 * is available and no compound primary keys are supported.
+	 * @param meta
+	 *            of the entity
+	 * @return Gets the primary key attribute of the given entity. Assumes a
+	 *         primary key is available and no compound primary keys are
+	 *         supported.
 	 */
-	public static MetaAttribute getPrimaryKeyAttr(MetaEntity meta) {
+	public static MetaAttribute getPrimaryKeyAttr(MetaDataObject meta) {
 		MetaKey primaryKey = meta.getPrimaryKey();
 		PreconditionUtil.assertNotNull("no primary key", primaryKey);
 		PreconditionUtil.assertEquals("non-compound primary key expected", 1, primaryKey.getElements().size());
@@ -46,6 +56,7 @@ public class JpaRepositoryUtils {
 		if (!querySpec.getIncludedFields().isEmpty()) {
 			throw new UnsupportedOperationException("includeFields not yet supported");
 		}
+
 	}
 
 	public static void prepareExecutor(JpaQueryExecutor<?> executor, QuerySpec querySpec, boolean includeRelations) {
@@ -64,5 +75,37 @@ public class JpaRepositoryUtils {
 			}
 			executor.setLimit((int) querySpec.getLimit().longValue());
 		}
+
+		addMergeInclusions(executor, querySpec);
+
 	}
+
+	/**
+	 * related attribute that are merged into a resource should be loaded by
+	 * graph control to avoid lazy-loading or potential lack of session in
+	 * serialization.
+	 */
+	private static void addMergeInclusions(JpaQueryExecutor<?> executor, QuerySpec querySpec) {
+		ArrayDeque<String> attributePath = new ArrayDeque<>();
+		Class<?> resourceClass = querySpec.getResourceClass();
+
+		addMergeInclusions(attributePath, executor, resourceClass);
+	}
+
+	private static void addMergeInclusions(Deque<String> attributePath, JpaQueryExecutor<?> executor, Class<?> resourceClass) {
+		JpaMergeRelations annotation = resourceClass.getAnnotation(JpaMergeRelations.class);
+		if (annotation != null) {
+			for (String attrName : annotation.attributes()) {
+				attributePath.push(attrName);
+				executor.fetch(new ArrayList<>(attributePath));
+
+				// recurse
+				Class attrType = PropertyUtils.getPropertyClass(resourceClass, attrName);
+				addMergeInclusions(attributePath, executor, attrType);
+
+				attributePath.pop();
+			}
+		}
+	}
+
 }

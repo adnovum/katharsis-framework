@@ -1,8 +1,8 @@
 package io.katharsis.validation.mock.models;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.List;
 
 import io.katharsis.resource.annotations.JsonApiId;
 import io.katharsis.resource.annotations.JsonApiIncludeByDefault;
@@ -12,8 +12,8 @@ import io.katharsis.resource.annotations.JsonApiMetaInformation;
 import io.katharsis.resource.annotations.JsonApiResource;
 import io.katharsis.resource.annotations.JsonApiToMany;
 import io.katharsis.resource.annotations.JsonApiToOne;
-import io.katharsis.response.LinksInformation;
-import io.katharsis.response.MetaInformation;
+import io.katharsis.resource.links.LinksInformation;
+import io.katharsis.resource.meta.MetaInformation;
 import io.katharsis.validation.mock.ComplexValid;
 
 @JsonApiResource(type = "tasks")
@@ -31,7 +31,7 @@ public class Task {
 	private Project project;
 
 	@JsonApiToMany(lazy = false)
-	private List<Project> projects;
+	private List<Project> projects = Collections.emptyList();
 
 	@JsonApiToOne
 	@JsonApiLookupIncludeAutomatically

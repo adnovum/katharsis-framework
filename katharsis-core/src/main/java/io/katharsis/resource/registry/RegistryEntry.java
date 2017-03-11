@@ -1,155 +1,164 @@
 package io.katharsis.resource.registry;
 
-import io.katharsis.repository.RepositoryMethodParameterProvider;
-import io.katharsis.repository.exception.RelationshipRepositoryNotFoundException;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.repository.AnnotatedRelationshipEntryBuilder;
-import io.katharsis.resource.registry.repository.AnnotatedResourceEntry;
-import io.katharsis.resource.registry.repository.DirectResponseRelationshipEntry;
-import io.katharsis.resource.registry.repository.DirectResponseResourceEntry;
-import io.katharsis.resource.registry.repository.ResourceEntry;
-import io.katharsis.resource.registry.repository.ResponseRelationshipEntry;
-import io.katharsis.resource.registry.responseRepository.RelationshipRepositoryAdapter;
-import io.katharsis.resource.registry.responseRepository.ResourceRepositoryAdapter;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import io.katharsis.core.internal.registry.DirectResponseRelationshipEntry;
+import io.katharsis.core.internal.registry.DirectResponseResourceEntry;
+import io.katharsis.core.internal.repository.adapter.RelationshipRepositoryAdapter;
+import io.katharsis.core.internal.repository.adapter.ResourceRepositoryAdapter;
+import io.katharsis.errorhandling.exception.RelationshipRepositoryNotFoundException;
+import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
+import io.katharsis.legacy.registry.AnnotatedRelationshipEntryBuilder;
+import io.katharsis.legacy.registry.AnnotatedResourceEntry;
+import io.katharsis.module.ModuleRegistry;
+import io.katharsis.repository.information.ResourceRepositoryInformation;
+import io.katharsis.resource.information.ResourceInformation;
+
 /**
- * Holds information about a resource of type <i>T</i> and its repositories.
- * It includes the following information:
- * - ResourceInformation instance with information about the resource,
- * - ResourceEntry instance,
- * - List of all repositories for relationships defined in resource class.
- * - Parent RegistryEntry if a resource inherits from another resource
+ * Holds information about a resource of type <i>T</i> and its repositories. It
+ * includes the following information: - ResourceInformation instance with
+ * information about the resource, - ResourceEntry instance, - List of all
+ * repositories for relationships defined in resource class. - Parent
+ * RegistryEntry if a resource inherits from another resource
  *
- * @param <T> resource type
+ * @param <T>
+ *            resource type
  */
-public class RegistryEntry<T> {
-    private final ResourceInformation resourceInformation;
-    private final ResourceEntry<T, ?> resourceEntry;
-    private final List<ResponseRelationshipEntry<T, ?>> relationshipEntries;
-    private RegistryEntry parentRegistryEntry = null;
-    
-	private ResourceRegistry resourceRegistry;
+public class RegistryEntry {
 
-    public RegistryEntry(ResourceInformation resourceInformation,
-                         @SuppressWarnings("SameParameterValue") ResourceEntry<T, ?> resourceEntry) {
-        this(resourceInformation, resourceEntry, new LinkedList<ResponseRelationshipEntry<T, ?>>());
-    }
+	private final ResourceInformation resourceInformation;
 
-    public RegistryEntry(ResourceInformation resourceInformation,
-                         ResourceEntry<T, ?> resourceEntry,
-                         List<ResponseRelationshipEntry<T, ?>> relationshipEntries) {
-        this.resourceInformation = resourceInformation;
-        this.resourceEntry = resourceEntry;
-        this.relationshipEntries = relationshipEntries;
-    }
-    
-    protected void initialize(ResourceRegistry resourceRegistry){
-    	this.resourceRegistry = resourceRegistry;
-    }
+	private final ResourceEntry resourceEntry;
 
-    @SuppressWarnings("unchecked")
-    public ResourceRepositoryAdapter getResourceRepository(RepositoryMethodParameterProvider parameterProvider) {
-        Object repoInstance = null;
-        if (resourceEntry instanceof DirectResponseResourceEntry) {
-            repoInstance = ((DirectResponseResourceEntry<T, ?>) resourceEntry).getResourceRepository();
-        } else if (resourceEntry instanceof AnnotatedResourceEntry) {
-            repoInstance = ((AnnotatedResourceEntry<T, ?>) resourceEntry).build(parameterProvider);
-        }
-        
-        if(repoInstance instanceof ResourceRegistryAware){
-        	((ResourceRegistryAware)repoInstance).setResourceRegistry(resourceRegistry);
-        }
+	private final List<ResponseRelationshipEntry> relationshipEntries;
 
-        return new ResourceRepositoryAdapter(resourceInformation, resourceRegistry, repoInstance);
-    }
+	private RegistryEntry parentRegistryEntry = null;
 
-    public List<ResponseRelationshipEntry<T, ?>> getRelationshipEntries() {
-        return relationshipEntries;
-    }
+	private ModuleRegistry moduleRegistry;
 
-    @SuppressWarnings("unchecked")
-    public RelationshipRepositoryAdapter getRelationshipRepositoryForClass(Class clazz,
-                                                                                     RepositoryMethodParameterProvider parameterProvider) {
-        ResponseRelationshipEntry<T, ?> foundRelationshipEntry = null;
-        for (ResponseRelationshipEntry<T, ?> relationshipEntry : relationshipEntries) {
-            if (clazz == relationshipEntry.getTargetAffiliation()) {
-                foundRelationshipEntry = relationshipEntry;
-                break;
-            }
-        }
-        if (foundRelationshipEntry == null) {
-            throw new RelationshipRepositoryNotFoundException(resourceInformation.getResourceClass(), clazz);
-        }
+	private ResourceRepositoryInformation repositoryInformation;
 
-        Object repoInstance;
-        if (foundRelationshipEntry instanceof AnnotatedRelationshipEntryBuilder) {
-            repoInstance = ((AnnotatedRelationshipEntryBuilder<T, ?>) foundRelationshipEntry).build(parameterProvider);
-        } else {
-             repoInstance = ((DirectResponseRelationshipEntry<T, ?>) foundRelationshipEntry).getRepositoryInstanceBuilder();
-        }
-         
-        if(repoInstance instanceof ResourceRegistryAware){
-        	((ResourceRegistryAware)repoInstance).setResourceRegistry(resourceRegistry);
-        }
-         
-        return new RelationshipRepositoryAdapter(resourceInformation, resourceRegistry, repoInstance);
-    }
+	public RegistryEntry(ResourceRepositoryInformation repositoryInformation, @SuppressWarnings("SameParameterValue") ResourceEntry resourceEntry) {
+		this(repositoryInformation, resourceEntry, new LinkedList<ResponseRelationshipEntry>());
+	}
 
-    public ResourceInformation getResourceInformation() {
-        return resourceInformation;
-    }
+	public RegistryEntry(ResourceRepositoryInformation repositoryInformation, ResourceEntry resourceEntry, List<ResponseRelationshipEntry> relationshipEntries) {
+		this.repositoryInformation = repositoryInformation;
+		this.resourceInformation = repositoryInformation.getResourceInformation();
+		this.resourceEntry = resourceEntry;
+		this.relationshipEntries = relationshipEntries;
+	}
 
-    public RegistryEntry getParentRegistryEntry() {
-        return parentRegistryEntry;
-    }
+	public void initialize(ModuleRegistry moduleRegistry) {
+		this.moduleRegistry = moduleRegistry;
+	}
 
-    /**
-     * To be used only by ResourceRegistryBuilder
-     *
-     * @param parentRegistryEntry parent resource
-     */
-    void setParentRegistryEntry(RegistryEntry parentRegistryEntry) {
-        this.parentRegistryEntry = parentRegistryEntry;
-    }
+	@SuppressWarnings("unchecked")
+	public ResourceRepositoryAdapter getResourceRepository(RepositoryMethodParameterProvider parameterProvider) {
+		Object repoInstance = null;
+		if (resourceEntry instanceof DirectResponseResourceEntry) {
+			repoInstance = ((DirectResponseResourceEntry) resourceEntry).getResourceRepository();
+		} else if (resourceEntry instanceof AnnotatedResourceEntry) {
+			repoInstance = ((AnnotatedResourceEntry) resourceEntry).build(parameterProvider);
+		}
 
-    /**
-     * Check the parameter is a parent of <b>this</b> {@link RegistryEntry} instance
-     *
-     * @param registryEntry parent to check
-     * @return true if the parameter is a parent
-     */
-    public boolean isParent(RegistryEntry registryEntry) {
-        RegistryEntry parentRegistryEntry = getParentRegistryEntry();
-        while (parentRegistryEntry != null) {
-            if (parentRegistryEntry.equals(registryEntry)) {
-                return true;
-            }
-            parentRegistryEntry = parentRegistryEntry.getParentRegistryEntry();
-        }
-        return false;
-    }
+		if (repoInstance instanceof ResourceRegistryAware) {
+			((ResourceRegistryAware) repoInstance).setResourceRegistry(moduleRegistry.getResourceRegistry());
+		}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        RegistryEntry<?> that = (RegistryEntry<?>) o;
-        return Objects.equals(resourceInformation, that.resourceInformation) &&
-            Objects.equals(resourceEntry, that.resourceEntry) &&
-            Objects.equals(relationshipEntries, that.relationshipEntries) &&
-            Objects.equals(parentRegistryEntry, that.parentRegistryEntry);
-    }
+		return new ResourceRepositoryAdapter(resourceInformation, moduleRegistry, repoInstance);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(resourceInformation, resourceEntry, relationshipEntries, parentRegistryEntry);
-    }
+	public List<ResponseRelationshipEntry> getRelationshipEntries() {
+		return relationshipEntries;
+	}
+
+	@SuppressWarnings("unchecked")
+	public RelationshipRepositoryAdapter getRelationshipRepositoryForClass(Class<?> clazz, RepositoryMethodParameterProvider parameterProvider) {
+		ResponseRelationshipEntry foundRelationshipEntry = null;
+		for (ResponseRelationshipEntry relationshipEntry : relationshipEntries) {
+			if (clazz == relationshipEntry.getTargetAffiliation()) {
+				foundRelationshipEntry = relationshipEntry;
+				break;
+			}
+		}
+		if (foundRelationshipEntry == null) {
+			throw new RelationshipRepositoryNotFoundException(resourceInformation.getResourceClass(), clazz);
+		}
+
+		Object repoInstance;
+		if (foundRelationshipEntry instanceof AnnotatedRelationshipEntryBuilder) {
+			repoInstance = ((AnnotatedRelationshipEntryBuilder) foundRelationshipEntry).build(parameterProvider);
+		} else {
+			repoInstance = ((DirectResponseRelationshipEntry) foundRelationshipEntry).getRepositoryInstanceBuilder();
+		}
+
+		if (repoInstance instanceof ResourceRegistryAware) {
+			((ResourceRegistryAware) repoInstance).setResourceRegistry(moduleRegistry.getResourceRegistry());
+		}
+
+		return new RelationshipRepositoryAdapter(resourceInformation, moduleRegistry, repoInstance);
+	}
+
+	public ResourceInformation getResourceInformation() {
+		return resourceInformation;
+	}
+
+	public ResourceRepositoryInformation getRepositoryInformation() {
+		return repositoryInformation;
+	}
+
+	public RegistryEntry getParentRegistryEntry() {
+		return parentRegistryEntry;
+	}
+
+	/**
+	 * To be used only by ResourceRegistryBuilder
+	 *
+	 * @param parentRegistryEntry
+	 *            parent resource
+	 */
+	public void setParentRegistryEntry(RegistryEntry parentRegistryEntry) {
+		this.parentRegistryEntry = parentRegistryEntry;
+	}
+
+	/**
+	 * Check the parameter is a parent of <b>this</b> {@link RegistryEntry}
+	 * instance
+	 *
+	 * @param registryEntry
+	 *            parent to check
+	 * @return true if the parameter is a parent
+	 */
+	public boolean isParent(RegistryEntry registryEntry) {
+		RegistryEntry parentRegistryEntry = getParentRegistryEntry();
+		while (parentRegistryEntry != null) {
+			if (parentRegistryEntry.equals(registryEntry)) {
+				return true;
+			}
+			parentRegistryEntry = parentRegistryEntry.getParentRegistryEntry();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || !(o instanceof RegistryEntry)) {
+			return false;
+		}
+		RegistryEntry that = (RegistryEntry) o;
+		return Objects.equals(resourceInformation, that.resourceInformation) && // NOSONAR
+				Objects.equals(repositoryInformation, that.repositoryInformation) && Objects.equals(resourceEntry, that.resourceEntry) && Objects.equals(moduleRegistry, that.moduleRegistry)
+				&& Objects.equals(relationshipEntries, that.relationshipEntries) && Objects.equals(parentRegistryEntry, that.parentRegistryEntry);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(repositoryInformation, resourceInformation, resourceEntry, relationshipEntries, moduleRegistry, parentRegistryEntry);
+	}
 }

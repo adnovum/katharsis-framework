@@ -3,8 +3,8 @@ package io.katharsis.client;
 import java.io.Serializable;
 import java.util.List;
 
-import io.katharsis.queryParams.QueryParams;
-import io.katharsis.repository.ResourceRepository;
+import io.katharsis.legacy.queryParams.QueryParams;
+import io.katharsis.legacy.repository.ResourceRepository;
 
 /**
  * Implemented by every {@link ResourceRepository} stub.
@@ -24,38 +24,5 @@ public interface ResourceRepositoryStub<T, ID extends Serializable> extends Reso
 	 * @param <S> resource type
 	 * @return persisted resource
 	 */
-	@Override
-	public <S extends T> S save(S entity);
-
-	/**
-	 * Saves the given entity. {@link QueryParams} allows to specify which
-	 * relationships should be saved as well.
-	 *
-	 * @param entity resource to be saved
-	 * @param queryParams query params
-	 * @param <S> resource type
-	 * @return persisted resource
-	 */
-	public <S extends T> S save(S entity, QueryParams queryParams);
-	
-
-	/**
-	 * Saves the given entity without any of its relationships.
-	 *
-	 * @param entity resource to be saved
-	 * @param <S> resource type
-	 * @return persisted resource
-	 */
 	public <S extends T> S create(S entity);
-
-	/**
-	 * Saves the given entity. {@link QueryParams} allows to specify which
-	 * relationships should be saved as well.
-	 *
-	 * @param entity resource to be saved
-	 * @param queryParams query params
-	 * @param <S> resource type
-	 * @return persisted resource
-	 */
-	public <S extends T> S create(S entity, QueryParams queryParams);
 }

@@ -1,15 +1,15 @@
 package io.katharsis.resource.mock.repository;
 
-import io.katharsis.queryParams.QueryParams;
-import io.katharsis.repository.RelationshipRepository;
-import io.katharsis.resource.mock.models.ProjectPolymorphic;
-import io.katharsis.resource.mock.models.Task;
-import io.katharsis.resource.mock.repository.util.Relation;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import io.katharsis.legacy.queryParams.QueryParams;
+import io.katharsis.legacy.repository.RelationshipRepository;
+import io.katharsis.resource.mock.models.ProjectPolymorphic;
+import io.katharsis.resource.mock.models.Task;
+import io.katharsis.resource.mock.repository.util.Relation;
 
 public class ProjectPolymorphicToObjectRepository extends AbstractRelationShipRepository<ProjectPolymorphic> implements RelationshipRepository<ProjectPolymorphic, Long, Object, Long> {
 

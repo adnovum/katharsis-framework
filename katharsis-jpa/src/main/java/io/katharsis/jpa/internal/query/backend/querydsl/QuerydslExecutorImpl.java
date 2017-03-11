@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.QTuple;
 import com.querydsl.jpa.impl.JPAQuery;
 
-import io.katharsis.jpa.internal.meta.MetaDataObject;
 import io.katharsis.jpa.internal.query.AbstractQueryExecutorImpl;
 import io.katharsis.jpa.query.querydsl.QuerydslExecutor;
 import io.katharsis.jpa.query.querydsl.QuerydslTuple;
+import io.katharsis.meta.model.MetaDataObject;
 
 public class QuerydslExecutorImpl<T> extends AbstractQueryExecutorImpl<T> implements QuerydslExecutor<T> {
 
@@ -27,14 +27,20 @@ public class QuerydslExecutorImpl<T> extends AbstractQueryExecutorImpl<T> implem
 		this.query = query;
 	}
 
+	@Override
 	public JPAQuery<T> getQuery() {
 		return query;
 	}
 
 	@Override
-	protected List<?> executeQuery() {
-		Query jpaQuery = query.createQuery();
-		return executeQuery(jpaQuery);
+	public void setQuery(JPAQuery<T> query) {
+		this.query = query;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public TypedQuery<T> getTypedQuery() {
+		return (TypedQuery<T>) setupQuery(query.createQuery());
 	}
 
 	@Override

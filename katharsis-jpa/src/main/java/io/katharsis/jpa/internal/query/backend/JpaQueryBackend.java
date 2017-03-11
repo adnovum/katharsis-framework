@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.persistence.criteria.JoinType;
 
-import io.katharsis.jpa.internal.meta.MetaAttribute;
-import io.katharsis.jpa.internal.meta.MetaAttributePath;
+import io.katharsis.meta.model.MetaAttribute;
+import io.katharsis.meta.model.MetaAttributePath;
 import io.katharsis.queryspec.Direction;
 import io.katharsis.queryspec.FilterOperator;
 
@@ -50,10 +50,6 @@ public interface JpaQueryBackend<F, O, P, E> {
 	public E joinSubType(E currentCriteriaPath, Class<?> entityType);
 
 	public E joinMapValue(E currentCriteriaPath, MetaAttribute pathElement, Object key);
-
-	public E joinMapValues(E currentCriteriaPath, MetaAttribute pathElement);
-
-	public E joinMapKey(E currentCriteriaPath, MetaAttribute pathElement);
 
 	public F doJoin(MetaAttribute targetAttr, JoinType joinType, F parent);
 }

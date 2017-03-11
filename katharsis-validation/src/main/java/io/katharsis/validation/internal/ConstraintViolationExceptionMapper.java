@@ -15,22 +15,23 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.ElementKind;
 import javax.validation.Path.Node;
 
+import io.katharsis.errorhandling.ExceptionMapperHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.katharsis.core.internal.utils.PropertyUtils;
 import io.katharsis.errorhandling.ErrorData;
 import io.katharsis.errorhandling.ErrorDataBuilder;
 import io.katharsis.errorhandling.ErrorResponse;
 import io.katharsis.errorhandling.mapper.ExceptionMapper;
 import io.katharsis.module.Module.ModuleContext;
-import io.katharsis.resource.field.ResourceField;
+import io.katharsis.resource.information.ResourceField;
 import io.katharsis.resource.information.ResourceInformation;
 import io.katharsis.resource.registry.RegistryEntry;
 import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.utils.PropertyUtils;
 
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConstraintViolationExceptionMapper.class);
 
 	private static final String HIBERNATE_PROPERTY_NODE_IMPL = "org.hibernate.validator.path.PropertyNode";
@@ -43,7 +44,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
 	protected static final String META_TYPE_KEY = "type";
 
-	protected static final Object META_TYPE_VALUE = "ConstraintViolation";
+	protected static final String META_TYPE_VALUE = "ConstraintViolation";
 
 	protected static final String META_MESSAGE_TEMPLATE = "messageTemplate";
 
@@ -60,7 +61,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 	@Override
 	public ErrorResponse toErrorResponse(ConstraintViolationException cve) {
 		LOGGER.warn("a ConstraintViolationException occured", cve);
-		
+
 		List<ErrorData> errors = new ArrayList<>();
 		for (ConstraintViolation<?> violation : cve.getConstraintViolations()) {
 
@@ -127,16 +128,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
 	@Override
 	public boolean accepts(ErrorResponse errorResponse) {
-		if (errorResponse.getHttpStatus() != UNPROCESSABLE_ENTITY_422) {
-			return false;
-		}
-		Iterator<ErrorData> errors = errorResponse.getErrors().iterator();
-		if (!errors.hasNext()) {
-			return false;
-		}
-		ErrorData error = errors.next();
-		Map<String, Object> meta = error.getMeta();
-		return meta != null && META_TYPE_VALUE.equals(meta.get(META_TYPE_KEY));
+		return ExceptionMapperHelper.accepts(errorResponse, UNPROCESSABLE_ENTITY_422, META_TYPE_VALUE);
 	}
 
 	/**
@@ -150,7 +142,6 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 	 */
 	private ResourceRef resolvePath(ConstraintViolation<?> violation) {
 		Object resource = violation.getRootBean();
-		assertResource(resource);
 
 		Object nodeObject = resource;
 		ResourceRef ref = new ResourceRef(resource);
@@ -158,6 +149,18 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 		Iterator<Node> iterator = violation.getPropertyPath().iterator();
 		while (iterator.hasNext()) {
 			Node node = iterator.next();
+
+			// ignore methods/parameters
+			if (node.getKind() == ElementKind.METHOD) {
+				continue;
+			}
+			if (node.getKind() == ElementKind.PARAMETER) {
+				resource = getParameterValue(node);
+				nodeObject = resource;
+				ref = new ResourceRef(resource);
+				assertResource(resource);
+				continue;
+			}
 
 			// visit list, set, map references
 			nodeObject = ref.getNodeReference(nodeObject, node);
@@ -194,6 +197,28 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 				else {
 					return valueMethod.invoke(propertyNode);
 				}
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+		else {
+			throw new UnsupportedOperationException(
+					"cannot convert violations for java.util.Set elements, consider using Hibernate validator");
+		}
+	}
+	
+	private static Object getParameterValue(Node propertyNode) {
+		// bean validation not sufficient for sets
+		// not possible to access elements, reverting to
+		// Hibernate implementation
+		// TODO investigate other implementation next to
+		// hibernate, JSR 303 v1.1 not sufficient
+		if (propertyNode.getClass().getName().equals(HIBERNATE_PROPERTY_NODE_IMPL)
+				|| propertyNode.getClass().getName().equals(HIBERNATE_PROPERTY_NODE_ENGINE_IMPL)) { // NOSONAR
+			try {
+				Method valueMethod = propertyNode.getClass().getMethod("getValue");
+				return valueMethod.invoke(propertyNode);
 			}
 			catch (Exception e) {
 				throw new UnsupportedOperationException(e);
@@ -308,7 +333,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
 		private boolean isPrimaryKey(Class<? extends Object> clazz, String name) {
 			ResourceRegistry resourceRegistry = context.getResourceRegistry();
-			RegistryEntry<?> entry = resourceRegistry.getEntry(clazz);
+			RegistryEntry entry = resourceRegistry.findEntry(clazz);
 			if (entry != null) {
 				ResourceInformation resourceInformation = entry.getResourceInformation();
 				ResourceField idField = resourceInformation.getIdField();
@@ -321,7 +346,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
 		private boolean isAssociation(Class<? extends Object> clazz, String name) {
 			ResourceRegistry resourceRegistry = context.getResourceRegistry();
-			RegistryEntry<?> entry = resourceRegistry.getEntry(clazz);
+			RegistryEntry entry = resourceRegistry.findEntry(clazz);
 			if (entry != null) {
 				ResourceInformation resourceInformation = entry.getResourceInformation();
 				ResourceField relationshipField = resourceInformation.findRelationshipFieldByName(name);
@@ -371,7 +396,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 	 */
 	protected String getResourceId(Object resource) {
 		ResourceRegistry resourceRegistry = context.getResourceRegistry();
-		RegistryEntry<?> entry = resourceRegistry.getEntry(resource.getClass());
+		RegistryEntry entry = resourceRegistry.findEntry(resource.getClass());
 		ResourceInformation resourceInformation = entry.getResourceInformation();
 		ResourceField idField = resourceInformation.getIdField();
 		Object id = PropertyUtils.getProperty(resource, idField.getUnderlyingName());
@@ -383,7 +408,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
 	protected String getResourceType(Object resource) {
 		ResourceRegistry resourceRegistry = context.getResourceRegistry();
-		RegistryEntry<?> entry = resourceRegistry.getEntry(resource.getClass());
+		RegistryEntry entry = resourceRegistry.findEntry(resource.getClass());
 		ResourceInformation resourceInformation = entry.getResourceInformation();
 		return resourceInformation.getResourceType();
 	}

@@ -1,6 +1,7 @@
 package io.katharsis.jpa;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,18 +18,20 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.katharsis.client.KatharsisClient;
-import io.katharsis.jpa.model.TestEntity;
+import io.katharsis.client.http.okhttp.OkHttpAdapter;
+import io.katharsis.client.http.okhttp.OkHttpAdapterListenerBase;
+import io.katharsis.core.properties.KatharsisProperties;
 import io.katharsis.jpa.query.AbstractJpaTest;
 import io.katharsis.jpa.query.querydsl.QuerydslQueryFactory;
 import io.katharsis.jpa.util.EntityManagerProducer;
 import io.katharsis.jpa.util.SpringTransactionRunner;
 import io.katharsis.jpa.util.TestConfig;
-import io.katharsis.locator.SampleJsonServiceLocator;
-import io.katharsis.queryParams.DefaultQueryParamsParser;
-import io.katharsis.queryParams.QueryParamsBuilder;
+import io.katharsis.legacy.locator.SampleJsonServiceLocator;
+import io.katharsis.legacy.queryParams.DefaultQueryParamsParser;
+import io.katharsis.legacy.queryParams.QueryParamsBuilder;
 import io.katharsis.queryspec.DefaultQuerySpecDeserializer;
 import io.katharsis.rs.KatharsisFeature;
-import io.katharsis.rs.KatharsisProperties;
+import okhttp3.OkHttpClient.Builder;
 
 public abstract class AbstractJpaJerseyTest extends JerseyTest {
 
@@ -42,13 +45,26 @@ public abstract class AbstractJpaJerseyTest extends JerseyTest {
 
 	@Before
 	public void setup() {
-		client = new KatharsisClient(getBaseUri().toString(), "io.katharsis.jpa.model.dto");
+		client = new KatharsisClient(getBaseUri().toString());
+		client.setPushAlways(false);
 
-		JpaModule module = JpaModule.newClientModule(TestEntity.class.getPackage().getName());
+		JpaModule module = JpaModule.newClientModule();
 		setupModule(module, false);
 		client.addModule(module);
+		setNetworkTimeout(client, 10000, TimeUnit.SECONDS);
 	}
 
+	public static void setNetworkTimeout(KatharsisClient client, final int timeout, final TimeUnit timeUnit) {
+		OkHttpAdapter httpAdapter = (OkHttpAdapter) client.getHttpAdapter();
+		httpAdapter.addListener(new OkHttpAdapterListenerBase() {
+
+			@Override
+			public void onBuild(Builder builder) {
+				builder.readTimeout(timeout, timeUnit);
+			}
+		});
+	}
+	
 	protected void setupModule(JpaModule module, boolean server) {
 	}
 

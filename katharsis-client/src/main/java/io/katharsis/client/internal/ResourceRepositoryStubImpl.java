@@ -5,155 +5,103 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Request.Builder;
-import okhttp3.RequestBody;
 
 import io.katharsis.client.KatharsisClient;
-import io.katharsis.client.QuerySpecResourceRepositoryStub;
 import io.katharsis.client.ResourceRepositoryStub;
-import io.katharsis.client.response.ResourceList;
-import io.katharsis.queryParams.QueryParams;
+import io.katharsis.core.internal.utils.JsonApiUrlBuilder;
+import io.katharsis.core.internal.utils.PropertyUtils;
+import io.katharsis.legacy.queryParams.QueryParams;
 import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.queryspec.internal.QueryAdapter;
-import io.katharsis.queryspec.internal.QueryParamsAdapter;
-import io.katharsis.queryspec.internal.QuerySpecAdapter;
-import io.katharsis.request.path.JsonPath;
-import io.katharsis.request.path.ResourcePath;
-import io.katharsis.resource.field.ResourceField;
+import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.repository.request.HttpMethod;
+import io.katharsis.repository.response.JsonApiResponse;
+import io.katharsis.resource.Document;
+import io.katharsis.resource.information.ResourceField;
 import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.response.BaseResponseContext;
-import io.katharsis.response.CollectionResponseContext;
-import io.katharsis.response.JsonApiResponse;
-import io.katharsis.response.ResourceResponseContext;
-import io.katharsis.utils.JsonApiUrlBuilder;
-import io.katharsis.utils.PropertyUtils;
+import io.katharsis.resource.list.DefaultResourceList;
 
-public class ResourceRepositoryStubImpl<T, I extends Serializable> extends AbstractStub
-		implements ResourceRepositoryStub<T, I>, QuerySpecResourceRepositoryStub<T, I> {
+public class ResourceRepositoryStubImpl<T, I extends Serializable> extends AbstractStub implements ResourceRepositoryV2<T, I>, ResourceRepositoryStub<T, I> {
 
 	private ResourceInformation resourceInformation;
 
 	private Class<T> resourceClass;
 
-	public ResourceRepositoryStubImpl(KatharsisClient client, Class<T> resourceClass, ResourceInformation resourceInformation,
-			JsonApiUrlBuilder urlBuilder) {
+	public ResourceRepositoryStubImpl(KatharsisClient client, Class<T> resourceClass, ResourceInformation resourceInformation, JsonApiUrlBuilder urlBuilder) {
 		super(client, urlBuilder);
 		this.resourceClass = resourceClass;
 		this.resourceInformation = resourceInformation;
 	}
 
-	private BaseResponseContext executeUpdate(HttpUrl requestUrl, T resource, QueryAdapter queryAdapter, boolean create) {
+	private Object executeUpdate(String requestUrl, T resource, boolean create) {
 		JsonApiResponse response = new JsonApiResponse();
 		response.setEntity(resource);
 
-		JsonPath jsonPath = new ResourcePath(resourceInformation.getResourceType());
-		ResourceResponseContext context = new ResourceResponseContext(response, jsonPath, queryAdapter);
+		ClientDocumentMapper documentMapper = client.getDocumentMapper();
+		Document requestDocument = documentMapper.toDocument(response, null);
 
-		ObjectMapper objectMapper = katharsis.getObjectMapper();
+		ObjectMapper objectMapper = client.getObjectMapper();
 		String requestBodyValue;
 		try {
-			requestBodyValue = objectMapper.writeValueAsString(context);
-		}
-		catch (JsonProcessingException e) {
+			requestBodyValue = objectMapper.writeValueAsString(requestDocument);
+		} catch (JsonProcessingException e) {
 			throw new IllegalStateException(e);
 		}
 
-		Builder builder = new Request.Builder().url(requestUrl);
+		HttpMethod method = create || client.getPushAlways() ? HttpMethod.POST : HttpMethod.PATCH;
 
-		if (create || katharsis.getPushAlways()) {
-			builder = builder.post(RequestBody.create(null, requestBodyValue));
-		}
-		else {
-			builder = builder.patch(RequestBody.create(null, requestBodyValue));
-		}
-
-		return execute(builder, true);
+		return execute(requestUrl, ResponseType.RESOURCE, method, requestBodyValue);
 	}
 
 	@Override
 	public T findOne(I id, QueryParams queryParams) {
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, id, queryParams));
+		String url = urlBuilder.buildUrl(resourceInformation, id, queryParams);
 		return findOne(url);
 	}
 
 	@Override
 	public List<T> findAll(QueryParams queryParams) {
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, null, queryParams));
+		String url = urlBuilder.buildUrl(resourceInformation, null, queryParams);
 		return findAll(url);
 	}
 
 	@Override
 	public List<T> findAll(Iterable<I> ids, QueryParams queryParams) {
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, ids, queryParams));
+		String url = urlBuilder.buildUrl(resourceInformation, ids, queryParams);
 		return findAll(url);
 	}
 
 	@Override
 	public <S extends T> S save(S entity) {
-		return save(entity, new QuerySpec(resourceClass));
-	}
-
-	@Override
-	public <S extends T> S save(S entity, QueryParams queryParams) {
-		return modify(entity, queryParams, false);
+		return modify(entity, false);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <S extends T> S modify(S entity, QueryParams queryParams, boolean create) {
-		String strId = getStringId(entity, create);
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, strId, (QuerySpec) null));
-		BaseResponseContext context = executeUpdate(url, entity, new QueryParamsAdapter(queryParams), create);
-		return (S) context.getResponse().getEntity();
-	}
-
-	@Override
-	public <S extends T> S save(S entity, QuerySpec querySpec) {
-		return modify(entity, querySpec, false);
+	private <S extends T> S modify(S entity, boolean create) {
+		Object id = getId(entity, create);
+		String url = urlBuilder.buildUrl(resourceInformation, id, (QuerySpec) null);
+		return (S) executeUpdate(url, entity, create);
 	}
 
 	@Override
 	public <S extends T> S create(S entity) {
-		return modify(entity, new QuerySpec(resourceClass), true);
+		return modify(entity, true);
 	}
 
-	@Override
-	public <S extends T> S create(S entity, QuerySpec querySpec) {
-		return modify(entity, querySpec, true);
-	}
-
-	@Override
-	public <S extends T> S create(S entity, QueryParams queryParams) {
-		return modify(entity, queryParams, true);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <S extends T> S modify(S entity, QuerySpec querySpec, boolean create) {
-		String idString = getStringId(entity, create);
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, idString, (QuerySpec) null));
-		BaseResponseContext context = executeUpdate(url, entity, new QuerySpecAdapter(querySpec, katharsis.getRegistry()),
-				create);
-		return (S) context.getResponse().getEntity();
-	}
-
-	private <S extends T> String getStringId(S entity, boolean create) {
-		if (katharsis.getPushAlways()) {
+	private <S extends T> Object getId(S entity, boolean create) {
+		if (client.getPushAlways()) {
 			return null;
 		}
 		if (create) {
 			return null;
-		}
-		else {
+		} else {
 			ResourceField idField = resourceInformation.getIdField();
-			Object objectId = PropertyUtils.getProperty(entity, idField.getUnderlyingName());
-			return resourceInformation.toIdString(objectId);
+			return PropertyUtils.getProperty(entity, idField.getUnderlyingName());
 		}
 	}
 
 	@Override
 	public void delete(I id) {
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, id, (QuerySpec) null));
+		String url = urlBuilder.buildUrl(resourceInformation, id, (QuerySpec) null);
 		executeDelete(url);
 	}
 
@@ -164,37 +112,30 @@ public class ResourceRepositoryStubImpl<T, I extends Serializable> extends Abstr
 
 	@Override
 	public T findOne(I id, QuerySpec querySpec) {
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, id, querySpec));
+		String url = urlBuilder.buildUrl(resourceInformation, id, querySpec);
 		return findOne(url);
 	}
 
 	@Override
-	public ResourceList<T> findAll(QuerySpec querySpec) {
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, null, querySpec));
+	public DefaultResourceList<T> findAll(QuerySpec querySpec) {
+		String url = urlBuilder.buildUrl(resourceInformation, null, querySpec);
 		return findAll(url);
 	}
 
 	@Override
-	public ResourceList<T> findAll(Iterable<I> ids, QuerySpec queryPaquerySpecrams) {
-		HttpUrl url = HttpUrl.parse(urlBuilder.buildUrl(resourceClass, ids, queryPaquerySpecrams));
+	public DefaultResourceList<T> findAll(Iterable<I> ids, QuerySpec queryPaquerySpecrams) {
+		String url = urlBuilder.buildUrl(resourceInformation, ids, queryPaquerySpecrams);
 		return findAll(url);
 	}
 
-	private ResourceList<T> findAll(HttpUrl url) {
-		BaseResponseContext responseContext = executeGet(url);
-		if (responseContext instanceof CollectionResponseContext) {
-			CollectionResponseContext colResponseContext = (CollectionResponseContext) responseContext;
-			return toList(colResponseContext.getResponse());
-		}
-		else {
-			return toList(responseContext.getResponse());
-		}
+	@SuppressWarnings("unchecked")
+	public DefaultResourceList<T> findAll(String url) {
+		return (DefaultResourceList<T>) executeGet(url, ResponseType.RESOURCES);
 	}
 
 	@SuppressWarnings("unchecked")
-	private T findOne(HttpUrl url) {
-		BaseResponseContext responseContext = executeGet(url);
-		return (T) responseContext.getResponse().getEntity();
+	private T findOne(String url) {
+		return (T) executeGet(url, ResponseType.RESOURCE);
 	}
 
 }

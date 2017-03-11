@@ -14,12 +14,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.katharsis.client.KatharsisClient;
 import io.katharsis.client.RelationshipRepositoryStub;
 import io.katharsis.client.ResourceRepositoryStub;
-import io.katharsis.locator.SampleJsonServiceLocator;
-import io.katharsis.queryParams.DefaultQueryParamsParser;
-import io.katharsis.queryParams.QueryParamsBuilder;
+import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.legacy.locator.SampleJsonServiceLocator;
+import io.katharsis.legacy.queryParams.DefaultQueryParamsParser;
+import io.katharsis.legacy.queryParams.QueryParamsBuilder;
 import io.katharsis.rs.KatharsisFeature;
-import io.katharsis.rs.KatharsisProperties;
-import io.katharsis.validation.ValidationModule;
 import io.katharsis.validation.mock.models.Project;
 import io.katharsis.validation.mock.models.Task;
 import io.katharsis.validation.mock.repository.TaskRepository;
@@ -38,12 +37,14 @@ public abstract class AbstractValidationTest extends JerseyTest {
 
 	@Before
 	public void setup() {
-		client = new KatharsisClient(getBaseUri().toString(), getClass().getPackage().getName());
-		client.addModule(new ValidationModule());
-		taskRepo = client.getRepository(Task.class);
-		projectRepo = client.getRepository(Project.class);
-		relRepo = client.getRepository(Task.class, Project.class);
+		client = new KatharsisClient(getBaseUri().toString());
+		client.addModule(ValidationModule.newInstance());
+		taskRepo = client.getQueryParamsRepository(Task.class);
+		projectRepo = client.getQueryParamsRepository(Project.class);
+		relRepo = client.getQueryParamsRepository(Task.class, Project.class);
 		TaskRepository.map.clear();
+		
+		client.getHttpAdapter().setReceiveTimeout(1000000, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public abstract class AbstractValidationTest extends JerseyTest {
 
 			KatharsisFeature feature = new KatharsisFeature(new ObjectMapper(),
 					new QueryParamsBuilder(new DefaultQueryParamsParser()), new SampleJsonServiceLocator());
-			feature.addModule(new ValidationModule());
+			feature.addModule(ValidationModule.newInstance());
 			register(feature);
 
 		}

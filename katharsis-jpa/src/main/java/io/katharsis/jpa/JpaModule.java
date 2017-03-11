@@ -1,48 +1,58 @@
 package io.katharsis.jpa;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.metamodel.ManagedType;
 
-import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.internal.boot.TransactionRunner;
-import io.katharsis.dispatcher.filter.AbstractFilter;
-import io.katharsis.dispatcher.filter.FilterChain;
-import io.katharsis.dispatcher.filter.FilterRequestContext;
+import io.katharsis.core.internal.boot.TransactionRunner;
+import io.katharsis.core.internal.utils.PreconditionUtil;
+import io.katharsis.jpa.internal.JpaRequestContext;
 import io.katharsis.jpa.internal.JpaResourceInformationBuilder;
 import io.katharsis.jpa.internal.OptimisticLockExceptionMapper;
-import io.katharsis.jpa.internal.meta.MetaAttribute;
-import io.katharsis.jpa.internal.meta.MetaDataObject;
-import io.katharsis.jpa.internal.meta.MetaElement;
-import io.katharsis.jpa.internal.meta.MetaEntity;
-import io.katharsis.jpa.internal.meta.MetaLookup;
-import io.katharsis.jpa.internal.meta.MetaType;
-import io.katharsis.jpa.internal.meta.impl.MetaResourceImpl;
+import io.katharsis.jpa.internal.query.backend.querydsl.QuerydslQueryImpl;
 import io.katharsis.jpa.mapping.JpaMapper;
-import io.katharsis.jpa.mapping.JpaMapping;
+import io.katharsis.jpa.meta.JpaMetaProvider;
+import io.katharsis.jpa.meta.MetaEntity;
+import io.katharsis.jpa.meta.MetaJpaDataObject;
 import io.katharsis.jpa.query.JpaQueryFactory;
 import io.katharsis.jpa.query.JpaQueryFactoryContext;
 import io.katharsis.jpa.query.criteria.JpaCriteriaQueryFactory;
+import io.katharsis.jpa.query.querydsl.QuerydslQueryFactory;
+import io.katharsis.jpa.query.querydsl.QuerydslRepositoryFilter;
+import io.katharsis.jpa.query.querydsl.QuerydslTranslationContext;
+import io.katharsis.jpa.query.querydsl.QuerydslTranslationInterceptor;
+import io.katharsis.meta.MetaLookup;
+import io.katharsis.meta.model.MetaAttribute;
+import io.katharsis.meta.model.MetaDataObject;
+import io.katharsis.meta.model.MetaElement;
+import io.katharsis.meta.model.MetaType;
+import io.katharsis.meta.model.resource.MetaJsonObject;
+import io.katharsis.meta.model.resource.MetaResource;
+import io.katharsis.meta.provider.resource.ResourceMetaProvider;
 import io.katharsis.module.Module;
-import io.katharsis.queryspec.QuerySpecRelationshipRepository;
-import io.katharsis.queryspec.QuerySpecResourceRepository;
+import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.repository.RelationshipRepositoryV2;
+import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.repository.decorate.RelationshipRepositoryDecorator;
+import io.katharsis.repository.decorate.RepositoryDecoratorFactory;
+import io.katharsis.repository.decorate.ResourceRepositoryDecorator;
+import io.katharsis.repository.filter.AbstractDocumentFilter;
+import io.katharsis.repository.filter.DocumentFilterChain;
+import io.katharsis.repository.filter.DocumentFilterContext;
+import io.katharsis.repository.response.Response;
 import io.katharsis.resource.information.ResourceInformationBuilder;
-import io.katharsis.resource.registry.ResourceLookup;
-import io.katharsis.response.BaseResponseContext;
-import io.katharsis.utils.PreconditionUtil;
 
 /**
  * Katharsis module that adds support to expose JPA entities as repositories. It
@@ -52,14 +62,16 @@ import io.katharsis.utils.PreconditionUtil;
  * <li>Sorting</li>
  * <li>Filtering</li>
  * <li>Access to relationships for any operation (sorting, filtering, etc.)</li>
- * <li>Includes for relationships </li>
+ * <li>Includes for relationships</li>
  * <li>Paging</li>
  * <li>Mapping to DTOs</li>
  * <li>Criteria API and QueryDSL support</li>
- * <li>Computated attributes that map JPA Criteria/QueryDSL expressions to DTO attributes</li>
+ * <li>Computed attributes that map JPA Criteria/QueryDSL expressions to DTO
+ * attributes</li>
  * <li>JpaRepositoryFilter to customize the repositories</li>
  * <li>Client and server support</li>
- * <li>No need for katharsis annotations by default. Reads the entity annotations.</li>
+ * <li>No need for katharsis annotations by default. Reads the entity
+ * annotations.</li>
  * </ul>
  * 
  * 
@@ -78,8 +90,6 @@ public class JpaModule implements Module {
 
 	private static final String MODULE_NAME = "jpa";
 
-	private String resourceSearchPackage;
-
 	private EntityManagerFactory emFactory;
 
 	private EntityManager em;
@@ -92,39 +102,36 @@ public class JpaModule implements Module {
 
 	private ModuleContext context;
 
-	private MetaLookup metaLookup = new MetaLookup();
+	private MetaLookup jpaMetaLookup = new MetaLookup();
 
-	private HashSet<Class<?>> entityClasses = new HashSet<>();
+	private MetaLookup resourceMetaLookup = new MetaLookup();
 
-	private Map<Class<?>, MappedRegistration<?, ?>> mappings = new HashMap<>();
+	/**
+	 * Maps resource class to its configuration
+	 */
+	private Map<Class<?>, JpaRepositoryConfig<?>> repositoryConfigurationMap = new HashMap<>();
 
 	private JpaRepositoryFactory repositoryFactory;
 
 	private List<JpaRepositoryFilter> filters = new CopyOnWriteArrayList<>();
 
+	private ResourceMetaProvider resourceMetaProvider;
+
 	/**
 	 * Constructor used on client side.
 	 */
-	private JpaModule(String resourceSearchPackage) {
-		this.resourceSearchPackage = resourceSearchPackage;
-
-		Reflections reflections;
-		if (resourceSearchPackage != null) {
-			String[] packageNames = resourceSearchPackage.split(",");
-			Object[] objPackageNames = new Object[packageNames.length];
-			System.arraycopy(packageNames, 0, objPackageNames, 0, packageNames.length);
-			reflections = new Reflections(objPackageNames);
-		}
-		else {
-			reflections = new Reflections(resourceSearchPackage);
-		}
-		this.entityClasses.addAll(reflections.getTypesAnnotatedWith(Entity.class));
+	private JpaModule() {
+		this.jpaMetaLookup.addProvider(new JpaMetaProvider());
+		this.resourceMetaProvider = new ResourceMetaProvider();
+		this.resourceMetaLookup.addProvider(resourceMetaProvider);
 	}
 
 	/**
 	 * Constructor used on server side.
 	 */
 	private JpaModule(EntityManagerFactory emFactory, EntityManager em, TransactionRunner transactionRunner) {
+		this();
+
 		this.emFactory = emFactory;
 		this.em = em;
 		this.transactionRunner = transactionRunner;
@@ -134,9 +141,9 @@ public class JpaModule implements Module {
 			Set<ManagedType<?>> managedTypes = emFactory.getMetamodel().getManagedTypes();
 			for (ManagedType<?> managedType : managedTypes) {
 				Class<?> managedJavaType = managedType.getJavaType();
-				MetaElement meta = metaLookup.getMeta(managedJavaType);
+				MetaElement meta = jpaMetaLookup.getMeta(managedJavaType, MetaJpaDataObject.class);
 				if (meta instanceof MetaEntity) {
-					entityClasses.add(managedJavaType);
+					addRepository(JpaRepositoryConfig.builder(managedJavaType).build());
 				}
 			}
 		}
@@ -144,23 +151,36 @@ public class JpaModule implements Module {
 	}
 
 	/**
-	 * Creates a new JpaModule for a Katharsis client. 
+	 * Creates a new JpaModule for a Katharsis client.
 	 * 
-	 * @param resourceSearchPackage where to find the entity classes.
 	 * @return module
 	 */
-	public static JpaModule newClientModule(String resourceSearchPackage) {
-		return new JpaModule(resourceSearchPackage);
+	public static JpaModule newClientModule() {
+		return new JpaModule();
 	}
 
 	/**
-	 * Creates a new JpaModule for a Katharsis server. No entities are 
-	 * by default exposed as JSON API resources. Make use of
-	 * {@link #addEntityClass(Class)} andd {@link #addMappedEntityClass(Class, Class, JpaMapper)}
-	 * to add resources.
+	 * Creates a new JpaModule for a Katharsis client.
 	 * 
-	 * @param em to use
-	 * @param transactionRunner to use
+	 * @param resourceSearchPackage
+	 *            where to find the entity classes. Has no impact anymore.
+	 * @return module
+	 */
+	@Deprecated
+	public static JpaModule newClientModule(String resourceSearchPackage) {
+		return newClientModule();
+	}
+
+	/**
+	 * Creates a new JpaModule for a Katharsis server. No entities are by
+	 * default exposed as JSON API resources. Make use of
+	 * {@link #addEntityClass(Class)} andd
+	 * {@link #addMappedEntityClass(Class, Class, JpaMapper)} to add resources.
+	 * 
+	 * @param em
+	 *            to use
+	 * @param transactionRunner
+	 *            to use
 	 * @return created module
 	 */
 	public static JpaModule newServerModule(EntityManager em, TransactionRunner transactionRunner) {
@@ -169,32 +189,37 @@ public class JpaModule implements Module {
 
 	/**
 	 * Creates a new JpaModule for a Katharsis server. All entities managed by
-	 * the provided EntityManagerFactory are registered to the module 
-	 * and exposed as JSON API resources if not later configured otherwise.
+	 * the provided EntityManagerFactory are registered to the module and
+	 * exposed as JSON API resources if not later configured otherwise.
 	 * 
-	 * @param emFactory to retrieve the managed entities.
-	 * @param em to use
-	 * @param transactionRunner to use
+	 * @param emFactory
+	 *            to retrieve the managed entities.
+	 * @param em
+	 *            to use
+	 * @param transactionRunner
+	 *            to use
 	 * @return created module
 	 */
-	public static JpaModule newServerModule(EntityManagerFactory emFactory, EntityManager em,
-			TransactionRunner transactionRunner) {
+	public static JpaModule newServerModule(EntityManagerFactory emFactory, EntityManager em, TransactionRunner transactionRunner) {
 		return new JpaModule(emFactory, em, transactionRunner);
 	}
 
 	/**
-	 * Adds the given filter to this module. Filter will be used by all repositories managed by this module.
+	 * Adds the given filter to this module. Filter will be used by all
+	 * repositories managed by this module.
 	 * 
-	 * @param filter to add
+	 * @param filter
+	 *            to add
 	 */
 	public void addFilter(JpaRepositoryFilter filter) {
 		filters.add(filter);
 	}
 
 	/**
-	 * Removes the given filter to this module. 
+	 * Removes the given filter to this module.
 	 * 
-	 * @param filter to remove
+	 * @param filter
+	 *            to remove
 	 */
 	public void removeFilter(JpaRepositoryFilter filter) {
 		filters.remove(filter);
@@ -207,107 +232,79 @@ public class JpaModule implements Module {
 		return filters;
 	}
 
-	public MetaLookup getMetaLookup() {
-		return metaLookup;
-	}
-
 	public void setRepositoryFactory(JpaRepositoryFactory repositoryFactory) {
 		checkNotInitialized();
 		this.repositoryFactory = repositoryFactory;
 	}
 
 	/**
-	 * @return set of entity classes made available as repository.
+	 * @return set of resource classes made available as repository (entity or
+	 *         dto).
+	 * @Deprecated use getResourceClasses
 	 */
-	public Set<Class<?>> getEntityClasses() {
-		return Collections.unmodifiableSet(entityClasses);
+	public Set<Class<?>> getResourceClasses() {
+		return Collections.unmodifiableSet(repositoryConfigurationMap.keySet());
 	}
 
 	/**
-	 * Adds the given entity class to expose the entity as repository.
+	 * Adds the repository to this module.
 	 * 
-	 * @param entityClass to expose as repository
+	 * @param configuration
+	 *            to use
 	 */
-	public void addEntityClass(Class<?> entityClass) {
+	public <T> void addRepository(JpaRepositoryConfig<T> config) {
 		checkNotInitialized();
-		entityClasses.add(entityClass);
-	}
-
-	/**
-	 * Adds the given entity class which is mapped to a DTO with the provided mapper.
-	 * 
-	 * @param <E> entity class
-	 * @param <D> dto class
-	 * @param entityClass to add as repository
-	 * @param dtoClass to map the entity to
-	 * @param mapper to use to map the entity to the dto
-	 */
-	public <E, D> void addMappedEntityClass(Class<E> entityClass, Class<D> dtoClass, JpaMapper<E, D> mapper) {
-		checkNotInitialized();
-		if (mappings.containsKey(dtoClass)) {
-			throw new IllegalArgumentException(dtoClass.getName() + " is already registered");
+		Class<?> resourceClass = config.getResourceClass();
+		if (repositoryConfigurationMap.containsKey(resourceClass)) {
+			throw new IllegalArgumentException(resourceClass.getName() + " is already registered");
 		}
-		mappings.put(dtoClass, new MappedRegistration<>(entityClass, dtoClass, mapper));
+		repositoryConfigurationMap.put(resourceClass, config);
 	}
 
 	/**
-	 * Adds the given entity class which is mapped to a DTO with the provided mapper.
+	 * Removes the repository with the given type from this module.
 	 * 
-	 * @param <D> dto type
-	 * @param dtoClass to remove
+	 * @param <D>
+	 *            resourse class (entity or mapped dto)
+	 * @param resourceClass
+	 *            to remove
 	 */
-	public <D> void removeMappedEntityClass(Class<D> dtoClass) {
+	public <T> void removeRepository(Class<T> resourceClass) {
 		checkNotInitialized();
-		mappings.remove(dtoClass);
+		repositoryConfigurationMap.remove(resourceClass);
 	}
 
-	private static class MappedRegistration<E, D> implements JpaMapping<E, D> {
-
-		Class<E> entityClass;
-
-		Class<D> dtoClass;
-
-		JpaMapper<E, D> mapper;
-
-		MappedRegistration(Class<E> entityClass, Class<D> dtoClass, JpaMapper<E, D> mapper) {
-			this.entityClass = entityClass;
-			this.dtoClass = dtoClass;
-			this.mapper = mapper;
-		}
+	private final class JpaQuerydslTranslationInterceptor implements QuerydslTranslationInterceptor {
 
 		@Override
-		public Class<E> getEntityClass() {
-			return entityClass;
+		public <T> void intercept(QuerydslQueryImpl<T> query, QuerydslTranslationContext<T> translationContext) {
+
+			JpaRequestContext requestContext = (JpaRequestContext) query.getPrivateData();
+			if (requestContext != null) {
+				for (JpaRepositoryFilter filter : filters) {
+					invokeFilter(filter, requestContext, translationContext);
+				}
+			}
 		}
 
-		@Override
-		public Class<D> getDtoClass() {
-			return dtoClass;
-		}
-
-		@Override
-		public JpaMapper<E, D> getMapper() {
-			return mapper;
+		private <T> void invokeFilter(JpaRepositoryFilter filter, JpaRequestContext requestContext, QuerydslTranslationContext<T> translationContext) {
+			if (filter instanceof QuerydslRepositoryFilter) {
+				Object repository = requestContext.getRepository();
+				QuerySpec querySpec = requestContext.getQuerySpec();
+				((QuerydslRepositoryFilter) filter).filterQueryTranslation(repository, querySpec, translationContext);
+			}
 		}
 	}
 
 	/**
-	 * Removes the given entity class to not expose the entity as repository.
-	 * 
-	 * @param entityClass to remove
+	 * Removes all entity classes registered by default. Use
+	 * {@link #addEntityClass(Class)} or
+	 * {@link #addMappedEntityClass(Class, Class, JpaMapper)} to register
+	 * classes manually.
 	 */
-	public void removeEntityClass(Class<?> entityClass) {
+	public void removeRepositories() {
 		checkNotInitialized();
-		entityClasses.remove(entityClass);
-	}
-
-	/**
-	 * Removes all entity classes registered by default. Use {@link #addEntityClass(Class)} or
-	 * {@link #addMappedEntityClass(Class, Class, JpaMapper)} to register classes manually.
-	 */
-	public void removeAllEntityClasses() {
-		checkNotInitialized();
-		entityClasses.clear();
+		repositoryConfigurationMap.clear();
 	}
 
 	@Override
@@ -323,44 +320,49 @@ public class JpaModule implements Module {
 	public void setupModule(ModuleContext context) {
 		this.context = context;
 
+		this.jpaMetaLookup.initialize();
+		this.resourceMetaLookup.initialize();
+
 		context.addResourceInformationBuilder(getResourceInformationBuilder());
 		context.addExceptionMapper(new OptimisticLockExceptionMapper());
+		context.addRepositoryDecoratorFactory(new JpaRepositoryDecoratorFactory());
 
-		if (resourceSearchPackage != null) {
-			setupClientResourceLookup();
-		}
-		else {
-			context.addResourceLookup(new MappingsResourceLookup());
+		if (em != null) {
 			setupServerRepositories();
 			setupTransactionMgmt();
 		}
 	}
 
-	/**
-	 * Makes all the mapped DTO classes available to katharsis.
-	 */
-	private class MappingsResourceLookup implements ResourceLookup {
+	class JpaRepositoryDecoratorFactory implements RepositoryDecoratorFactory {
 
 		@Override
-		public Set<Class<?>> getResourceClasses() {
-			return Collections.unmodifiableSet(mappings.keySet());
+		public <T, I extends Serializable> ResourceRepositoryDecorator<T, I> decorateRepository(ResourceRepositoryV2<T, I> repository) {
+			JpaRepositoryConfig<T> config = getRepositoryConfig(repository.getResourceClass());
+			if (config != null) {
+				return config.getRepositoryDecorator();
+			}
+			return null;
 		}
 
 		@Override
-		public Set<Class<?>> getResourceRepositoryClasses() {
-			return Collections.emptySet();
+		public <T, I extends Serializable, D, J extends Serializable> RelationshipRepositoryDecorator<T, I, D, J> decorateRepository(RelationshipRepositoryV2<T, I, D, J> repository) {
+			JpaRepositoryConfig<T> config = getRepositoryConfig(repository.getSourceResourceClass());
+			if (config != null) {
+				return config.getRepositoryDecorator(repository.getTargetResourceClass());
+			}
+			return null;
 		}
 	}
 
 	protected void setupTransactionMgmt() {
-		context.addFilter(new AbstractFilter() {
+		context.addFilter(new AbstractDocumentFilter() {
 
 			@Override
-			public BaseResponseContext filter(final FilterRequestContext context, final FilterChain chain) {
-				return transactionRunner.doInTransaction(new Callable<BaseResponseContext>() {
+			public Response filter(final DocumentFilterContext context, final DocumentFilterChain chain) {
+				return transactionRunner.doInTransaction(new Callable<Response>() {
 
 					@Override
-					public BaseResponseContext call() throws Exception {
+					public Response call() throws Exception {
 						return chain.doFilter(context);
 					}
 				});
@@ -368,49 +370,26 @@ public class JpaModule implements Module {
 		});
 	}
 
-	private void setupClientResourceLookup() {
-		context.addResourceLookup(new JpaEntityResourceLookup(resourceSearchPackage));
-	}
-
-	public class JpaEntityResourceLookup implements ResourceLookup {
-
-		public JpaEntityResourceLookup(String packageName) {
-		}
-
-		@Override
-		public Set<Class<?>> getResourceClasses() {
-			return entityClasses;
-		}
-
-		@Override
-		public Set<Class<?>> getResourceRepositoryClasses() {
-			return Collections.emptySet();
-		}
-	}
-
 	private void setupServerRepositories() {
-		for (Class<?> entityClass : entityClasses) {
-			MetaElement meta = metaLookup.getMeta(entityClass);
-			setupRepository(meta);
-		}
-
-		for (MappedRegistration<?, ?> mapping : mappings.values()) {
-			setupMappedRepository(mapping);
+		for (JpaRepositoryConfig<?> config : repositoryConfigurationMap.values()) {
+			setupRepository(config);
 		}
 	}
 
-	private void setupMappedRepository(MappedRegistration<?, ?> mapping) {
-		MetaEntity metaEntity = metaLookup.getMeta(mapping.getEntityClass()).asEntity();
+	private void setupRepository(JpaRepositoryConfig<?> config) {
+		Class<?> resourceClass = config.getResourceClass();
+		MetaEntity metaEntity = jpaMetaLookup.getMeta(config.getEntityClass(), MetaEntity.class);
 		if (isValidEntity(metaEntity)) {
-			QuerySpecResourceRepository<?, ?> repository = filterResourceCreation(mapping.getDtoClass(),
-					repositoryFactory.createEntityRepository(this, mapping.getDtoClass()));
-			context.addRepository(mapping.getDtoClass(), repository);
-			setupRelationshipRepositories(mapping.getDtoClass());
+			JpaEntityRepository<?, Serializable> jpaRepository = repositoryFactory.createEntityRepository(this, config);
+
+			ResourceRepositoryV2<?, ?> repository = filterResourceCreation(resourceClass, jpaRepository);
+
+			context.addRepository(repository);
+			setupRelationshipRepositories(resourceClass, config.getResourceClass() != config.getEntityClass());
 		}
 	}
 
-	private QuerySpecResourceRepository<?, ?> filterResourceCreation(Class<?> resourceClass,
-			JpaEntityRepository<?, ?> repository) {
+	private ResourceRepositoryV2<?, ?> filterResourceCreation(Class<?> resourceClass, JpaEntityRepository<?, ?> repository) {
 		JpaEntityRepository<?, ?> filteredRepository = repository;
 		for (JpaRepositoryFilter filter : filters) {
 			if (filter.accept(resourceClass)) {
@@ -420,8 +399,7 @@ public class JpaModule implements Module {
 		return filteredRepository;
 	}
 
-	private QuerySpecRelationshipRepository<?, ?, ?, ?> filterRelationshipCreation(Class<?> resourceClass,
-			JpaRelationshipRepository<?, ?, ?, ?> repository) {
+	private RelationshipRepositoryV2<?, ?, ?, ?> filterRelationshipCreation(Class<?> resourceClass, JpaRelationshipRepository<?, ?, ?, ?> repository) {
 		JpaRelationshipRepository<?, ?, ?, ?> filteredRepository = repository;
 		for (JpaRepositoryFilter filter : filters) {
 			if (filter.accept(resourceClass)) {
@@ -431,59 +409,45 @@ public class JpaModule implements Module {
 		return filteredRepository;
 	}
 
-	@SuppressWarnings({ "rawtypes" })
-	private void setupRepository(MetaElement meta) {
-		if (!(meta instanceof MetaEntity))
-			return;
-		MetaEntity metaEntity = meta.asEntity();
-		if (isValidEntity(metaEntity)) {
-			Class<?> resourceClass = metaEntity.getImplementationClass();
-			QuerySpecResourceRepository repository = filterResourceCreation(resourceClass,
-					repositoryFactory.createEntityRepository(this, resourceClass));
-			context.addRepository(resourceClass, repository);
-			setupRelationshipRepositories(resourceClass);
-		}
-	}
-
 	/**
-	 * Sets up  relationship repositories for the given resource class. In case of a mapper
-	 * the resource class might not correspond to the entity class.
+	 * Sets up relationship repositories for the given resource class. In case
+	 * of a mapper the resource class might not correspond to the entity class.
 	 */
-	private void setupRelationshipRepositories(Class<?> resourceClass) {
-		MetaDataObject meta = metaLookup.getMeta(resourceClass).asDataObject();
+	private void setupRelationshipRepositories(Class<?> resourceClass, boolean mapped) {
+		MetaLookup metaLookup = mapped ? resourceMetaLookup : jpaMetaLookup;
+
+		Class<? extends MetaDataObject> metaClass = mapped ? MetaJsonObject.class : MetaJpaDataObject.class;
+		MetaDataObject meta = metaLookup.getMeta(resourceClass, metaClass);
 
 		for (MetaAttribute attr : meta.getAttributes()) {
 			if (!attr.isAssociation()) {
 				continue;
 			}
 			MetaType attrType = attr.getType().getElementType();
+
 			if (attrType instanceof MetaEntity) {
 				// normal entity association
-				Class<?> attrImplClass = attr.getType().getElementType().getImplementationClass();
+				Class<?> attrImplClass = attrType.getImplementationClass();
+				JpaRepositoryConfig<?> attrConfig = getRepositoryConfig(attrImplClass);
 
 				// only include relations that are exposed as repositories
-				if (entityClasses.contains(attrImplClass)) {
-					QuerySpecRelationshipRepository<?, ?, ?, ?> relationshipRepository = filterRelationshipCreation(attrImplClass,
-							repositoryFactory.createRelationshipRepository(this, resourceClass, attrImplClass));
-					context.addRepository(resourceClass, attrImplClass, relationshipRepository);
+				if (attrConfig != null) {
+					RelationshipRepositoryV2<?, ?, ?, ?> relationshipRepository = filterRelationshipCreation(attrImplClass, repositoryFactory.createRelationshipRepository(this, resourceClass, attrConfig));
+					context.addRepository(relationshipRepository);
 				}
-			}
-			else if (attrType instanceof MetaResourceImpl) {
+			} else if (attrType instanceof MetaResource) {
 				Class<?> attrImplClass = attrType.getImplementationClass();
-				if (!mappings.containsKey(attrImplClass)) {
-					throw new IllegalStateException(
-							"no mapped entity for " + attrType.getName() + " reference by " + attr.getId() + " registered");
+				JpaRepositoryConfig<?> attrConfig = getRepositoryConfig(attrImplClass);
+				if (attrConfig == null || attrConfig.getMapper() == null) {
+					throw new IllegalStateException("no mapped entity for " + attrType.getName() + " reference by " + attr.getId() + " registered");
 				}
-				MappedRegistration<?, ?> targetMapping = mappings.get(attrImplClass);
-				Class<?> targetDtoClass = targetMapping.getDtoClass();
+				JpaRepositoryConfig<?> targetConfig = getRepositoryConfig(attrImplClass);
+				Class<?> targetResourceClass = targetConfig.getResourceClass();
 
-				QuerySpecRelationshipRepository<?, ?, ?, ?> relationshipRepository = filterRelationshipCreation(targetDtoClass,
-						repositoryFactory.createRelationshipRepository(this, resourceClass, targetDtoClass));
-				context.addRepository(resourceClass, targetDtoClass, relationshipRepository);
-			}
-			else {
-				throw new IllegalStateException(
-						"unable to process relation: " + attr.getId() + ", neither a entity nor a mapped entity is referenced");
+				RelationshipRepositoryV2<?, ?, ?, ?> relationshipRepository = filterRelationshipCreation(targetResourceClass, repositoryFactory.createRelationshipRepository(this, resourceClass, attrConfig));
+				context.addRepository(relationshipRepository);
+			} else {
+				throw new IllegalStateException("unable to process relation: " + attr.getId() + ", neither a entity nor a mapped entity is referenced");
 			}
 		}
 	}
@@ -504,13 +468,15 @@ public class JpaModule implements Module {
 	 * @return ResourceInformationBuilder used to describe JPA entity classes.
 	 */
 	public ResourceInformationBuilder getResourceInformationBuilder() {
-		if (resourceInformationBuilder == null)
-			resourceInformationBuilder = new JpaResourceInformationBuilder(metaLookup, em, entityClasses);
+		if (resourceInformationBuilder == null) {
+			resourceInformationBuilder = new JpaResourceInformationBuilder(jpaMetaLookup);
+		}
 		return resourceInformationBuilder;
 	}
 
 	/**
-	 * @return {@link JpaQueryFactory}} implementation used to create JPA queries.
+	 * @return {@link JpaQueryFactory}} implementation used to create JPA
+	 *         queries.
 	 */
 	public JpaQueryFactory getQueryFactory() {
 		return queryFactory;
@@ -528,9 +494,14 @@ public class JpaModule implements Module {
 
 			@Override
 			public MetaLookup getMetaLookup() {
-				return metaLookup;
+				return jpaMetaLookup;
 			}
 		});
+
+		if (queryFactory instanceof QuerydslQueryFactory) {
+			QuerydslQueryFactory querydslFactory = (QuerydslQueryFactory) queryFactory;
+			querydslFactory.addInterceptor(new JpaQuerydslTranslationInterceptor());
+		}
 	}
 
 	/**
@@ -548,15 +519,19 @@ public class JpaModule implements Module {
 	}
 
 	/**
-	 * Returns the mapper used for the given dto class.
-	 * 
-	 * @param <E> entity
-	 * @param <D> dto
-	 * @param dtoClass to find the mapper for
-	 * @return mapper for this dtoClass
+	 * @param resourceClass
+	 * @return config
 	 */
 	@SuppressWarnings("unchecked")
-	public <E, D> JpaMapping<E, D> getMapping(Class<D> dtoClass) {
-		return (JpaMapping<E, D>) mappings.get(dtoClass);
+	public <T> JpaRepositoryConfig<T> getRepositoryConfig(Class<T> resourceClass) {
+		return (JpaRepositoryConfig<T>) repositoryConfigurationMap.get(resourceClass);
+	}
+
+	public MetaLookup getJpaMetaLookup() {
+		return jpaMetaLookup;
+	}
+
+	public MetaLookup getResourceMetaLookup() {
+		return resourceMetaLookup;
 	}
 }

@@ -4,36 +4,35 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import io.katharsis.core.internal.utils.MultivaluedMap;
 import io.katharsis.jpa.internal.JpaRepositoryBase;
 import io.katharsis.jpa.internal.JpaRepositoryUtils;
-import io.katharsis.jpa.internal.meta.MetaAttribute;
-import io.katharsis.jpa.internal.meta.MetaEntity;
-import io.katharsis.jpa.internal.meta.MetaType;
-import io.katharsis.jpa.internal.paging.DefaultPagedMetaInformation;
-import io.katharsis.jpa.internal.paging.PagedMetaInformation;
+import io.katharsis.jpa.internal.JpaRequestContext;
 import io.katharsis.jpa.mapping.IdentityMapper;
 import io.katharsis.jpa.mapping.JpaMapper;
-import io.katharsis.jpa.mapping.JpaMapping;
+import io.katharsis.jpa.meta.MetaEntity;
 import io.katharsis.jpa.query.ComputedAttributeRegistry;
 import io.katharsis.jpa.query.JpaQuery;
 import io.katharsis.jpa.query.JpaQueryExecutor;
 import io.katharsis.jpa.query.JpaQueryFactory;
 import io.katharsis.jpa.query.Tuple;
+import io.katharsis.meta.model.MetaAttribute;
+import io.katharsis.meta.model.MetaType;
 import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.queryspec.QuerySpecBulkRelationshipRepository;
-import io.katharsis.response.paging.PagedResultList;
+import io.katharsis.repository.BulkRelationshipRepositoryV2;
+import io.katharsis.repository.RelationshipRepositoryV2;
+import io.katharsis.resource.list.DefaultResourceList;
+import io.katharsis.resource.list.ResourceList;
+import io.katharsis.resource.meta.MetaInformation;
+import io.katharsis.resource.meta.PagedMetaInformation;
 
-public class JpaRelationshipRepository<S, I extends Serializable, T, J extends Serializable> extends JpaRepositoryBase<T>
-		implements QuerySpecBulkRelationshipRepository<S, I, T, J> {
+public class JpaRelationshipRepository<S, I extends Serializable, T, J extends Serializable> extends JpaRepositoryBase<T> implements RelationshipRepositoryV2<S, I, T, J>, BulkRelationshipRepositoryV2<S, I, T, J> {
 
 	private Class<S> sourceResourceClass;
 
@@ -46,29 +45,30 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 	/**
 	 * JPA relationship directly exposed as repository
 	 * 
-	 * @param module that manages this repository
-	 * @param sourceResourceClass from this relation
-	 * @param targetResourceClass from this relation
+	 * @param module
+	 *            that manages this repository
+	 * @param sourceResourceClass
+	 *            from this relation
+	 * @param targetResourceClass
+	 *            from this relation
 	 */
-	public JpaRelationshipRepository(JpaModule module, Class<S> sourceResourceClass, Class<T> targetResourceClass) {
+	public JpaRelationshipRepository(JpaModule module, Class<S> sourceResourceClass, JpaRepositoryConfig<T> targetResourceClass) {
 		super(module, targetResourceClass);
 		this.sourceResourceClass = sourceResourceClass;
 
-		JpaMapping<?, S> sourceMapping = module.getMapping(sourceResourceClass);
+		JpaRepositoryConfig<S> sourceMapping = module.getRepositoryConfig(sourceResourceClass);
 		if (sourceMapping != null) {
 			this.sourceEntityClass = sourceMapping.getEntityClass();
 			this.sourceMapper = sourceMapping.getMapper();
-		}
-		else {
+		} else {
 			this.sourceEntityClass = sourceResourceClass;
 			this.sourceMapper = IdentityMapper.newInstance();
 		}
-		this.entityMeta = module.getMetaLookup().getMeta(sourceEntityClass).asEntity();
+		this.entityMeta = module.getJpaMetaLookup().getMeta(sourceEntityClass, MetaEntity.class);
 	}
 
 	@Override
 	public void setRelation(S source, J targetId, String fieldName) {
-		checkUpdateable();
 		MetaAttribute attrMeta = entityMeta.getAttribute(fieldName);
 		MetaAttribute oppositeAttrMeta = attrMeta.getOppositeAttribute();
 		Class<?> targetType = getElementType(attrMeta);
@@ -82,8 +82,7 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 		if (target != null && oppositeAttrMeta != null) {
 			if (oppositeAttrMeta.getType().isCollection()) {
 				oppositeAttrMeta.addValue(target, sourceEntity);
-			}
-			else {
+			} else {
 				oppositeAttrMeta.setValue(target, sourceEntity);
 			}
 			em.persist(target);
@@ -101,7 +100,6 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 		EntityManager em = module.getEntityManager();
 		Collection<Object> targets = attrMeta.getType().asCollection().newInstance();
 		for (J targetId : targetIds) {
-			checkCreateable();
 
 			Object target = em.find(targetType, targetId);
 			targets.add(target);
@@ -113,12 +111,10 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 			Iterator<?> iterator = col.iterator();
 			while (iterator.hasNext()) {
 				Object prevTarget = iterator.next();
-				checkDeleteable();
 				iterator.remove();
 				if (oppositeAttrMeta.getType().isCollection()) {
 					oppositeAttrMeta.removeValue(prevTarget, sourceEntity);
-				}
-				else {
+				} else {
 					oppositeAttrMeta.setValue(prevTarget, null);
 				}
 			}
@@ -127,11 +123,9 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 		// attach new targets
 		for (Object target : targets) {
 			if (oppositeAttrMeta != null) {
-				checkCreateable();
 				if (oppositeAttrMeta.getType().isCollection()) {
 					oppositeAttrMeta.addValue(target, sourceEntity);
-				}
-				else {
+				} else {
 					oppositeAttrMeta.setValue(target, sourceEntity);
 				}
 				em.persist(target);
@@ -150,7 +144,6 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 
 	@Override
 	public void addRelations(S source, Iterable<J> targetIds, String fieldName) {
-		checkCreateable();
 		MetaAttribute attrMeta = entityMeta.getAttribute(fieldName);
 		MetaAttribute oppositeAttrMeta = attrMeta.getOppositeAttribute();
 		Class<?> targetType = getElementType(attrMeta);
@@ -165,8 +158,7 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 			if (oppositeAttrMeta != null) {
 				if (oppositeAttrMeta.getType().isCollection()) {
 					oppositeAttrMeta.addValue(target, sourceEntity);
-				}
-				else {
+				} else {
 					oppositeAttrMeta.setValue(target, sourceEntity);
 				}
 				em.persist(target);
@@ -177,7 +169,6 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 
 	@Override
 	public void removeRelations(S source, Iterable<J> targetIds, String fieldName) {
-		checkDeleteable();
 		MetaAttribute attrMeta = entityMeta.getAttribute(fieldName);
 		MetaAttribute oppositeAttrMeta = attrMeta.getOppositeAttribute();
 		Class<?> targetType = getElementType(attrMeta);
@@ -192,8 +183,7 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 			if (target != null && oppositeAttrMeta != null) {
 				if (oppositeAttrMeta.getType().isCollection()) {
 					oppositeAttrMeta.removeValue(target, sourceEntity);
-				}
-				else {
+				} else {
 					oppositeAttrMeta.setValue(target, null);
 				}
 			}
@@ -201,21 +191,7 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 	}
 
 	@Override
-	public Map<I, T> findOneTargets(Iterable<I> sourceIds, String fieldName, QuerySpec querySpec) {
-		checkReadable();
-		return getUniqueOrNull(getResults(sourceIds, fieldName, querySpec));
-	}
-
-	@Override
-	public Map<I, Iterable<T>> findManyTargets(Iterable<I> sourceIds, String fieldName, QuerySpec querySpec) {
-		checkReadable();
-		return getResults(sourceIds, fieldName, querySpec);
-
-	}
-
-	private Map<I, Iterable<T>> getResults(Iterable<I> sourceIds, String fieldName, QuerySpec querySpec) {
-		resetEntityManager();
-		
+	public MultivaluedMap<I, T> findTargets(Iterable<I> sourceIds, String fieldName, QuerySpec querySpec) {
 		List<I> sourceIdLists = new ArrayList<>();
 		for (I sourceId : sourceIds) {
 			sourceIdLists.add(sourceId);
@@ -226,14 +202,16 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 		}
 
 		QuerySpec bulkQuerySpec = querySpec.duplicate();
-		
+
 		QuerySpec filteredQuerySpec = filterQuerySpec(bulkQuerySpec);
 
 		JpaQueryFactory queryFactory = module.getQueryFactory();
 		JpaQuery<?> query = queryFactory.query(sourceEntityClass, fieldName, sourceIdLists);
+		query.setPrivateData(new JpaRequestContext(this, querySpec));
 		query.addParentIdSelection();
 		query = filterQuery(filteredQuerySpec, query);
 
+		Class<?> entityClass = repositoryConfig.getEntityClass();
 		ComputedAttributeRegistry computedAttributesRegistry = queryFactory.getComputedAttributes();
 		Set<String> computedAttrs = computedAttributesRegistry.getForType(entityClass);
 
@@ -244,68 +222,61 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 		executor = filterExecutor(filteredQuerySpec, executor);
 
 		List<Tuple> tuples = executor.getResultTuples();
-		
+
 		tuples = filterTuples(bulkQuerySpec, tuples);
 
-		Map<I, Iterable<T>> map = mapTuples(tuples);
+		MultivaluedMap<I, T> map = mapTuples(tuples);
 
 		// support paging for non-bulk requests
 		if (sourceIdLists.size() == 1 && querySpec.getLimit() != null) {
-			long totalRowCount = executor.getTotalRowCount();
 			I sourceId = sourceIdLists.get(0);
-			Iterable<T> iterable = map.get(sourceId);
-			if (iterable == null) {
-				iterable = new ArrayList<>();
+			ResourceList<T> iterable = (ResourceList<T>) map.getList(sourceId);
+
+			MetaInformation metaInfo = iterable.getMeta();
+			if (metaInfo instanceof PagedMetaInformation) {
+				long totalRowCount = executor.getTotalRowCount();
+				((PagedMetaInformation) metaInfo).setTotalResourceCount(totalRowCount);
 			}
-			map.put(sourceId, new PagedResultList<>((List<T>) iterable, totalRowCount));
 		}
 
-		resetEntityManager();
 		return map;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<I, Iterable<T>> mapTuples(List<Tuple> tuples) {
-		Map<I, Iterable<T>> map = new HashMap<>();
+	private MultivaluedMap<I, T> mapTuples(List<Tuple> tuples) {
+		MultivaluedMap<I, T> map = new MultivaluedMap<I, T>() {
+
+			@Override
+			protected List<T> newList() {
+				return repositoryConfig.newResultList();
+			}
+		};
 		for (Tuple tuple : tuples) {
 			I sourceId = (I) tuple.get(0, Object.class);
 			tuple.reduce(1);
-
-			List<T> iterable = (List<T>) map.get(sourceId);
-			if (iterable == null) {
-				iterable = new ArrayList<>();
-				map.put(sourceId, iterable);
-			}
-			iterable.add(mapper.map(tuple));
+			JpaMapper<Object, T> mapper = repositoryConfig.getMapper();
+			map.add(sourceId, mapper.map(tuple));
 		}
 		return map;
 	}
 
 	@Override
 	public T findOneTarget(I sourceId, String fieldName, QuerySpec querySpec) {
-		Map<I, T> map = findOneTargets(Arrays.asList(sourceId), fieldName, querySpec);
+		MultivaluedMap<I, T> map = findTargets(Arrays.asList(sourceId), fieldName, querySpec);
 		if (map.isEmpty()) {
 			return null;
-		}
-		else if (map.containsKey(sourceId) && map.size() == 1) {
-			return map.get(sourceId);
-		}
-		else {
-			throw new IllegalStateException("expected sourceId=" + sourceId + "in result " + map);
+		} else {
+			return map.getUnique(sourceId);
 		}
 	}
 
 	@Override
-	public List<T> findManyTargets(I sourceId, String fieldName, QuerySpec querySpec) {
-		Map<I, Iterable<T>> map = findManyTargets(Arrays.asList(sourceId), fieldName, querySpec);
+	public ResourceList<T> findManyTargets(I sourceId, String fieldName, QuerySpec querySpec) {
+		MultivaluedMap<I, T> map = findTargets(Arrays.asList(sourceId), fieldName, querySpec);
 		if (map.isEmpty()) {
-			return Collections.emptyList();
-		}
-		else if (map.containsKey(sourceId) && map.size() == 1) {
-			return (List<T>) map.get(sourceId);
-		}
-		else {
-			throw new IllegalStateException("expected sourceId=" + sourceId + "in result " + map);
+			return new DefaultResourceList<>();
+		} else {
+			return (ResourceList<T>) map.getList(sourceId);
 		}
 	}
 
@@ -316,15 +287,10 @@ public class JpaRelationshipRepository<S, I extends Serializable, T, J extends S
 
 	@Override
 	public Class<T> getTargetResourceClass() {
-		return resourceClass;
+		return repositoryConfig.getResourceClass();
 	}
 
 	public Class<?> getTargetEntityClass() {
-		return entityClass;
-	}
-
-	@Override
-	protected PagedMetaInformation newPagedMetaInformation() {
-		return new DefaultPagedMetaInformation();
+		return repositoryConfig.getEntityClass();
 	}
 }

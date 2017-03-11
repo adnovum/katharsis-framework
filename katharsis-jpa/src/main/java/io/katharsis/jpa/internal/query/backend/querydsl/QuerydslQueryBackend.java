@@ -33,21 +33,24 @@ import com.querydsl.jpa.JPAQueryBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import io.katharsis.jpa.internal.meta.MetaAttribute;
-import io.katharsis.jpa.internal.meta.MetaAttributePath;
-import io.katharsis.jpa.internal.meta.MetaEntity;
-import io.katharsis.jpa.internal.meta.MetaKey;
+import io.katharsis.core.internal.utils.PreconditionUtil;
 import io.katharsis.jpa.internal.query.ComputedAttributeRegistryImpl;
 import io.katharsis.jpa.internal.query.JoinRegistry;
 import io.katharsis.jpa.internal.query.MetaComputedAttribute;
 import io.katharsis.jpa.internal.query.QueryUtil;
 import io.katharsis.jpa.internal.query.backend.JpaQueryBackend;
 import io.katharsis.jpa.query.querydsl.QuerydslExpressionFactory;
+import io.katharsis.jpa.query.querydsl.QuerydslTranslationContext;
+import io.katharsis.meta.model.MetaAttribute;
+import io.katharsis.meta.model.MetaAttributePath;
+import io.katharsis.meta.model.MetaDataObject;
+import io.katharsis.meta.model.MetaKey;
 import io.katharsis.queryspec.Direction;
 import io.katharsis.queryspec.FilterOperator;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class QuerydslQueryBackend<T> implements JpaQueryBackend<Expression<?>, OrderSpecifier<?>, Predicate, Expression<?>> {
+public class QuerydslQueryBackend<T>
+		implements QuerydslTranslationContext<T>, JpaQueryBackend<Expression<?>, OrderSpecifier<?>, Predicate, Expression<?>> {
 
 	private JoinRegistry<Expression<?>, Expression<?>> joinHelper;
 
@@ -61,28 +64,29 @@ public class QuerydslQueryBackend<T> implements JpaQueryBackend<Expression<?>, O
 
 	private List<OrderSpecifier<?>> orderList = new ArrayList<>();
 
-	public QuerydslQueryBackend(QuerydslQueryImpl<T> queryImpl, Class<T> clazz, Class<?> parentEntityClass,
+	public QuerydslQueryBackend(QuerydslQueryImpl<T> queryImpl, Class<T> clazz, MetaDataObject parentMeta,
 			MetaAttribute parentAttr, boolean addParentSelection) {
 		this.queryImpl = queryImpl;
 
 		JPAQueryFactory queryFactory = queryImpl.getQueryFactory();
 
-		if (parentEntityClass != null) {
-			parentFrom = QuerydslUtils.getEntityPath(parentEntityClass);
+		if (parentMeta != null) {
+			parentFrom = QuerydslUtils.getEntityPath(parentMeta.getImplementationClass());
 			root = QuerydslUtils.getEntityPath(clazz);
 
 			Path joinPath = (Path) QuerydslUtils.get(parentFrom, parentAttr.getName());
 			joinHelper = new JoinRegistry<>(this, queryImpl);
 
 			joinHelper.putJoin(new MetaAttributePath(), root);
-			
-			if(addParentSelection){
-				Expression<Object> parentIdExpr = getParentIdExpression(parentAttr);
+
+			if (addParentSelection) {
+				Expression<Object> parentIdExpr = getParentIdExpression(parentMeta, parentAttr);
 				querydslQuery = queryFactory.select(parentIdExpr, root);
-			}else{
+			}
+			else {
 				querydslQuery = queryFactory.select(root);
 			}
-			
+
 			querydslQuery = querydslQuery.from(parentFrom);
 			if (joinPath instanceof CollectionExpression) {
 				querydslQuery = querydslQuery.join((CollectionExpression) joinPath, root);
@@ -100,13 +104,13 @@ public class QuerydslQueryBackend<T> implements JpaQueryBackend<Expression<?>, O
 		}
 	}
 
-	private Expression<Object> getParentIdExpression(MetaAttribute parentAttr) {
-		MetaEntity parentEntity = parentAttr.getParent().asEntity();
-		MetaKey primaryKey = parentEntity.getPrimaryKey();
-		List<MetaAttribute> elements = primaryKey.getElements();
-		if (elements.size() != 1) {
-			throw new UnsupportedOperationException("composite primary keys not supported yet");
+	private Expression<Object> getParentIdExpression(MetaDataObject parentMeta, MetaAttribute parentAttr) {
+		MetaKey primaryKey = parentMeta.getPrimaryKey();
+		if(primaryKey == null){
+			throw new IllegalStateException("no primary key specified for parentAttribute " + parentAttr.getId());
 		}
+		List<MetaAttribute> elements = primaryKey.getElements();
+		PreconditionUtil.assertEquals("composite primary keys not supported yet", 1, elements.size());
 		MetaAttribute primaryKeyAttr = elements.get(0);
 		return QuerydslUtils.get(parentFrom, primaryKeyAttr.getName());
 	}
@@ -309,7 +313,12 @@ public class QuerydslQueryBackend<T> implements JpaQueryBackend<Expression<?>, O
 			return predicates.get(0);
 		}
 		else {
-			return new BooleanPredicateOperation(Ops.AND, (ImmutableList) ImmutableList.copyOf(predicates));
+			// only two elements for each operation supported, needs querydsl fix?
+			Predicate result = predicates.get(0);
+			for (int i = 1; i < predicates.size(); i++) {
+				result = new BooleanPredicateOperation(Ops.AND, (ImmutableList) ImmutableList.of(result, predicates.get(i)));
+			}
+			return result;
 		}
 	}
 
@@ -324,7 +333,12 @@ public class QuerydslQueryBackend<T> implements JpaQueryBackend<Expression<?>, O
 			return predicates.get(0);
 		}
 		else {
-			return new BooleanPredicateOperation(Ops.OR, (ImmutableList) ImmutableList.copyOf(predicates));
+			// only two elements for each operation supported, needs querydsl fix?
+			Predicate result = predicates.get(0);
+			for (int i = 1; i < predicates.size(); i++) {
+				result = new BooleanPredicateOperation(Ops.OR, (ImmutableList) ImmutableList.of(result, predicates.get(i)));
+			}
+			return result;
 		}
 	}
 
@@ -362,16 +376,6 @@ public class QuerydslQueryBackend<T> implements JpaQueryBackend<Expression<?>, O
 	public Expression<?> joinMapValue(Expression<?> currentCriteriaPath, MetaAttribute pathElement, Object key) {
 		MapPath mapPath = (MapPath) QuerydslUtils.get(currentCriteriaPath, pathElement.getName());
 		return mapPath.get(key);
-	}
-
-	@Override
-	public Expression<?> joinMapValues(Expression<?> currentCriteriaPath, MetaAttribute pathElement) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Expression<?> joinMapKey(Expression<?> currentCriteriaPath, MetaAttribute pathElement) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -417,5 +421,25 @@ public class QuerydslQueryBackend<T> implements JpaQueryBackend<Expression<?>, O
 			querydslQuery.getMetadata().addJoin(QuerydslUtils.convertJoinType(joinType), expression);
 			return expression;
 		}
+	}
+
+	@Override
+	public JPAQueryFactory getQueryFactory() {
+		return queryImpl.getQueryFactory();
+	}
+
+	@Override
+	public EntityPath getParentRoot() {
+		return parentFrom;
+	}
+
+	@Override
+	public <E> EntityPath<E> getJoin(MetaAttributePath path) {
+		return (EntityPath<E>) joinHelper.getOrCreateJoin(path);
+	}
+
+	@Override
+	public <U> QuerydslTranslationContext<U> castFor(Class<U> type) {
+		return (QuerydslTranslationContext<U>) this;
 	}
 }

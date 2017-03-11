@@ -4,7 +4,7 @@
 Katharsis library adds an additional layer on top of RESTful endpoint to provide easy HATEOAS support for Java by implementing JSON API standard.
 
 **This repository is combination of multiple maintained separately repos in katharis-project:**
-- katharsis-core - ![katharsis-core](http://githubbadges.com/star.svg?user=katharsis-project&repo=katharsis-core&style=flat)
+- katharsis-core - ![katharsis-core](http://githubbadges.com/star.svg?user=katharsis-project&repo=katharsis-core&style=flat) 
 - katharsis-rs - ![katharsis-rs](http://githubbadges.com/star.svg?user=katharsis-project&repo=katharsis-rs&style=flat)
 - katharsis-spring - ![katharsis-spring](http://githubbadges.com/star.svg?user=katharsis-project&repo=katharsis-spring&style=flat)
 - katharsis-servlet - ![katharsis-servlet](http://githubbadges.com/star.svg?user=katharsis-project&repo=katharsis-servlet&style=flat)
@@ -15,7 +15,7 @@ Katharsis library adds an additional layer on top of RESTful endpoint to provide
 
 [![Build Status](https://travis-ci.org/katharsis-project/katharsis-framework.svg?branch=develop)](https://travis-ci.org/katharsis-project/katharsis-framework)
 [![Coverage Status](https://coveralls.io/repos/github/katharsis-project/katharsis-framework/badge.svg)](https://coveralls.io/github/katharsis-project/katharsis-framework)
-
+[![Maven Central](https://img.shields.io/maven-central/v/io.katharsis/katharsis-core.svg)](http://mvnrepository.com/artifact/io.katharsis/katharsis-core)
 
 Systems nowadays utilize data from various systems to leverage the business needs. To achieve that, many of them provide usually inconsistent REST interface.
 
@@ -41,8 +41,7 @@ Because of the usage of JSON API, Katharsis can be used with many other librarie
 
 
 ## Documentation and examples
-Documentation, along with example projects and project details are available on project website [katharsis.io](http://katharsis.io) and [katharsis-jsonapi.readthedocs.io](http://katharsis-jsonapi.readthedocs.io/)
-
+Documentation, along with example projects and project details are available on project website [katharsis.io](http://katharsis.io)
 
 ## Chat
 Need to directly talk to us? Write on gitter: 

@@ -10,11 +10,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.katharsis.jackson.exception.ParametersDeserializationException;
+import io.katharsis.core.internal.utils.PropertyException;
+import io.katharsis.core.internal.utils.PropertyUtils;
+import io.katharsis.errorhandling.exception.BadRequestException;
+import io.katharsis.errorhandling.exception.ParametersDeserializationException;
 import io.katharsis.resource.RestrictedQueryParamsMembers;
+import io.katharsis.resource.information.ResourceInformation;
 import io.katharsis.resource.registry.RegistryEntry;
 import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.utils.PropertyUtils;
 import io.katharsis.utils.parser.TypeParser;
 
 /**
@@ -26,9 +29,9 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 
 	private static final String LIMIT_PARAMETER = "limit";
 
-	private static final Pattern PARAMETER_PATTERN = Pattern.compile("(\\w+)(\\[(\\w+)\\])?([\\w\\[\\]]*)");
+	private static final Pattern PARAMETER_PATTERN = Pattern.compile("(\\w+)(\\[([^\\]]+)\\])?([\\w\\[\\]]*)");
 
-	private TypeParser typeParser = new TypeParser();
+	private TypeParser typeParser;
 
 	private FilterOperator defaultOperator = FilterOperator.EQ;
 
@@ -36,9 +39,13 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 
 	private Long defaultLimit = null;
 
+	private Long maxPageLimit = null;
+
 	private Set<FilterOperator> supportedOperators = new HashSet<>();
 
 	private ResourceRegistry resourceRegistry;
+
+	private boolean allowUnknownAttributes = false;
 
 	public DefaultQuerySpecDeserializer() {
 		supportedOperators.add(FilterOperator.LIKE);
@@ -48,6 +55,14 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		supportedOperators.add(FilterOperator.GE);
 		supportedOperators.add(FilterOperator.LT);
 		supportedOperators.add(FilterOperator.LE);
+	}
+
+	public boolean getAllowUnknownAttributes() {
+		return allowUnknownAttributes;
+	}
+
+	public void setAllowUnknownAttributes(boolean allowUnknownAttributes) {
+		this.allowUnknownAttributes = allowUnknownAttributes;
 	}
 
 	public long getDefaultOffset() {
@@ -76,6 +91,19 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		this.defaultLimit = defaultLimit;
 	}
 
+	public Long getMaxPageLimit() {
+		return this.maxPageLimit;
+	}
+
+	/**
+	 * Sets the maximum page limit.
+	 * 
+	 * @param maxPageLimit
+	 */
+	public void setMaxPageLimit(Long maxPageLimit) {
+		this.maxPageLimit = maxPageLimit;
+	}
+
 	public FilterOperator getDefaultOperator() {
 		return defaultOperator;
 	}
@@ -95,38 +123,39 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 	@Override
 	public void init(QuerySpecDeserializerContext ctx) {
 		this.resourceRegistry = ctx.getResourceRegistry();
+		this.typeParser = ctx.getTypeParser();
 	}
 
 	@Override
-	public QuerySpec deserialize(Class<?> rootResourceClass, Map<String, Set<String>> parameterMap) {
-		QuerySpec rootQuerySpec = new QuerySpec(rootResourceClass);
+	public QuerySpec deserialize(ResourceInformation resourceInformation, Map<String, Set<String>> parameterMap) {
+		QuerySpec rootQuerySpec = new QuerySpec(resourceInformation.getResourceClass());
 		setupDefaults(rootQuerySpec);
 
-		List<Parameter> parameters = parseParameters(parameterMap, rootResourceClass);
+		List<Parameter> parameters = parseParameters(parameterMap, resourceInformation);
 		for (Parameter parameter : parameters) {
-			QuerySpec querySpec = rootQuerySpec.getQuerySpec(parameter.resourceClass);
+			QuerySpec querySpec = rootQuerySpec.getQuerySpec(parameter.resourceInformation);
 			if (querySpec == null) {
-				querySpec = rootQuerySpec.getOrCreateQuerySpec(parameter.resourceClass);
+				querySpec = rootQuerySpec.getOrCreateQuerySpec(parameter.resourceInformation);
 				setupDefaults(querySpec);
 			}
 			switch (parameter.paramType) {
-				case sort:
-					deserializeSort(querySpec, parameter);
-					break;
-				case filter:
-					deserializeFilter(querySpec, parameter);
-					break;
-				case include:
-					deserializeIncludes(querySpec, parameter);
-					break;
-				case fields:
-					deserializeFields(querySpec, parameter);
-					break;
-				case page:
-					deserializePage(querySpec, parameter);
-					break;
-				default:
-					throw new IllegalStateException(parameter.paramType.toString());
+			case sort:
+				deserializeSort(querySpec, parameter);
+				break;
+			case filter:
+				deserializeFilter(querySpec, parameter);
+				break;
+			case include:
+				deserializeIncludes(querySpec, parameter);
+				break;
+			case fields:
+				deserializeFields(querySpec, parameter);
+				break;
+			case page:
+				deserializePage(querySpec, parameter);
+				break;
+			default:
+				throw new IllegalStateException(parameter.paramType.toString());
 			}
 
 		}
@@ -140,9 +169,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 	}
 
 	private void deserializeIncludes(QuerySpec querySpec, Parameter parameter) {
-		if (parameter.name != null) {
-			throw new ParametersDeserializationException("invalid parameter " + parameter);
-		}
+		checkNoParameterName(parameter);
 
 		for (String values : parameter.values) {
 			for (String value : splitValues(values)) {
@@ -152,14 +179,18 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		}
 	}
 
+	private void checkNoParameterName(Parameter parameter) {
+		if (parameter.name != null) {
+			throw new ParametersDeserializationException("invalid parameter " + parameter);
+		}
+	}
+
 	private String[] splitValues(String values) {
 		return values.split(",");
 	}
 
 	private void deserializeFields(QuerySpec querySpec, Parameter parameter) {
-		if (parameter.name != null) {
-			throw new ParametersDeserializationException("invalid parameter " + parameter);
-		}
+		checkNoParameterName(parameter);
 
 		for (String values : parameter.values) {
 			for (String value : splitValues(values)) {
@@ -176,11 +207,14 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		String name = parameter.name.substring(1, parameter.name.length() - 1);
 		if (OFFSET_PARAMETER.equalsIgnoreCase(name)) {
 			querySpec.setOffset(parameter.getLongValue());
-		}
-		else if (LIMIT_PARAMETER.equalsIgnoreCase(name)) {
-			querySpec.setLimit(parameter.getLongValue());
-		}
-		else {
+		} else if (LIMIT_PARAMETER.equalsIgnoreCase(name)) {
+			Long limit = parameter.getLongValue();
+			if (getMaxPageLimit() != null && limit != null && limit > getMaxPageLimit()) {
+				String error = String.format("%s parameter value %d is larger than the maximum allowed of " + "of %d", LIMIT_PARAMETER, limit, getMaxPageLimit());
+				throw new BadRequestException(error);
+			}
+			querySpec.setLimit(limit);
+		} else {
 			throw new ParametersDeserializationException(parameter.toString());
 		}
 	}
@@ -203,7 +237,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 			filterOp = defaultOperator;
 		}
 
-		Class<?> attributeType = PropertyUtils.getPropertyClass(querySpec.getResourceClass(), attributePath);
+		Class<?> attributeType = getAttributeType(querySpec, attributePath);
 		Set<Object> typedValues = new HashSet<>();
 		for (String stringValue : parameter.values) {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -215,10 +249,20 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		querySpec.addFilter(new FilterSpec(attributePath, filterOp, value));
 	}
 
-	private void deserializeSort(QuerySpec querySpec, Parameter parameter) {
-		if (parameter.name != null) {
-			throw new ParametersDeserializationException("invalid parameter " + parameter);
+	private Class<?> getAttributeType(QuerySpec querySpec, List<String> attributePath) {
+		try {
+			return PropertyUtils.getPropertyClass(querySpec.getResourceClass(), attributePath);
+		} catch (PropertyException e) {
+			if (allowUnknownAttributes) {
+				return String.class;
+			} else {
+				throw e;
+			}
 		}
+	}
+
+	private void deserializeSort(QuerySpec querySpec, Parameter parameter) {
+		checkNoParameterName(parameter);
 
 		for (String values : parameter.values) {
 			for (String value : splitValues(values)) {
@@ -233,7 +277,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		}
 	}
 
-	private List<Parameter> parseParameters(Map<String, Set<String>> params, Class<?> rootResourceClass) {
+	private List<Parameter> parseParameters(Map<String, Set<String>> params, ResourceInformation rootResourceInformation) {
 		List<Parameter> list = new ArrayList<>();
 		Set<Entry<String, Set<String>>> entrySet = params.entrySet();
 		for (Entry<String, Set<String>> entry : entrySet) {
@@ -247,7 +291,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 			String strParamType = m.group(1);
 			String resourceType = m.group(3);
 			String path = m.group(4);
-			RegistryEntry<?> registryEntry = resourceType != null ? resourceRegistry.getEntry(resourceType) : null;
+			RegistryEntry registryEntry = resourceType != null ? resourceRegistry.getEntry(resourceType) : null;
 
 			Parameter param = new Parameter();
 			param.fullKey = entry.getKey();
@@ -255,17 +299,15 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 			param.values = entry.getValue();
 			if (registryEntry == null) {
 				// first parameter is not the resourceType => JSON API spec
-				param.resourceClass = rootResourceClass;
+				param.resourceInformation = rootResourceInformation;
 				String attrName = resourceType;
 				if (attrName != null) {
 					param.name = "[" + attrName + "]" + nullToEmpty(path);
-				}
-				else {
+				} else {
 					param.name = emptyToNull(path);
 				}
-			}
-			else {
-				param.resourceClass = registryEntry.getResourceInformation().getResourceClass();
+			} else {
+				param.resourceInformation = registryEntry.getResourceInformation();
 				param.name = emptyToNull(path);
 			}
 			list.add(param);
@@ -287,7 +329,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 
 		RestrictedQueryParamsMembers paramType;
 
-		Class<?> resourceClass;
+		ResourceInformation resourceInformation;
 
 		String name;
 
@@ -299,8 +341,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 			}
 			try {
 				return Long.parseLong(values.iterator().next());
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				throw new ParametersDeserializationException("expected a Long for " + toString());
 			}
 		}
@@ -316,8 +357,12 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 			throw new ParametersDeserializationException("invalid attribute path in " + param.toString());
 		}
 		String temp = pathString.substring(1, pathString.length() - 1);
-
-		return Arrays.asList(temp.split("\\]\\["));
+		String[] elements = temp.split("\\]\\[");
+		List<String> results = new ArrayList<>();
+		for (String element : elements) {
+			results.addAll(Arrays.asList(element.split("\\.")));
+		}
+		return results;
 	}
 
 	private List<String> splitAttributePath(String pathString, Parameter param) {

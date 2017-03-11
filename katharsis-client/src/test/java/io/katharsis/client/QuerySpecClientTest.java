@@ -7,15 +7,25 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import io.katharsis.client.http.HttpAdapter;
 import io.katharsis.client.http.okhttp.OkHttpAdapter;
 import io.katharsis.client.http.okhttp.OkHttpAdapterListener;
 import io.katharsis.client.mock.models.Project;
+import io.katharsis.client.mock.models.Schedule;
 import io.katharsis.client.mock.models.Task;
+import io.katharsis.client.mock.repository.ScheduleRepository;
+import io.katharsis.client.mock.repository.ScheduleRepository.ScheduleList;
+import io.katharsis.client.mock.repository.ScheduleRepository.ScheduleListLinks;
+import io.katharsis.client.mock.repository.ScheduleRepository.ScheduleListMeta;
+import io.katharsis.errorhandling.exception.ResourceNotFoundException;
 import io.katharsis.queryspec.Direction;
 import io.katharsis.queryspec.QuerySpec;
 import io.katharsis.queryspec.SortSpec;
+import io.katharsis.repository.RelationshipRepositoryV2;
+import io.katharsis.repository.ResourceRepositoryV2;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient.Builder;
 import okhttp3.Request;
@@ -23,24 +33,77 @@ import okhttp3.Response;
 
 public class QuerySpecClientTest extends AbstractClientTest {
 
-	protected QuerySpecResourceRepositoryStub<Task, Long> taskRepo;
+	protected ResourceRepositoryV2<Task, Long> taskRepo;
 
-	protected QuerySpecResourceRepositoryStub<Project, Long> projectRepo;
+	protected ResourceRepositoryV2<Project, Long> projectRepo;
 
-	protected QuerySpecRelationshipRepositoryStub<Task, Long, Project, Long> relRepo;
+	protected ResourceRepositoryV2<Schedule, Long> scheduleRepo;
+
+	protected RelationshipRepositoryV2<Task, Long, Project, Long> relRepo;
+
+	protected RelationshipRepositoryV2<Schedule, Long, Task, Long> scheduleTaskRepo;
+
+	protected RelationshipRepositoryV2<Task, Long, Schedule, Long> taskScheduleRepo;
 
 	@Before
 	public void setup() {
 		super.setup();
 
+		scheduleRepo = client.getQuerySpecRepository(Schedule.class);
 		taskRepo = client.getQuerySpecRepository(Task.class);
 		projectRepo = client.getQuerySpecRepository(Project.class);
 		relRepo = client.getQuerySpecRepository(Task.class, Project.class);
+		scheduleTaskRepo = client.getQuerySpecRepository(Schedule.class, Task.class);
+		taskScheduleRepo = client.getQuerySpecRepository(Task.class, Schedule.class);
+	}
+
+	@Test
+	public void testGetters() {
+		Assert.assertEquals(Task.class, taskRepo.getResourceClass());
+		Assert.assertEquals(Task.class, relRepo.getSourceResourceClass());
+		Assert.assertEquals(Project.class, relRepo.getTargetResourceClass());
 	}
 
 	@Override
 	protected TestApplication configure() {
 		return new TestApplication(true);
+	}
+
+	@Test
+	public void testInterfaceAccess() {
+		ScheduleRepository scheduleRepository = client.getResourceRepository(ScheduleRepository.class);
+
+		Schedule schedule = new Schedule();
+		schedule.setId(13L);
+		schedule.setName("mySchedule");
+		scheduleRepository.create(schedule);
+
+		QuerySpec querySpec = new QuerySpec(Schedule.class);
+		ScheduleList list = scheduleRepository.findAll(querySpec);
+		Assert.assertEquals(1, list.size());
+		ScheduleListMeta meta = list.getMeta();
+		ScheduleListLinks links = list.getLinks();
+		Assert.assertNotNull(meta);
+		Assert.assertNotNull(links);
+	}
+
+	@Test
+	public void testCreate() {
+		ScheduleRepository scheduleRepository = client.getResourceRepository(ScheduleRepository.class);
+
+		Schedule schedule = new Schedule();
+		schedule.setName("mySchedule");
+		scheduleRepository.create(schedule);
+
+		QuerySpec querySpec = new QuerySpec(Schedule.class);
+		ScheduleList list = scheduleRepository.findAll(querySpec);
+		Assert.assertEquals(1, list.size());
+		schedule = list.get(0);
+		Assert.assertNotNull(schedule.getId());
+		ScheduleListMeta meta = list.getMeta();
+		ScheduleListLinks links = list.getLinks();
+		Assert.assertNotNull(meta);
+		Assert.assertNotNull(links);
 	}
 
 	@Test
@@ -83,15 +146,9 @@ public class QuerySpecClientTest extends AbstractClientTest {
 		Assert.assertTrue(tasks.isEmpty());
 	}
 
-	@Test
+	@Test(expected=ResourceNotFoundException.class)
 	public void testFindNull() {
-		try {
-			taskRepo.findOne(1L, new QuerySpec(Task.class));
-			Assert.fail();
-		}
-		catch (ClientException e) {
-			Assert.assertEquals("Not Found", e.getMessage());
-		}
+		taskRepo.findOne(1L, new QuerySpec(Task.class));
 	}
 
 	@Test
@@ -149,14 +206,16 @@ public class QuerySpecClientTest extends AbstractClientTest {
 			}
 		};
 
-		OkHttpAdapter httpAdapter = (OkHttpAdapter) client.getHttpAdapter();
-		httpAdapter.addListener(new OkHttpAdapterListener() {
+		HttpAdapter httpAdapter = client.getHttpAdapter();
+		if (httpAdapter instanceof OkHttpAdapter) {
+			((OkHttpAdapter) httpAdapter).addListener(new OkHttpAdapterListener() {
 
-			@Override
-			public void onBuild(Builder builder) {
-				builder.addInterceptor(interceptor);
-			}
-		});
+				@Override
+				public void onBuild(Builder builder) {
+					builder.addInterceptor(interceptor);
+				}
+			});
+		}
 
 		Task task = new Task();
 		task.setId(1L);
@@ -175,24 +234,25 @@ public class QuerySpecClientTest extends AbstractClientTest {
 		Assert.assertNotNull(savedTask);
 		Assert.assertEquals("updatedName", task.getName());
 
-		// check HTTP handling
-		Assert.assertEquals(4, methods.size());
-		Assert.assertEquals(4, paths.size());
-		Assert.assertEquals("POST", methods.get(0));
-		Assert.assertEquals("GET", methods.get(1));
-		if (pushAlways) {
-			Assert.assertEquals("POST", methods.get(2));
-			Assert.assertEquals("/tasks/", paths.get(2));
-		}
-		else {
-			Assert.assertEquals("PATCH", methods.get(2));
-			Assert.assertEquals("/tasks/1/", paths.get(2));
-		}
-		Assert.assertEquals("GET", methods.get(3));
+		if (httpAdapter instanceof OkHttpAdapter) {
+			// check HTTP handling
+			Assert.assertEquals(4, methods.size());
+			Assert.assertEquals(4, paths.size());
+			Assert.assertEquals("POST", methods.get(0));
+			Assert.assertEquals("GET", methods.get(1));
+			if (pushAlways) {
+				Assert.assertEquals("POST", methods.get(2));
+				Assert.assertEquals("/tasks/", paths.get(2));
+			} else {
+				Assert.assertEquals("PATCH", methods.get(2));
+				Assert.assertEquals("/tasks/1/", paths.get(2));
+			}
+			Assert.assertEquals("GET", methods.get(3));
 
-		Assert.assertEquals("/tasks/", paths.get(0));
-		Assert.assertEquals("/tasks/1/", paths.get(1));
-		Assert.assertEquals("/tasks/1/", paths.get(3));
+			Assert.assertEquals("/tasks/", paths.get(0));
+			Assert.assertEquals("/tasks/1/", paths.get(1));
+			Assert.assertEquals("/tasks/1/", paths.get(3));
+		}
 	}
 
 	@Test
@@ -219,24 +279,121 @@ public class QuerySpecClientTest extends AbstractClientTest {
 
 	@Test
 	public void testSetRelation() {
-		Project project = new Project();
-		project.setId(1L);
-		project.setName("project");
-		projectRepo.create(project);
+		Schedule schedule = new Schedule();
+		schedule.setId(1L);
+		schedule.setName("schedule");
+		scheduleRepo.create(schedule);
 
 		Task task = new Task();
 		task.setId(2L);
 		task.setName("test");
 		taskRepo.create(task);
 
-		relRepo.setRelation(task, project.getId(), "project");
+		relRepo.setRelation(task, schedule.getId(), "schedule");
 
-		Project relProject = relRepo.findOneTarget(task.getId(), "project", new QuerySpec(Task.class));
-		Assert.assertNotNull(relProject);
-		Assert.assertEquals(project.getId(), relProject.getId());
+		Schedule relSchedule = taskScheduleRepo.findOneTarget(task.getId(), "schedule", new QuerySpec(Schedule.class));
+		Assert.assertNotNull(relSchedule);
+		Assert.assertEquals(schedule.getId(), relSchedule.getId());
 	}
 
 	@Test
+	public void testSaveRelationWithCreate() {
+		Schedule schedule = new Schedule();
+		schedule.setId(1L);
+		schedule.setName("schedule");
+		scheduleRepo.create(schedule);
+
+		Task task = new Task();
+		task.setId(2L);
+		task.setName("test");
+		task.setSchedule(schedule);
+		taskRepo.create(task);
+
+		// check relationship available
+		Task savedTask = taskRepo.findOne(task.getId(), new QuerySpec(Task.class));
+		Assert.assertNotNull(savedTask.getSchedule());
+	}
+
+	@Test
+	public void testNullNonLazyRelationWithSave() {
+		Schedule schedule = new Schedule();
+		schedule.setId(1L);
+		schedule.setName("schedule");
+		scheduleRepo.create(schedule);
+
+		Task task = new Task();
+		task.setId(2L);
+		task.setName("test");
+		task.setSchedule(schedule);
+		taskRepo.create(task);
+
+		Task savedTask = taskRepo.findOne(task.getId(), new QuerySpec(Task.class));
+		Assert.assertNotNull(savedTask.getSchedule());
+
+		// null
+		savedTask.setSchedule(null);
+		taskRepo.save(savedTask);
+
+		// relation must be null
+		Task updatedTask = taskRepo.findOne(task.getId(), new QuerySpec(Task.class));
+		Assert.assertNull(updatedTask.getSchedule());
+	}
+
+	@Test
+	public void testCannotNullLazyRelationWithSave() {
+		Task task = new Task();
+		task.setId(2L);
+		task.setName("test");
+		taskRepo.create(task);
+
+		Schedule schedule = new Schedule();
+		schedule.setId(1L);
+		schedule.setName("schedule");
+		schedule.setLazyTask(task);
+		scheduleRepo.create(schedule);
+
+		// since lazy, will not be sent to client if not requested
+		QuerySpec querySpec = new QuerySpec(Schedule.class);
+		Schedule savedSchedule = scheduleRepo.findOne(schedule.getId(), querySpec);
+		Assert.assertNull(savedSchedule.getLazyTask());
+
+		querySpec.includeRelation(Arrays.asList("lazyTask"));
+		savedSchedule = scheduleRepo.findOne(schedule.getId(), querySpec);
+		Assert.assertNotNull(savedSchedule.getLazyTask());
+
+		// null
+		savedSchedule.setLazyTask(task);
+		scheduleRepo.save(savedSchedule);
+
+		// still not null because cannot differantiate between not loaded and
+		// nulled
+		Schedule updatedSchedule = scheduleRepo.findOne(schedule.getId(), querySpec);
+		Assert.assertNotNull(updatedSchedule.getLazyTask());
+	}
+
+	@Test
+	public void testSaveRelationWithSave() {
+		Schedule schedule = new Schedule();
+		schedule.setId(1L);
+		schedule.setName("schedule");
+		scheduleRepo.create(schedule);
+
+		Task task = new Task();
+		task.setId(2L);
+		task.setName("test");
+		taskRepo.create(task);
+
+		Task createdTask = taskRepo.findOne(task.getId(), new QuerySpec(Task.class));
+		Assert.assertNull(createdTask.getSchedule());
+		createdTask.setSchedule(schedule);
+		taskRepo.save(createdTask);
+
+		Task updatedTask = taskRepo.findOne(task.getId(), new QuerySpec(Task.class));
+		Assert.assertNotNull(updatedTask.getSchedule());
+	}
+
+	@Test
+	@Ignore // get rid of queryparams
 	public void testAddSetRemoveRelations() {
 		Project project0 = new Project();
 		project0.setId(1L);

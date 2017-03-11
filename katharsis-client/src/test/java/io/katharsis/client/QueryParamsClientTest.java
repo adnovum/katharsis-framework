@@ -1,5 +1,6 @@
 package io.katharsis.client;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,8 +14,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import io.katharsis.client.mock.models.Project;
+import io.katharsis.client.mock.models.Schedule;
 import io.katharsis.client.mock.models.Task;
-import io.katharsis.queryParams.QueryParams;
+import io.katharsis.errorhandling.exception.ResourceNotFoundException;
+import io.katharsis.legacy.queryParams.QueryParams;
 
 public class QueryParamsClientTest extends AbstractClientTest {
 
@@ -24,13 +27,16 @@ public class QueryParamsClientTest extends AbstractClientTest {
 
 	protected RelationshipRepositoryStub<Task, Long, Project, Long> relRepo;
 
+	private ResourceRepositoryStub<Schedule, Serializable> scheduleRepo;
+
 	@Before
 	public void setup() {
 		super.setup();
 
-		taskRepo = client.getRepository(Task.class);
-		projectRepo = client.getRepository(Project.class);
-		relRepo = client.getRepository(Task.class, Project.class);
+		scheduleRepo = client.getQueryParamsRepository(Schedule.class);
+		taskRepo = client.getQueryParamsRepository(Task.class);
+		projectRepo = client.getQueryParamsRepository(Project.class);
+		relRepo = client.getQueryParamsRepository(Task.class, Project.class);
 	}
 
 	@Test
@@ -40,14 +46,14 @@ public class QueryParamsClientTest extends AbstractClientTest {
 	}
 
 	@Test
+	public void testAccessQuerySpecRepository() {
+		List<Schedule> schedule = scheduleRepo.findAll(new QueryParams());
+		Assert.assertTrue(schedule.isEmpty());
+	}
+
+	@Test(expected=ResourceNotFoundException.class)
 	public void testFindNull() {
-		try {
-			taskRepo.findOne(1L, new QueryParams());
-			Assert.fail();
-		}
-		catch (ClientException e) {
-			Assert.assertEquals("Not Found", e.getMessage());
-		}
+		taskRepo.findOne(1L, new QueryParams());
 	}
 
 	@Test
@@ -115,7 +121,7 @@ public class QueryParamsClientTest extends AbstractClientTest {
 		addParams(params, "include[projects]", "tasks");
 		QueryParams queryParams = queryParamsBuilder.buildQueryParams(params);
 
-		projectRepo.save(project, queryParams);
+		projectRepo.save(project);
 
 		Task savedTask = taskRepo.findOne(2L, queryParams);
 		Assert.assertEquals(task.getId(), savedTask.getId());

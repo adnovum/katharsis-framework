@@ -9,12 +9,13 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.JoinType;
 
-import io.katharsis.jpa.internal.meta.MetaAttribute;
-import io.katharsis.jpa.internal.meta.MetaAttributePath;
-import io.katharsis.jpa.internal.meta.MetaDataObject;
-import io.katharsis.jpa.internal.meta.MetaLookup;
 import io.katharsis.jpa.internal.query.backend.JpaQueryBackend;
+import io.katharsis.jpa.meta.MetaJpaDataObject;
 import io.katharsis.jpa.query.JpaQuery;
+import io.katharsis.meta.MetaLookup;
+import io.katharsis.meta.model.MetaAttribute;
+import io.katharsis.meta.model.MetaAttributePath;
+import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.queryspec.Direction;
 import io.katharsis.queryspec.FilterOperator;
 import io.katharsis.queryspec.FilterSpec;
@@ -47,7 +48,7 @@ public abstract class AbstractJpaQueryImpl<T, B extends JpaQueryBackend<?, ?, ?,
 
 	protected boolean ensureTotalOrder = true;
 
-	protected Class<?> parentEntityClass;
+	protected MetaDataObject parentMeta;
 
 	protected List<?> parentIds;
 
@@ -56,13 +57,23 @@ public abstract class AbstractJpaQueryImpl<T, B extends JpaQueryBackend<?, ?, ?,
 	protected boolean parentIdSelection;
 
 	private ComputedAttributeRegistryImpl computedAttrs;
+	
+	private Object privateData;
 
 	protected AbstractJpaQueryImpl(MetaLookup metaLookup, EntityManager em, Class<T> clazz,
 			ComputedAttributeRegistryImpl computedAttrs) {
 		this.em = em;
 		this.clazz = clazz;
-		this.meta = metaLookup.getMeta(clazz).asDataObject();
+		this.meta = metaLookup.getMeta(clazz, MetaJpaDataObject.class);
 		this.computedAttrs = computedAttrs;
+	}
+	
+	public Object getPrivateData(){
+		return privateData;
+	}
+	
+	public void setPrivateData(Object privateData){
+		this.privateData = privateData;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -71,17 +82,16 @@ public abstract class AbstractJpaQueryImpl<T, B extends JpaQueryBackend<?, ?, ?,
 		this.em = em;
 		this.computedAttrs = virtualAttrs;
 
-		MetaDataObject parentMeta = metaLookup.getMeta(entityClass).asDataObject();
+		this.parentMeta = metaLookup.getMeta(entityClass, MetaJpaDataObject.class);
 		MetaAttribute attrMeta = parentMeta.getAttribute(attrName);
 		if (attrMeta.getType().isCollection()) {
-			this.meta = attrMeta.getType().asCollection().getElementType().asEntity();
+			this.meta = (MetaDataObject) attrMeta.getType().asCollection().getElementType();
 		}
 		else {
-			this.meta = attrMeta.getType().asEntity();
+			this.meta = (MetaDataObject) attrMeta.getType();
 		}
 		this.clazz = (Class<T>) meta.getImplementationClass();
 
-		this.parentEntityClass = entityClass;
 		this.parentAttr = attrMeta;
 		this.parentIds = entityIds;
 	}
@@ -218,6 +228,10 @@ public abstract class AbstractJpaQueryImpl<T, B extends JpaQueryBackend<?, ?, ?,
 
 	public MetaAttribute getParentAttr() {
 		return parentAttr;
+	}
+
+	public MetaDataObject getParentMeta() {
+		return parentMeta;
 	}
 
 }

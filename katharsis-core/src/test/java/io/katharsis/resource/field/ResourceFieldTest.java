@@ -1,98 +1,110 @@
 package io.katharsis.resource.field;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.katharsis.resource.annotations.JsonApiIncludeByDefault;
-import io.katharsis.resource.annotations.JsonApiToMany;
-import io.katharsis.resource.information.AnnotationResourceInformationBuilder;
-
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.resource.annotations.JsonApiIncludeByDefault;
+import io.katharsis.resource.annotations.JsonApiToMany;
+import io.katharsis.resource.information.ResourceField;
+import io.katharsis.resource.information.ResourceFieldType;
 
 public class ResourceFieldTest {
 
-    @Test
-    public void onWithLazyFieldClassShouldReturnTrue() throws Exception {
-        // GIVEN
-        List<Annotation> annotations = Arrays.asList(WithLazyFieldClass.class.getDeclaredField("value").getAnnotations());
-        ResourceField sut = new AnnotationResourceInformationBuilder.AnnotatedResourceField("", "", String.class, String.class, annotations);
+	@Test
+	public void getResourceFieldType() {
+		assertThat(ResourceFieldType.get(true, false, false, false)).isEqualByComparingTo(ResourceFieldType.ID);
+		assertThat(ResourceFieldType.get(false, true, false, false)).isEqualByComparingTo(ResourceFieldType.LINKS_INFORMATION);
+		assertThat(ResourceFieldType.get(false, false, true, false)).isEqualByComparingTo(ResourceFieldType.META_INFORMATION);
+		assertThat(ResourceFieldType.get(false, false, false, true)).isEqualByComparingTo(ResourceFieldType.RELATIONSHIP);
+		assertThat(ResourceFieldType.get(false, false, false, false)).isEqualByComparingTo(ResourceFieldType.ATTRIBUTE);
+	}
 
-        // WHEN
-        boolean result = sut.isLazy();
+	@Test
+	public void onWithLazyFieldClassShouldReturnTrue() throws Exception {
+		// GIVEN
+		List<Annotation> annotations = Arrays.asList(WithLazyFieldClass.class.getDeclaredField("value").getAnnotations());
+		ResourceField sut = new AnnotationResourceInformationBuilder.AnnotatedResourceField("", "", String.class, String.class, null, annotations);
 
-        // THEN
+		// WHEN
+		boolean result = sut.isLazy();
 
-        assertThat(result).isTrue();
-    }
+		// THEN
 
-    @Test
-    public void onWithToManyEagerFieldClassShouldReturnFalse() throws Exception {
-        // GIVEN
-        List<Annotation> annotations = Arrays.asList(WithToManyEagerFieldClass.class.getDeclaredField("value").getAnnotations());
-        ResourceField sut = new AnnotationResourceInformationBuilder.AnnotatedResourceField("", "", String.class, String.class, annotations);
+		assertThat(result).isTrue();
+	}
 
-        // WHEN
-        boolean result = sut.isLazy();
+	@Test
+	public void onWithToManyEagerFieldClassShouldReturnFalse() throws Exception {
+		// GIVEN
+		List<Annotation> annotations = Arrays.asList(WithToManyEagerFieldClass.class.getDeclaredField("value").getAnnotations());
+		ResourceField sut = new AnnotationResourceInformationBuilder.AnnotatedResourceField("", "", String.class, String.class, null, annotations);
 
-        // THEN
+		// WHEN
+		boolean result = sut.isLazy();
 
-        assertThat(result).isFalse();
-    }
+		// THEN
 
-    @Test
-    public void onWithoutToManyFieldClassShouldReturnFalse() throws Exception {
-        // GIVEN
-        List<Annotation> annotations = Arrays.asList(WithoutToManyFieldClass.class.getDeclaredField("value").getAnnotations());
-        ResourceField sut = new AnnotationResourceInformationBuilder.AnnotatedResourceField("", "", String.class, String.class, annotations);
+		assertThat(result).isFalse();
+	}
 
-        // WHEN
-        boolean result = sut.isLazy();
+	@Test
+	public void onWithoutToManyFieldClassShouldReturnFalse() throws Exception {
+		// GIVEN
+		List<Annotation> annotations = Arrays.asList(WithoutToManyFieldClass.class.getDeclaredField("value").getAnnotations());
+		ResourceField sut = new AnnotationResourceInformationBuilder.AnnotatedResourceField("", "", String.class, String.class, null, annotations);
 
-        // THEN
+		// WHEN
+		boolean result = sut.isLazy();
 
-        assertThat(result).isFalse();
-    }
+		// THEN
 
-    @Test
-    public void onLazyRelationshipToManyAndInclusionByDefaultShouldReturnEagerFlag() throws Exception {
-        // GIVEN
-        List<Annotation> annotations = Arrays.asList(WithLazyFieldAndInclusionByDefaultClass.class.getDeclaredField("value").getAnnotations());
-        ResourceField sut = new AnnotationResourceInformationBuilder.AnnotatedResourceField("", "", String.class, String.class, annotations);
+		assertThat(result).isFalse();
+	}
 
-        // WHEN
-        boolean result = sut.isLazy();
+	@Test
+	public void onLazyRelationshipToManyAndInclusionByDefaultShouldReturnEagerFlag() throws Exception {
+		// GIVEN
+		List<Annotation> annotations = Arrays.asList(WithLazyFieldAndInclusionByDefaultClass.class.getDeclaredField("value").getAnnotations());
+		ResourceField sut = new AnnotationResourceInformationBuilder.AnnotatedResourceField("", "", String.class, String.class, null, annotations);
 
-        // THEN
+		// WHEN
+		boolean result = sut.isLazy();
 
-        assertThat(result).isFalse();
-    }
+		// THEN
 
-    private static class WithLazyFieldClass {
+		assertThat(result).isFalse();
+	}
 
-        @JsonProperty("sth")
-        @JsonApiToMany
-        private String value;
-    }
+	private static class WithLazyFieldClass {
 
-    private static class WithLazyFieldAndInclusionByDefaultClass {
+		@JsonProperty("sth")
+		@JsonApiToMany
+		private String value;
+	}
 
-        @JsonApiIncludeByDefault
-        @JsonApiToMany
-        private String value;
-    }
+	private static class WithLazyFieldAndInclusionByDefaultClass {
 
-    private static class WithToManyEagerFieldClass {
+		@JsonApiIncludeByDefault
+		@JsonApiToMany
+		private String value;
+	}
 
-        @JsonApiToMany(lazy = false)
-        private String value;
-    }
+	private static class WithToManyEagerFieldClass {
 
-    private static class WithoutToManyFieldClass {
-        private String value;
+		@JsonApiToMany(lazy = false)
+		private String value;
+	}
 
-    }
+	private static class WithoutToManyFieldClass {
+		private String value;
+
+	}
 }

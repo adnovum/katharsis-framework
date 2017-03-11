@@ -1,109 +1,86 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.katharsis.example.springboot.simple.domain.repository;
 
 import io.katharsis.example.springboot.simple.domain.model.Project;
-import io.katharsis.example.springboot.simple.domain.model.Task;
-import io.katharsis.queryParams.QueryParams;
-import io.katharsis.repository.annotations.JsonApiDelete;
-import io.katharsis.repository.annotations.JsonApiFindAll;
-import io.katharsis.repository.annotations.JsonApiFindAllWithIds;
-import io.katharsis.repository.annotations.JsonApiFindOne;
-import io.katharsis.repository.annotations.JsonApiResourceRepository;
-import io.katharsis.repository.annotations.JsonApiSave;
-import io.katharsis.resource.exception.ResourceNotFoundException;
+import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.resource.links.PagedLinksInformation;
+import io.katharsis.resource.list.ResourceListBase;
+import io.katharsis.resource.meta.PagedMetaInformation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+public interface ProjectRepository extends ResourceRepositoryV2<Project, Long> {
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
+	public class ProjectListMeta implements PagedMetaInformation {
 
-import com.google.common.collect.Iterables;
+		private Long totalResourceCount;
 
-@JsonApiResourceRepository(Project.class)
-@Component
-public class ProjectRepository {
-    private static final Map<Long, Project> REPOSITORY = new ConcurrentHashMap<>();
-    private static final AtomicLong ID_GENERATOR = new AtomicLong(124);
-    private final TaskRepository taskRepository;
+		@Override
+		public Long getTotalResourceCount() {
+			return totalResourceCount;
+		}
 
-    @Autowired @Lazy
-    public ProjectRepository(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
-        Project project = new Project(123L);
-        project.setName("Great Project");
-        save(project);
-    }
+		@Override
+		public void setTotalResourceCount(Long totalResourceCount) {
+			this.totalResourceCount = totalResourceCount;
+		}
 
-    @JsonApiSave
-    public <S extends Project> S save(S entity) {
-        if (entity.getId() == null) {
-            entity.setId(ID_GENERATOR.getAndIncrement());
-        }
-        REPOSITORY.put(entity.getId(), entity);
-        return entity;
-    }
+	}
 
-    @JsonApiFindOne
-    public Project findOne(Long projectId, QueryParams requestParams) {
-        if (projectId == null) {
-            return null;
-        }
-        Project project = REPOSITORY.get(projectId);
-        if (project == null) {
-            throw new ResourceNotFoundException("Project not found!");
-        }
-        if (project.getTasks().isEmpty()) {
-            Iterable<Task> tasks = taskRepository.findAll(null);
-            for (Task task: tasks) {
-                if (task.getProjectId().equals(project.getId())) {
-                    project.getTasks().add(task);
-                }
-            }
-            save(project);
-        }
-        return project;
-    }
+	public class ProjectListLinks implements PagedLinksInformation {
 
-    @JsonApiFindAll
-    public Iterable<Project> findAll(QueryParams requestParams) {
-        return REPOSITORY.values();
-    }
+		private String first;
 
-    @JsonApiFindAllWithIds
-    public Iterable<Project> findAll(Iterable<Long> projectIds, QueryParams requestParams) {
-        List<Project> foundProjects = new ArrayList<>();
-        for (Map.Entry<Long, Project> entry: REPOSITORY.entrySet()) {
-            for (Long projectId: projectIds) {
-                if (projectId.equals(entry.getKey())) {
-                    foundProjects.add(entry.getValue());
-                }
-            }
-        }
-        return foundProjects;
-    }
+		private String last;
 
-    @JsonApiDelete
-    public void delete(Long projectId) {
-        REPOSITORY.remove(projectId);
-    }
+		private String next;
+
+		private String prev;
+
+		@Override
+		public String getFirst() {
+			return first;
+		}
+
+		@Override
+		public void setFirst(String first) {
+			this.first = first;
+		}
+
+		@Override
+		public String getLast() {
+			return last;
+		}
+
+		@Override
+		public void setLast(String last) {
+			this.last = last;
+		}
+
+		@Override
+		public String getNext() {
+			return next;
+		}
+
+		@Override
+		public void setNext(String next) {
+			this.next = next;
+		}
+
+		@Override
+		public String getPrev() {
+			return prev;
+		}
+
+		@Override
+		public void setPrev(String prev) {
+			this.prev = prev;
+		}
+
+	}
+
+	public class ProjectList extends ResourceListBase<Project, ProjectListMeta, ProjectListLinks> {
+
+	}
+
+	@Override
+	public ProjectList findAll(QuerySpec querySpec);
 }

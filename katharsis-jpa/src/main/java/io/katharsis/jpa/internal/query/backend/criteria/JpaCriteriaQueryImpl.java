@@ -6,10 +6,10 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 
-import io.katharsis.jpa.internal.meta.MetaLookup;
 import io.katharsis.jpa.internal.query.AbstractJpaQueryImpl;
 import io.katharsis.jpa.internal.query.ComputedAttributeRegistryImpl;
 import io.katharsis.jpa.query.criteria.JpaCriteriaQuery;
+import io.katharsis.meta.MetaLookup;
 
 public class JpaCriteriaQueryImpl<T> extends AbstractJpaQueryImpl<T, JpaCriteriaQueryBackend<T>>
 		implements JpaCriteriaQuery<T> {
@@ -35,7 +35,7 @@ public class JpaCriteriaQueryImpl<T> extends AbstractJpaQueryImpl<T, JpaCriteria
 
 	@Override
 	protected JpaCriteriaQueryBackend<T> newBackend() {
-		return new JpaCriteriaQueryBackend<>(this, em, clazz, parentEntityClass, parentAttr, parentIdSelection);
+		return new JpaCriteriaQueryBackend<>(this, em, clazz, parentMeta, parentAttr, parentIdSelection);
 	}
 
 	@Override

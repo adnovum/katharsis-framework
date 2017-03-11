@@ -15,11 +15,11 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-import io.katharsis.jpa.internal.meta.MetaDataObject;
 import io.katharsis.jpa.internal.query.AbstractQueryExecutorImpl;
 import io.katharsis.jpa.internal.query.QueryUtil;
 import io.katharsis.jpa.internal.query.backend.querydsl.ObjectArrayTupleImpl;
 import io.katharsis.jpa.query.criteria.JpaCriteriaQueryExecutor;
+import io.katharsis.meta.model.MetaDataObject;
 
 public class JpaCriteriaQueryExecutorImpl<T> extends AbstractQueryExecutorImpl<T> implements JpaCriteriaQueryExecutor<T> {
 
@@ -36,10 +36,10 @@ public class JpaCriteriaQueryExecutorImpl<T> extends AbstractQueryExecutorImpl<T
 		return query;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	protected List<?> executeQuery() {
-		TypedQuery<T> typedQuery = em.createQuery(query);
-		return executeQuery(typedQuery);
+	public TypedQuery<T> getTypedQuery() {
+		return (TypedQuery<T>) setupQuery(em.createQuery(query));
 	}
 
 	@Override

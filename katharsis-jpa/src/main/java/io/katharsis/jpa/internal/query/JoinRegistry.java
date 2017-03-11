@@ -5,10 +5,11 @@ import java.util.Map;
 
 import javax.persistence.criteria.JoinType;
 
-import io.katharsis.jpa.internal.meta.MetaAttribute;
-import io.katharsis.jpa.internal.meta.MetaAttributePath;
-import io.katharsis.jpa.internal.meta.MetaMapAttribute;
 import io.katharsis.jpa.internal.query.backend.JpaQueryBackend;
+import io.katharsis.meta.model.MetaAttribute;
+import io.katharsis.meta.model.MetaAttributePath;
+import io.katharsis.meta.model.MetaDataObject;
+import io.katharsis.meta.model.MetaMapAttribute;
 
 public class JoinRegistry<F, E> {
 
@@ -45,7 +46,8 @@ public class JoinRegistry<F, E> {
 				criteriaPath = joinMap(currentCriteriaPath, pathElement);
 			} else {
 				// we may need to downcast if attribute is defined on a subtype
-				Class<?> pathType = pathElement.getParent().asDataObject().getImplementationClass();
+				MetaDataObject parent = pathElement.getParent().asDataObject();
+				Class<?> pathType = parent.getImplementationClass();
 				Class<?> currentType = backend.getJavaElementType(currentCriteriaPath);
 				boolean isSubType = !pathType.isAssignableFrom(currentType);
 				if (isSubType) {
@@ -60,13 +62,7 @@ public class JoinRegistry<F, E> {
 
 	private E joinMap(E currentCriteriaPath, MetaAttribute pathElement) {
 		MetaMapAttribute mapPathElement = (MetaMapAttribute) pathElement;
-		if (mapPathElement.isKeyAccess()) {
-			return backend.joinMapKey(currentCriteriaPath, pathElement);
-		} else if (mapPathElement.getKey() == null) {
-			return backend.joinMapValues(currentCriteriaPath, pathElement);
-		} else {
-			return backend.joinMapValue(currentCriteriaPath, pathElement, mapPathElement.getKey());
-		}
+		return backend.joinMapValue(currentCriteriaPath, pathElement, mapPathElement.getKey());
 	}
 
 	protected static MetaAttributePath extractAssociationPath(MetaAttributePath path) {

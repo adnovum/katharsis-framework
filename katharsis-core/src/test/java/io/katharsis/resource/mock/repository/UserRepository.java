@@ -1,67 +1,78 @@
 package io.katharsis.resource.mock.repository;
 
-import io.katharsis.queryParams.QueryParams;
-import io.katharsis.repository.ResourceRepository;
-import io.katharsis.resource.exception.ResourceNotFoundException;
-import io.katharsis.resource.mock.models.User;
-
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class UserRepository implements ResourceRepository<User, Long> {
+import io.katharsis.errorhandling.exception.ResourceNotFoundException;
+import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.resource.list.DefaultResourceList;
+import io.katharsis.resource.list.ResourceList;
+import io.katharsis.resource.mock.models.User;
 
-    private static final QueryParams REQUEST_PARAMS = new QueryParams();
+public class UserRepository implements ResourceRepositoryV2<User, Long> {
 
-    private static final ConcurrentHashMap<Long, User> THREAD_LOCAL_REPOSITORY = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<Long, User> THREAD_LOCAL_REPOSITORY = new ConcurrentHashMap<>();
 
-    @Override
-    public <S extends User> S save(S entity) {
-        entity.setId((long) (THREAD_LOCAL_REPOSITORY.size() + 1));
-        THREAD_LOCAL_REPOSITORY.put(entity.getId(), entity);
+	public static void clear() {
+		THREAD_LOCAL_REPOSITORY.clear();
+	}
 
-        return entity;
-    }
+	@Override
+	public <S extends User> S save(S entity) {
+		entity.setId((long) (THREAD_LOCAL_REPOSITORY.size() + 1));
+		THREAD_LOCAL_REPOSITORY.put(entity.getId(), entity);
 
-    @Override
-    public User findOne(Long aLong, QueryParams queryParams) {
-        User user = THREAD_LOCAL_REPOSITORY.get(aLong);
-        if (user == null) {
-            throw new ResourceNotFoundException(User.class.getCanonicalName());
-        }
+		return entity;
+	}
 
-        return user;
-    }
+	@Override
+	public User findOne(Long aLong, QuerySpec queryParams) {
+		User user = THREAD_LOCAL_REPOSITORY.get(aLong);
+		if (user == null) {
+			throw new ResourceNotFoundException(User.class.getCanonicalName());
+		}
 
-    @Override
-    public Iterable<User> findAll(QueryParams queryParams) {
-        return THREAD_LOCAL_REPOSITORY.values();
-    }
+		return user;
+	}
 
+	@Override
+	public ResourceList<User> findAll(QuerySpec queryParams) {
+		return queryParams.apply(THREAD_LOCAL_REPOSITORY.values());
+	}
 
-    @Override
-    public Iterable<User> findAll(Iterable<Long> ids, QueryParams queryParams) {
-        List<User> values = new LinkedList<>();
-        for (User value : THREAD_LOCAL_REPOSITORY.values()) {
-            if (contains(value, ids)) {
-                values.add(value);
-            }
-        }
-        return values;
-    }
+	@Override
+	public ResourceList<User> findAll(Iterable<Long> ids, QuerySpec queryParams) {
+		DefaultResourceList<User> values = new DefaultResourceList<>();
+		for (User value : THREAD_LOCAL_REPOSITORY.values()) {
+			if (contains(value, ids)) {
+				values.add(value);
+			}
+		}
+		return values;
+	}
 
-    private boolean contains(User value, Iterable<Long> ids) {
-        for (Long id : ids) {
-            if (value.getId().equals(id)) {
-                return true;
-            }
-        }
+	private boolean contains(User value, Iterable<Long> ids) {
+		for (Long id : ids) {
+			if (value.getId().equals(id)) {
+				return true;
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public void delete(Long aLong) {
-        THREAD_LOCAL_REPOSITORY.remove(aLong);
-    }
+	@Override
+	public void delete(Long aLong) {
+		THREAD_LOCAL_REPOSITORY.remove(aLong);
+	}
+
+	@Override
+	public Class<User> getResourceClass() {
+		return User.class;
+	}
+
+	@Override
+	public <S extends User> S create(S entity) {
+		return save(entity);
+	}
 }

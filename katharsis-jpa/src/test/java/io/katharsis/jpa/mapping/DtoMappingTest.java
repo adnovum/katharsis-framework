@@ -14,11 +14,9 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
-import io.katharsis.client.QuerySpecRelationshipRepositoryStub;
-import io.katharsis.client.QuerySpecResourceRepositoryStub;
-import io.katharsis.client.response.ResourceList;
 import io.katharsis.jpa.AbstractJpaJerseyTest;
 import io.katharsis.jpa.JpaModule;
+import io.katharsis.jpa.JpaRepositoryConfig;
 import io.katharsis.jpa.JpaRepositoryFilterBase;
 import io.katharsis.jpa.model.QTestEntity;
 import io.katharsis.jpa.model.RelatedEntity;
@@ -31,13 +29,16 @@ import io.katharsis.jpa.query.querydsl.QuerydslQueryFactory;
 import io.katharsis.queryspec.FilterOperator;
 import io.katharsis.queryspec.FilterSpec;
 import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.repository.RelationshipRepositoryV2;
+import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.resource.list.ResourceList;
 
 /**
  * Example of how to do DTO mapping and computed attributes.
  */
 public class DtoMappingTest extends AbstractJpaJerseyTest {
 
-	private QuerySpecResourceRepositoryStub<TestEntity, Long> testRepo;
+	private ResourceRepositoryV2<TestEntity, Long> testRepo;
 
 	@Override
 	@Before
@@ -74,8 +75,10 @@ public class DtoMappingTest extends AbstractJpaJerseyTest {
 					basicComputedValueFactory);
 			queryFactory.registerComputedAttribute(TestEntity.class, TestDTO.ATTR_COMPUTED_NUMBER_OF_SMALLER_IDS, Long.class,
 					complexComputedValueFactory);
-			module.addMappedEntityClass(TestEntity.class, TestDTO.class, new TestDTOMapper(entityManager));
-			module.addMappedEntityClass(RelatedEntity.class, RelatedDTO.class, new RelatedDTOMapper(entityManager));
+			module.addRepository(
+					JpaRepositoryConfig.builder(TestEntity.class, TestDTO.class, new TestDTOMapper(entityManager)).build());
+			module.addRepository(JpaRepositoryConfig
+					.builder(RelatedEntity.class, RelatedDTO.class, new RelatedDTOMapper(entityManager)).build());
 
 			module.addFilter(new JpaRepositoryFilterBase() {
 
@@ -94,14 +97,14 @@ public class DtoMappingTest extends AbstractJpaJerseyTest {
 		TestEntity test = new TestEntity();
 		test.setId(2L);
 		test.setStringValue("test");
-		testRepo.save(test);
+		testRepo.create(test);
 
 		// query as regular entity (you may want to disable that in a real application)
 		List<TestEntity> list = testRepo.findAll(new QuerySpec(TestEntity.class));
 		Assert.assertEquals(1, list.size());
 
 		// query the mapped DTO
-		QuerySpecResourceRepositoryStub<TestDTO, Serializable> dtoRepo = client.getQuerySpecRepository(TestDTO.class);
+		ResourceRepositoryV2<TestDTO, Serializable> dtoRepo = client.getQuerySpecRepository(TestDTO.class);
 		List<TestDTO> dtos = dtoRepo.findAll(new QuerySpec(TestDTO.class));
 		Assert.assertEquals(1, dtos.size());
 		TestDTO dto = dtos.get(0);
@@ -123,20 +126,20 @@ public class DtoMappingTest extends AbstractJpaJerseyTest {
 
 	@Test
 	public void testMappedOneRelation() {
-		QuerySpecResourceRepositoryStub<TestDTO, Serializable> testRepo = client.getQuerySpecRepository(TestDTO.class);
-		QuerySpecResourceRepositoryStub<RelatedDTO, Serializable> relatedRepo = client.getQuerySpecRepository(RelatedDTO.class);
-		QuerySpecRelationshipRepositoryStub<TestDTO, Serializable, RelatedDTO, Serializable> relRepo = client
+		ResourceRepositoryV2<TestDTO, Serializable> testRepo = client.getQuerySpecRepository(TestDTO.class);
+		ResourceRepositoryV2<RelatedDTO, Serializable> relatedRepo = client.getQuerySpecRepository(RelatedDTO.class);
+		RelationshipRepositoryV2<TestDTO, Serializable, RelatedDTO, Serializable> relRepo = client
 				.getQuerySpecRepository(TestDTO.class, RelatedDTO.class);
 
 		TestDTO test = new TestDTO();
 		test.setId(2L);
 		test.setStringValue("createdDto");
-		test = testRepo.save(test);
+		test = testRepo.create(test);
 
 		RelatedDTO related = new RelatedDTO();
 		related.setId(3L);
 		related.setStringValue("createdDto");
-		related = relatedRepo.save(related);
+		related = relatedRepo.create(related);
 
 		relRepo.setRelation(test, related.getId(), TestEntity.ATTR_oneRelatedValue);
 
@@ -159,25 +162,25 @@ public class DtoMappingTest extends AbstractJpaJerseyTest {
 
 	@Test
 	public void testMappedManyRelation() {
-		QuerySpecResourceRepositoryStub<TestDTO, Serializable> testRepo = client.getQuerySpecRepository(TestDTO.class);
-		QuerySpecResourceRepositoryStub<RelatedDTO, Serializable> relatedRepo = client.getQuerySpecRepository(RelatedDTO.class);
-		QuerySpecRelationshipRepositoryStub<TestDTO, Long, RelatedDTO, Long> relRepo = client
+		ResourceRepositoryV2<TestDTO, Serializable> testRepo = client.getQuerySpecRepository(TestDTO.class);
+		ResourceRepositoryV2<RelatedDTO, Serializable> relatedRepo = client.getQuerySpecRepository(RelatedDTO.class);
+		RelationshipRepositoryV2<TestDTO, Long, RelatedDTO, Long> relRepo = client
 				.getQuerySpecRepository(TestDTO.class, RelatedDTO.class);
 
 		TestDTO test = new TestDTO();
 		test.setId(2L);
 		test.setStringValue("createdDto");
-		test = testRepo.save(test);
+		test = testRepo.create(test);
 
 		RelatedDTO related1 = new RelatedDTO();
 		related1.setId(1L);
 		related1.setStringValue("related1");
-		related1 = relatedRepo.save(related1);
+		related1 = relatedRepo.create(related1);
 
 		RelatedDTO related2 = new RelatedDTO();
 		related2.setId(2L);
 		related2.setStringValue("related2");
-		related2 = relatedRepo.save(related2);
+		related2 = relatedRepo.create(related2);
 
 		Assert.assertEquals(1, testRepo.findAll(new QuerySpec(TestDTO.class)).size());
 		relRepo.addRelations(test, Arrays.asList(related1.getId(), related2.getId()), TestEntity.ATTR_manyRelatedValues);
@@ -211,13 +214,13 @@ public class DtoMappingTest extends AbstractJpaJerseyTest {
 
 	@Test
 	public void testInsertDeleteDto() {
-		QuerySpecResourceRepositoryStub<TestDTO, Serializable> dtoRepo = client.getQuerySpecRepository(TestDTO.class);
+		ResourceRepositoryV2<TestDTO, Serializable> dtoRepo = client.getQuerySpecRepository(TestDTO.class);
 
 		// create a entity with a DTO and check properly saved
 		TestDTO dto = new TestDTO();
 		dto.setId(2L);
 		dto.setStringValue("createdDto");
-		dto = dtoRepo.save(dto);
+		dto = dtoRepo.create(dto);
 		Assert.assertEquals("createdDto", dto.getStringValue());
 		Assert.assertEquals("CREATEDDTO", dto.getComputedUpperStringValue());
 
@@ -236,14 +239,14 @@ public class DtoMappingTest extends AbstractJpaJerseyTest {
 
 	@Test
 	public void testSubQueryComputation() {
-		QuerySpecResourceRepositoryStub<TestDTO, Serializable> dtoRepo = client.getQuerySpecRepository(TestDTO.class);
+		ResourceRepositoryV2<TestDTO, Serializable> dtoRepo = client.getQuerySpecRepository(TestDTO.class);
 
 		int n = 5;
 		for (long i = 0; i < n; i++) {
 			TestDTO dto = new TestDTO();
 			dto.setId(i + 100);
 			dto.setStringValue(Long.toString(i));
-			dtoRepo.save(dto);
+			dtoRepo.create(dto);
 		}
 
 		// select, sort, filter by complex subquery

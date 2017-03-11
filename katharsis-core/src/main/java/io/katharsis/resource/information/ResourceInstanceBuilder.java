@@ -1,6 +1,7 @@
 package io.katharsis.resource.information;
 
-import io.katharsis.request.dto.DataBody;
+import io.katharsis.core.internal.resource.DefaultResourceInstanceBuilder;
+import io.katharsis.resource.Resource;
 
 /**
  * Used to construct an object instance for the requested resource. {@link DefaultResourceInstanceBuilder} just
@@ -13,5 +14,5 @@ public interface ResourceInstanceBuilder<T> {
 	 * @param body request body
 	 * @return resource object
 	 */
-	T buildResource(DataBody body);
+	T buildResource(Resource body);
 }
