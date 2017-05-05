@@ -38,6 +38,7 @@ import io.katharsis.jpa.model.TestEntity;
 import io.katharsis.jpa.model.TestIdEmbeddable;
 import io.katharsis.jpa.model.TestNestedEmbeddable;
 import io.katharsis.jpa.model.TestSubclassWithSuperclassPk;
+import io.katharsis.jpa.model.UuidTestEntity;
 import io.katharsis.jpa.query.criteria.JpaCriteriaQueryFactory;
 import io.katharsis.jpa.util.SpringTransactionRunner;
 import io.katharsis.jpa.util.TestConfig;
@@ -208,6 +209,7 @@ public abstract class AbstractJpaTest {
 		clear(em, factory.query(LangEntity.class).buildExecutor().getResultList());
 		clear(em, factory.query(BasicAttributesTestEntity.class).buildExecutor().getResultList());
 		clear(em, factory.query(RenamedTestEntity.class).buildExecutor().getResultList());
+		clear(em, factory.query(UuidTestEntity.class).buildExecutor().getResultList());
 		em.flush();
 		em.clear();
 	}

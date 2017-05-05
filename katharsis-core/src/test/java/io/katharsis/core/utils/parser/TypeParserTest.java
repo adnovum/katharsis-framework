@@ -65,6 +65,11 @@ public class TypeParserTest {
         assertThat(result).isExactlyInstanceOf(UUID.class);
         assertThat(result).isEqualTo(UUID.fromString("de305d54-75b4-431b-adb2-eb6b9e546014"));
     }
+    
+    @Test(expected=ParserException.class)
+    public void onInvalidUUIDStringShouldThrowParserException() throws Exception {
+    	sut.parse("invalid", UUID.class);
+    }
 
     @Test
     public void onBooleanTrueShouldReturnBoolean() throws Exception {

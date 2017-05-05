@@ -201,7 +201,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		return values.split(",");
 	}
 
-	private void deserializeFields(QuerySpec querySpec, Parameter parameter) {
+	protected void deserializeFields(QuerySpec querySpec, Parameter parameter) {
 		for (String values : parameter.values) {
 			for (String value : splitValues(values)) {
 				List<String> attributePath = splitAttributePath(value, parameter);
@@ -210,7 +210,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		}
 	}
 
-	private void deserializePage(QuerySpec querySpec, Parameter parameter) {
+	protected void deserializePage(QuerySpec querySpec, Parameter parameter) {
 		if (OFFSET_PARAMETER.equalsIgnoreCase(parameter.pageParameter)) {
 			querySpec.setOffset(parameter.getLongValue());
 		} else if (LIMIT_PARAMETER.equalsIgnoreCase(parameter.pageParameter)) {
@@ -225,7 +225,7 @@ public class DefaultQuerySpecDeserializer implements QuerySpecDeserializer {
 		}
 	}
 
-	private void deserializeFilter(QuerySpec querySpec, Parameter parameter) {
+	protected void deserializeFilter(QuerySpec querySpec, Parameter parameter) {
 		Class<?> attributeType = getAttributeType(querySpec, parameter.attributePath);
 		Set<Object> typedValues = new HashSet<>();
 		for (String stringValue : parameter.values) {

@@ -11,4 +11,8 @@ public abstract class KatharsisMatchingException extends KatharsisException {
     protected KatharsisMatchingException(String message) {
         super(message);
     }
+    
+    protected KatharsisMatchingException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
 }

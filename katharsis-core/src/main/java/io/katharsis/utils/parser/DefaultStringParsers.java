@@ -93,7 +93,11 @@ public final class DefaultStringParsers {
 		addType(parsers, Collections.singletonList(UUID.class), new StringParser<UUID>() {
 			@Override
 			public UUID parse(String input) {
-				return UUID.fromString(input);
+				try{
+					return UUID.fromString(input);
+				}catch(IllegalArgumentException e){
+					throw new ParserException("not a valid uuid", e);
+				}
 			}
 		});
 

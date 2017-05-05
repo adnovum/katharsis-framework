@@ -23,7 +23,7 @@ import com.querydsl.core.types.QTuple;
 import com.querydsl.core.types.dsl.BeanPath;
 import com.querydsl.core.types.dsl.CollectionExpressionBase;
 import com.querydsl.core.types.dsl.ComparableExpression;
-import com.querydsl.core.types.dsl.LiteralExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.MapExpressionBase;
 import com.querydsl.core.types.dsl.MapPath;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -300,7 +300,7 @@ public class QuerydslQueryBackend<T>
 	private Expression<?> handleConversions(Expression<?> expression, FilterOperator operator) {
 		// convert to String for LIKE operators
 		if (expression.getType() != String.class && (operator == FilterOperator.LIKE)) {
-			return ((LiteralExpression) expression).stringValue();
+			return Expressions.stringOperation(Ops.STRING_CAST, expression);
 		}
 		else {
 			return expression;

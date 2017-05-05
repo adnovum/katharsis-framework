@@ -293,6 +293,9 @@ public class MetaLookup {
 	}
 
 	private static String firstToLower(String name) {
+		if(name.equals("UUID")){
+			return "uuid";
+		}
 		return Character.toLowerCase(name.charAt(0)) + name.substring(1);
 	}
 
