@@ -56,5 +56,23 @@ public class JpaNullabilityMetaTest {
 		MetaAttribute field = meta.getAttribute("notNullableValue");
 		Assert.assertFalse(field.isNullable());
 	}
+	
+	@Test
+	public void testNonOptionalRelatedValue(){
+		MetaLookup lookup = new MetaLookup();
+		lookup.addProvider(new JpaMetaProvider());
+		MetaEntity meta = lookup.getMeta(AnnotationTestEntity.class, MetaEntity.class);
+		MetaAttribute field = meta.getAttribute("nonOptionalRelatedValue");
+		Assert.assertFalse(field.isNullable());
+	}
+	
+	@Test
+	public void testOptionalRelatedValue(){
+		MetaLookup lookup = new MetaLookup();
+		lookup.addProvider(new JpaMetaProvider());
+		MetaEntity meta = lookup.getMeta(AnnotationTestEntity.class, MetaEntity.class);
+		MetaAttribute field = meta.getAttribute("optionalRelatedValue");
+		Assert.assertTrue(field.isNullable());
+	}
 
 }

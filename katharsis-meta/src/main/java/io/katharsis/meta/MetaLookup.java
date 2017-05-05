@@ -151,29 +151,30 @@ public class MetaLookup {
 
 		checkInitialized();
 
-		MetaElement meta = getUniqueElementByType(type, elementMetaClass);
-		if (meta == null) {
+		MetaElement existingElement = getUniqueElementByType(type, elementMetaClass);
+		if (existingElement == null) {
 			synchronized (this) {
-				meta = getUniqueElementByType(type, elementMetaClass);
-				if (meta == null) {
+				existingElement = getUniqueElementByType(type, elementMetaClass);
+				if (existingElement == null) {
 
 					boolean wasInitializing = adding;
 					if (!wasInitializing) {
 						adding = true;
 					}
 
-					meta = allocateMeta(type, elementMetaClass, nullable);
-					if (meta != null) {
-						add(meta);
+					MetaElement allocatedMeta = allocateMeta(type, elementMetaClass, nullable);
+					if (allocatedMeta != null) {
+						add(allocatedMeta);
 					}
 
 					if (!wasInitializing) {
 						initialize();
 					}
+					return allocatedMeta;
 				}
 			}
 		}
-		return meta;
+		return existingElement;
 	}
 
 	private MetaElement getUniqueElementByType(Type type, Class<? extends MetaElement> elementMetaClass) {

@@ -220,7 +220,7 @@ public class AnnotationResourceInformationBuilder implements ResourceInformation
 
 		Class<?> fieldType = mergeFieldType(fromField, fromMethod);
 		Type fieldGenericType = mergeGenericType(fromField, fromMethod);
-		String oppositeResourceType = getResourceType(fieldGenericType, context);
+		String oppositeResourceType = fromField.getResourceFieldType() == ResourceFieldType.RELATIONSHIP ? getResourceType(fieldGenericType, context) : null;
 		boolean postable = fromField.getAccess().isPostable() && fromMethod.getAccess().isPostable();
 		boolean patchable = fromField.getAccess().isPatchable() && fromMethod.getAccess().isPatchable();
 		boolean sortable = fromField.getAccess().isSortable() && fromMethod.getAccess().isSortable();

@@ -317,6 +317,7 @@ public class ResourceMetaProviderImpl extends MetaProviderBase {
 				attr.setLob(projectedAttr.isLob());
 				attr.setVersion(projectedAttr.isVersion()); 
 				attr.setNullable(projectedAttr.isNullable());
+				attr.setCascaded(projectedAttr.isCascaded());
 			}
 		}
 	}

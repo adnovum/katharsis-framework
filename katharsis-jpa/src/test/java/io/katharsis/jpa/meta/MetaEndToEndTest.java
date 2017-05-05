@@ -82,6 +82,16 @@ public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 	}
 
 	@Test
+	public void testCascaded() {
+		MetaLookup lookup = metaModule.getLookup();
+		MetaResource meta = lookup.getMeta(TestEntity.class, MetaResource.class);
+		MetaAttribute oneRelatedAttr = meta.getAttribute("oneRelatedValue");
+		MetaAttribute eagerRelatedAttr = meta.getAttribute("eagerRelatedValue");
+		Assert.assertTrue(oneRelatedAttr.isCascaded());
+		Assert.assertFalse(eagerRelatedAttr.isCascaded());
+	}
+	
+	@Test
 	public void testAttributeInsertableUpdatable() {
 		MetaLookup lookup = metaModule.getLookup();
 		MetaResource versionMeta = lookup.getMeta(VersionedEntity.class, MetaResource.class);

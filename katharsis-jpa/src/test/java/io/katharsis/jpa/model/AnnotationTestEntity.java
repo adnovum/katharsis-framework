@@ -2,8 +2,11 @@ package io.katharsis.jpa.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 
 import io.katharsis.resource.annotations.JsonApiField;
 
@@ -29,6 +32,12 @@ public class AnnotationTestEntity {
 
 	@Column(nullable = true)
 	private String nullableValue;
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	private RelatedEntity nonOptionalRelatedValue;
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	private RelatedEntity optionalRelatedValue;
 
 	private String readOnlyValue = "someReadOnlyValue";
 
@@ -82,5 +91,21 @@ public class AnnotationTestEntity {
 
 	public void setNullableValue(String nullableValue) {
 		this.nullableValue = nullableValue;
+	}
+
+	public RelatedEntity getNonOptionalRelatedValue() {
+		return nonOptionalRelatedValue;
+	}
+
+	public void setNonOptionalRelatedValue(RelatedEntity nonOptionalRelatedValue) {
+		this.nonOptionalRelatedValue = nonOptionalRelatedValue;
+	}
+
+	public RelatedEntity getOptionalRelatedValue() {
+		return optionalRelatedValue;
+	}
+
+	public void setOptionalRelatedValue(RelatedEntity optionalRelatedValue) {
+		this.optionalRelatedValue = optionalRelatedValue;
 	}
 }

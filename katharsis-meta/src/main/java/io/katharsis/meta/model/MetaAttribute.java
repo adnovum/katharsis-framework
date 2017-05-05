@@ -52,10 +52,12 @@ public class MetaAttribute extends MetaElement {
 	private boolean insertable;
 
 	private boolean updatable;
-	
+
 	private boolean lob;
-	
+
 	private boolean nullable;
+
+	private boolean cascaded;
 
 	@JsonApiRelation(serialize = SerializeType.LAZY)
 	private MetaAttribute oppositeAttribute;
@@ -75,7 +77,15 @@ public class MetaAttribute extends MetaElement {
 			writeMethod = ClassUtils.findSetter(beanClass, name, rawType);
 		}
 	}
-	
+
+	public boolean isCascaded() {
+		return cascaded;
+	}
+
+	public void setCascaded(boolean cascade) {
+		this.cascaded = cascade;
+	}
+
 	public boolean isNullable() {
 		return nullable;
 	}
@@ -84,16 +94,15 @@ public class MetaAttribute extends MetaElement {
 		this.nullable = nullable;
 	}
 
-	public Method getWriteMethod(){
+	public Method getWriteMethod() {
 		this.initAccessors();
 		return writeMethod;
 	}
-	
-	public Method getReadMethod(){
+
+	public Method getReadMethod() {
 		this.initAccessors();
 		return readMethod;
 	}
-	
 
 	@Override
 	public MetaDataObject getParent() {
@@ -253,14 +262,14 @@ public class MetaAttribute extends MetaElement {
 	public void setUpdatable(boolean updatable) {
 		this.updatable = updatable;
 	}
-	
+
 	/**
 	 * @return true if it is a potentially large object
 	 */
 	public boolean isLob() {
 		return lob;
 	}
-	
+
 	public void setLob(boolean blob) {
 		this.lob = blob;
 	}

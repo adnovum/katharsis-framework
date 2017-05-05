@@ -29,6 +29,7 @@ public class JpaMetaProviderAttributeTest {
 		Assert.assertFalse(attr.isDerived());
 		Assert.assertFalse(attr.isVersion());
 		Assert.assertFalse(attr.isLazy());
+		Assert.assertFalse(attr.isCascaded());
 		Assert.assertNull(attr.getOppositeAttribute());
 	}
 
@@ -51,6 +52,19 @@ public class JpaMetaProviderAttributeTest {
 		Assert.assertEquals("oneRelatedValue", attributes.get(7).getName());
 		Assert.assertEquals("eagerRelatedValue", attributes.get(8).getName());
 		Assert.assertEquals("manyRelatedValues", attributes.get(9).getName());
+	}
+	
+	@Test
+	public void testCascaded() {
+		MetaLookup lookup = new MetaLookup();
+		lookup.addProvider(new JpaMetaProvider());
+		lookup.initialize();
+		MetaEntity meta = lookup.getMeta(TestEntity.class, MetaEntity.class);
+
+		MetaAttribute oneRelatedAttr = meta.getAttribute("oneRelatedValue");
+		MetaAttribute eagerRelatedAttr = meta.getAttribute("eagerRelatedValue");
+		Assert.assertTrue(oneRelatedAttr.isCascaded());
+		Assert.assertFalse(eagerRelatedAttr.isCascaded());
 	}
 
 	@Test

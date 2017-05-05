@@ -1,12 +1,12 @@
 package io.katharsis.jpa.meta.internal;
 
-import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.EmbeddedId;
@@ -25,7 +25,6 @@ import io.katharsis.core.internal.utils.ClassUtils;
 import io.katharsis.jpa.internal.JpaResourceInformationBuilder;
 import io.katharsis.jpa.meta.MetaEntityAttribute;
 import io.katharsis.jpa.meta.MetaJpaDataObject;
-import io.katharsis.meta.internal.MetaUtils;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaElement;
@@ -121,13 +120,17 @@ public abstract class AbstractEntityMetaProvider<T extends MetaJpaDataObject> ex
 		attr.setLob(lobAnnotation != null);
 		attr.setFilterable(lobAnnotation == null);
 		attr.setSortable(lobAnnotation == null);
+		
+		attr.setCascaded(getCascade(manyManyAnnotation, manyOneAnnotation, oneManyAnnotation, oneOneAnnotation));
 
 		if(attr.getReadMethod() == null){
 			throw new IllegalStateException("no getter found for " + attr.getParent().getName() + "." + attr.getName());
 		}
 		Class<?> attributeType = attr.getReadMethod().getReturnType();
 		boolean isPrimitiveType = ClassUtils.isPrimitiveType(attributeType);
-		boolean columnNullable = columnAnnotation == null || columnAnnotation.nullable();
+		boolean columnNullable = (columnAnnotation == null || columnAnnotation.nullable()) &&
+				(manyOneAnnotation == null || manyOneAnnotation.optional()) &&
+				(oneOneAnnotation == null || oneOneAnnotation.optional());
 		attr.setNullable(!isPrimitiveType && columnNullable);
 
 		boolean hasSetter = attr.getWriteMethod() != null;
@@ -136,6 +139,26 @@ public abstract class AbstractEntityMetaProvider<T extends MetaJpaDataObject> ex
 
 	}
 
+
+	private boolean getCascade(ManyToMany manyManyAnnotation, ManyToOne manyOneAnnotation, OneToMany oneManyAnnotation, OneToOne oneOneAnnotation) {
+		if(manyManyAnnotation != null){
+			return getCascade(manyManyAnnotation.cascade());
+		}
+		if(manyOneAnnotation != null){
+			return getCascade(manyOneAnnotation.cascade());
+		}
+		if(oneManyAnnotation != null){
+			return getCascade(oneManyAnnotation.cascade());
+		}
+		if(oneOneAnnotation != null){
+			return getCascade(oneOneAnnotation.cascade());
+		}
+		return false;
+	}
+
+	private boolean getCascade(CascadeType[] types) {
+		return types.length > 0;
+	}
 
 	@Override
 	public void onInitialized(MetaElement element) {
