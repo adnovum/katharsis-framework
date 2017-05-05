@@ -26,6 +26,7 @@ import io.katharsis.jpa.model.JoinedTableChildEntity;
 import io.katharsis.jpa.model.LangEntity;
 import io.katharsis.jpa.model.OtherRelatedEntity;
 import io.katharsis.jpa.model.RelatedEntity;
+import io.katharsis.jpa.model.RenamedTestEntity;
 import io.katharsis.jpa.model.SingleTableBaseEntity;
 import io.katharsis.jpa.model.SingleTableChildEntity;
 import io.katharsis.jpa.model.TablePerClassBaseEntity;
@@ -206,6 +207,7 @@ public abstract class AbstractJpaTest {
 		clear(em, factory.query(CountryEntity.class).buildExecutor().getResultList());
 		clear(em, factory.query(LangEntity.class).buildExecutor().getResultList());
 		clear(em, factory.query(BasicAttributesTestEntity.class).buildExecutor().getResultList());
+		clear(em, factory.query(RenamedTestEntity.class).buildExecutor().getResultList());
 		em.flush();
 		em.clear();
 	}

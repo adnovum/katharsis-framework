@@ -97,15 +97,9 @@ public class JpaResourceInformationBuilder implements ResourceInformationBuilder
 
 		MetaDataObject meta;
 		DefaultResourceInstanceBuilder instanceBuilder;
-		if (resourceClass.getAnnotation(JpaResource.class) != null) {
-			// non-entities (like dtos subclassing entities) use default
-			// instantiation
-			meta = jpaMetaLookup.getMeta(resourceClass, MetaJsonObject.class);
-			instanceBuilder = new DefaultResourceInstanceBuilder(resourceClass);
-		} else {
-			meta = jpaMetaLookup.getMeta(resourceClass, MetaJpaDataObject.class).asDataObject();
-			instanceBuilder = new JpaResourceInstanceBuilder((MetaJpaDataObject) meta, resourceClass);
-		}
+		
+		meta = jpaMetaLookup.getMeta(resourceClass, MetaJpaDataObject.class).asDataObject();
+		instanceBuilder = new JpaResourceInstanceBuilder((MetaJpaDataObject) meta, resourceClass);
 
 		List<ResourceField> fields = buildFields(meta);
 		Set<String> ignoredFields = getIgnoredFields(meta);

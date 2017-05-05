@@ -1,5 +1,7 @@
 package io.katharsis.jpa.meta;
 
+import java.io.Serializable;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +9,7 @@ import org.junit.Test;
 import io.katharsis.jpa.AbstractJpaJerseyTest;
 import io.katharsis.jpa.model.AnnotationMappedSuperclassEntity;
 import io.katharsis.jpa.model.AnnotationTestEntity;
+import io.katharsis.jpa.model.RenamedTestEntity;
 import io.katharsis.jpa.model.SequenceEntity;
 import io.katharsis.jpa.model.TestEntity;
 import io.katharsis.jpa.model.VersionedEntity;
@@ -18,6 +21,8 @@ import io.katharsis.meta.model.MetaKey;
 import io.katharsis.meta.model.resource.MetaJsonObject;
 import io.katharsis.meta.model.resource.MetaResource;
 import io.katharsis.meta.model.resource.MetaResourceBase;
+import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.repository.ResourceRepositoryV2;
 
 public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 
@@ -48,6 +53,22 @@ public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 	}
 
 	@Test
+	public void testRenameResourceType() {
+		MetaLookup lookup = metaModule.getLookup();
+		MetaResource metaResource = lookup.getMeta(RenamedTestEntity.class, MetaResource.class);
+		Assert.assertEquals("renamedResource", metaResource.getResourceType());
+		
+		RenamedTestEntity test = new RenamedTestEntity();
+		test.setId(1L);
+		
+		ResourceRepositoryV2<RenamedTestEntity, Serializable> repository = client.getRepositoryForType(RenamedTestEntity.class);
+		repository.create(test);
+		Assert.assertEquals(1, repository.findAll(new QuerySpec(RenamedTestEntity.class)).size());
+		repository.delete(1L);
+		Assert.assertEquals(0, repository.findAll(new QuerySpec(RenamedTestEntity.class)).size());
+	}
+
+	@Test
 	public void testProjectedLobOnMappedSuperclass() {
 		MetaLookup lookup = metaModule.getLookup();
 		MetaResourceBase metaResource = lookup.getMeta(AnnotationMappedSuperclassEntity.class, MetaResourceBase.class);
@@ -55,7 +76,6 @@ public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 		Assert.assertTrue(lobAttr.isLob());
 	}
 
-	
 	@Test
 	public void testProjectedColumnAnnotatedValueIsNotNullable() {
 		MetaLookup lookup = metaModule.getLookup();
@@ -64,7 +84,6 @@ public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 		Assert.assertFalse(field.isNullable());
 	}
 
-	
 	@Test
 	public void testProjectedColumnAnnotatedValueIsNullable() {
 		MetaLookup lookup = metaModule.getLookup();
@@ -72,7 +91,7 @@ public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 		MetaAttribute field = meta.getAttribute("nullableValue");
 		Assert.assertTrue(field.isNullable());
 	}
-	
+
 	@Test
 	public void testProjectedVersion() {
 		MetaLookup lookup = metaModule.getLookup();
@@ -90,7 +109,7 @@ public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 		Assert.assertTrue(oneRelatedAttr.isCascaded());
 		Assert.assertFalse(eagerRelatedAttr.isCascaded());
 	}
-	
+
 	@Test
 	public void testAttributeInsertableUpdatable() {
 		MetaLookup lookup = metaModule.getLookup();
@@ -130,7 +149,7 @@ public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 		Assert.assertTrue(lobAttr.isUpdatable());
 		Assert.assertFalse(lobAttr.isSortable());
 		Assert.assertFalse(lobAttr.isFilterable());
-		
+
 	}
 
 	@Test

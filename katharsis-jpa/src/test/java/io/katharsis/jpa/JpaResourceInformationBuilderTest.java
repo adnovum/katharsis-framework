@@ -18,6 +18,7 @@ import io.katharsis.jpa.meta.JpaMetaProvider;
 import io.katharsis.jpa.model.AnnotationMappedSuperclassEntity;
 import io.katharsis.jpa.model.AnnotationTestEntity;
 import io.katharsis.jpa.model.RelatedEntity;
+import io.katharsis.jpa.model.RenamedTestEntity;
 import io.katharsis.jpa.model.TestEmbeddable;
 import io.katharsis.jpa.model.TestEntity;
 import io.katharsis.jpa.model.VersionedEntity;
@@ -46,8 +47,7 @@ public class JpaResourceInformationBuilderTest {
 	}
 
 	@Test
-	public void test()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void test() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 
 		ResourceInformation info = builder.build(TestEntity.class);
 		ResourceField idField = info.getIdField();
@@ -84,9 +84,9 @@ public class JpaResourceInformationBuilderTest {
 		}
 		Assert.assertTrue(found);
 	}
-	
+
 	@Test
-	public void testPrimitiveTypesProperlyRecognized(){
+	public void testPrimitiveTypesProperlyRecognized() {
 		ResourceInformation info = builder.build(TestEntity.class);
 		ResourceField field = info.findAttributeFieldByName("longValue");
 		Assert.assertNotNull(field);
@@ -132,8 +132,7 @@ public class JpaResourceInformationBuilderTest {
 	}
 
 	@Test
-	public void testAttributeAnnotations()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void testAttributeAnnotations() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		ResourceInformation info = builder.build(AnnotationTestEntity.class);
 
 		ResourceField lobField = info.findAttributeFieldByName("lobValue");
@@ -161,8 +160,13 @@ public class JpaResourceInformationBuilderTest {
 	}
 
 	@Test
-	public void testReadOnlyField()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void testRenamedResourceType() {
+		ResourceInformation info = builder.build(RenamedTestEntity.class);
+		Assert.assertEquals("renamedResource", info.getResourceType());
+	}
+
+	@Test
+	public void testReadOnlyField() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		ResourceInformation info = builder.build(AnnotationTestEntity.class);
 
 		ResourceField field = info.findAttributeFieldByName("readOnlyValue");
@@ -192,8 +196,7 @@ public class JpaResourceInformationBuilderTest {
 	}
 
 	@Test
-	public void testMappedSuperclass()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void testMappedSuperclass() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		ResourceInformation info = builder.build(AnnotationMappedSuperclassEntity.class);
 
 		Assert.assertNull(info.getResourceType());

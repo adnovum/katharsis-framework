@@ -20,7 +20,6 @@ import io.katharsis.resource.annotations.JsonApiResource;
  */
 @Retention(RUNTIME)
 @Target(TYPE)
-@Deprecated // currently not supported
 public @interface JpaResource {
 
 	/**
