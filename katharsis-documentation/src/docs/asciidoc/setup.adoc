@@ -1,0 +1,290 @@
+
+# Setup
+
+There are two main, orthogonal aspects of Katharsis that need configuration:
+
+1. The integration into a web framework like JAXRS or the Servlet API to be able to process requests.
+2. The discovery of repositories, modules, exception mappers, etc.
+
+The subsequent sections explain various possiblities resp. how to implement an own one.
+
+
+## Requirements
+
+Katharsis library requires minimum Java 7 to build and run.
+
+
+
+## JAX-RS integration
+
+Katharsis allows integration with JAX-RS environments through the usage of JAX-RS specification. JAX-RS 2.0 is
+required for this integration. Under the hood there is a @PreMatching filter which checks each request for
+JSON API processing. The Setup can look as simple as:
+
+[source]
+----
+@ApplicationPath("/")
+	public class MyApplication extends Application {
+
+		@Override
+		public Set<Object> getSingletons() {
+			KatharsisFeature katharsisFeature = new KatharsisFeature();
+			return Collections.singleton((Object)katharsisFeature);
+		}
+	}
+----
+
+`KatharsisFeature` provides various accessors to customize the behavior of Katharsis.
+A more advanced setup may look like:
+
+[source]
+----
+	public class MyAdvancedKatharsisFeature implements Feature {
+
+		@Inject
+		private EntityManager em;
+
+		@Inject
+		private EntityManagerFactory emFactory;
+
+		...
+
+		@Override
+		public boolean configure(FeatureContext featureContext) {
+			// also map entities to JSON API resources (see further below)
+			JpaModule jpaModule = new JpaModule(emFactory, em, transactionRunner);
+			jpaModule.setRepositoryFactory(new ValidatedJpaRepositoryFactory());
+
+			// JSON API compliant URL handling with QuerySpec
+			DefaultQuerySpecDeserializer querySpecDeserializer = new DefaultQuerySpecDeserializer();
+
+			// limit all incoming requests to 20 resources if not specified otherwise
+			querySpecDeserializer.setDefaultLimit(20L);
+
+			ServiceLocator serviceLocator = ...
+			KatharsisFeature feature = new KatharsisFeature(new ObjectMapper(), querySpecDeserializer, serviceLocator);
+			feature.addModule(jpaModule);
+
+			featureContext.register(feature);
+			return true;
+		}
+	}
+----
+
+Note that depending on the discovery mechanism in use (like Spring or CDI), modules like this JpaModule can be picked
+up automatically.
+
+
+
+
+## Servlet integration
+
+There are two ways of integrating katharsis using Servlets:
+
+* Adding an instance of ``AbstractKatharsisServlet``
+* Adding an instance of ``AbstractKatharsisFilter``
+
+### Integrating using a Servlet
+
+To integrate Katharsis using a servlet several steps are required.
+The first one is to create a class that extends ``AbstractKatharsisServlet`` and will provide required configuration for the library.
+The code below shows a sample implementation:
+
+[source]
+----
+
+  import io.katharsis.invoker.KatharsisInvokerBuilder;
+  import io.katharsis.locator.JsonServiceLocator;
+  import io.katharsis.locator.SampleJsonServiceLocator;
+
+  import javax.servlet.ServletConfig;
+  import javax.servlet.ServletException;
+
+  public class SampleKatharsisServlet extends AbstractKatharsisServlet {
+
+      private String resourceSearchPackage;
+
+      @Override
+      public void init(ServletConfig servletConfig) throws ServletException {
+          super.init(servletConfig);
+          resourceSearchPackage = servletConfig
+              .getInitParameter(KatharsisProperties.RESOURCE_SEARCH_PACKAGE);
+      }
+
+      @Override
+      protected KatharsisInvokerBuilder createKatharsisInvokerBuilder() {
+          return new KatharsisInvokerBuilder()
+              .resourceSearchPackage(resourceSearchPackage)
+              .jsonServiceLocator(new SampleJsonServiceLocator());
+      }
+
+  }
+----
+
+The newly created servlet must be added to the ``web.xml`` file or to another deployment descriptor.
+The code below shows a sample ``web.xml`` file with a properly defined and configured servlet:
+
+[source]
+----
+  <web-app>
+    <servlet>
+      <servlet-name>SampleKatharsisServlet</servlet-name>
+      <servlet-class>io.katharsis.servlet.SampleKatharsisServlet</servlet-class>
+      <init-param>
+        <param-name>katharsis.config.core.resource.package</param-name>
+        <param-value>io.katharsis.servlet.resource</param-value>
+      </init-param>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>SampleKatharsisServlet</servlet-name>
+      <url-pattern>/api/v1/ *</url-pattern>
+    </servlet-mapping>
+  </web-app>
+----
+
+You may omit the `resourceSearchPath` depending on which discovery mechanism is in place (see below).
+
+
+### Integrating using a filter
+
+To integrate Katharsis using a filter, several steps are required.
+First, create a class that extends ``AbstractKatharsisFilter``, which will provide required configuration for the library.
+The code below shows a sample implementation:
+
+[source]
+----
+  import io.katharsis.invoker.KatharsisInvokerBuilder;
+  import io.katharsis.locator.JsonServiceLocator;
+  import io.katharsis.locator.SampleJsonServiceLocator;
+
+  import javax.servlet.FilterConfig;
+  import javax.servlet.ServletException;
+
+  public class SampleKatharsisFilter extends AbstractKatharsisFilter {
+
+      private String resourceSearchPackage;
+
+      public void init(FilterConfig filterConfig) throws ServletException {
+          super.init(filterConfig);
+          resourceSearchPackage = filterConfig
+              .getInitParameter(KatharsisProperties.RESOURCE_SEARCH_PACKAGE);
+      }
+
+      @Override
+      public void init(FilterConfig filterConfig) throws ServletException {
+          super.init(filterConfig);
+          resourceSearchPackage = filterConfig
+              .getInitParameter(KatharsisProperties.RESOURCE_SEARCH_PACKAGE);
+      }
+
+      /**
+       * NOTE: A class extending this must provide a platform specific {@link JsonServiceLocator}
+       *       instead of the (testing-purpose) {@link SampleJsonServiceLocator} below
+       *       in order to provide advanced dependency injections for the repositories.
+       */
+      @Override
+      protected KatharsisInvokerBuilder createKatharsisInvokerBuilder() {
+          return new KatharsisInvokerBuilder()
+              .resourceSearchPackage(resourceSearchPackage)
+              .jsonServiceLocator(new SampleJsonServiceLocator());
+      }
+  }
+----
+
+The newly created filter must be added to ``web.xml`` file or other deployment descriptor.
+A code below shows a sample ``web.xml`` file with properly defined and configured filter
+
+[source]
+----
+  <web-app>
+    <filter>
+      <filter-name>SampleKatharsisFilter</filter-name>
+      <filter-class>io.katharsis.servlet.SampleKatharsisFilter</filter-class>
+      <init-param>
+        <param-name>katharsis.config.core.resource.package</param-name>
+        <param-value>io.katharsis.servlet.resource</param-value>
+      </init-param>
+    </filter>
+  </web-app>
+----
+
+## Spring integration
+
+Katharsis provides a simple Spring Boot integration using the ``@Configuration`` annotated class ``KatharsisConfigV3``.
+Using this class, the only thing needed to allow Katharsis process requests is parameter configuration.
+An example ``application.properties`` file is presented below.
+
+[source]
+----
+  katharsis.domainName=http://localhost:8080
+  katharsis.pathPrefix=/api
+----
+
+Spring integration uses katharsis-servlet ``AbstractKatharsisFilter`` to fetch the requests. Similar to CDI, repositories
+and modules are picked up from the Spring ApplicationContext with  ``SpringServiceDiscovery``.
+
+
+## Discovery with CDI
+
+To enable CDI support, add ``io.katharsis:katharsis-cdi`` to your classpath. Katharsis will then pickup the
+``CdiServiceDiscovery`` implementation and use it to discover its modules and repositories. Modules, repositories,
+etc. will then be picked up if they are registered as CDI beans.
+
+
+## Discovery with Spring
+
+The Spring integration comes with a ``SpringServiceDiscovery`` that makes use of the Spring `ApplicationContext`
+to discover beans.
+
+
+## Discovery without a dependency injection framework
+
+If no dependency injection framework is used, Katharsis can also discover beans on its own. For this purpose,
+the `org.reflections:reflections` library has to be added to the classpath and the
+`KatharsisProperties.RESOURCE_SEARCH_PACKAGE` be defined. In JAX-RS this may look like:
+
+[source]
+----
+@ApplicationPath("/")
+	public class MyApplication extends Application {
+
+		@Override
+        public Set<Object> getSingletons() {
+            KatharsisFeature katharsisFeature = new KatharsisFeature();
+            katharsisFeature.getBoot().setServiceLocator(...);
+            return Collections.singleton((Object)katharsisFeature);
+        }
+
+		@Override
+        public Map<String, Object> getProperties() {
+            Map<String, Object> map = new HashMap<>();
+            map.put(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, "com.myapplication.model")
+            return map;
+        }
+	}
+----
+
+A `JsonServiceLocator` service locator can be provided to control the instatiation of object. By default the default
+constructor will be used. The `KatharsisProperties.RESOURCE_SEARCH_PACKAGE` property is passed to define which package
+should be searched for beans. Multiple packages can be passed by specifying a comma separated string
+of packages i.e. com.company.service.dto,com.company.service.repository. It will pick up any public non-abstract
+class that makes use of Katharsis interfaces, like repositories, exception mappers and modules.
+
+
+
+
+## Parameters
+
+Any of the integrations allows API access to customize Katharsis. There are also a number of configuration flags
+provided by `KatharsisProperties`:
+
+* `katharsis.config.core.resource.domain`
+  Domain name as well as protocol and optionally port number used when building links objects in responses i.e. http://katharsis.io.
+  The value must not end with ``/``. If the property is omitted, then they are extracted from the incoming request, which should work
+  well for most use cases.
+
+* `katharsis.config.web.path.prefix`
+  Default prefix of a URL path used in two cases:
+  ** When building ``links`` objects in responses
+  ** When performing method matching
+  An example of a prefix ``/api/v1``.

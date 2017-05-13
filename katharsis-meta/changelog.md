@@ -1,5 +1,9 @@
 # katharsis-meta v3.0.1-SNAPSHOT git changelog
 
+2017-03-29    Make StringParser public [#391](https://github.com/katharsis-project/katharsis-framework/issues/391) (Remo)  
+2017-03-29    Ambiguity when parsing urls [#390](https://github.com/katharsis-project/katharsis-framework/issues/390) (Remo)  
+2017-03-29    katharsis-meta improvements [#371](https://github.com/katharsis-project/katharsis-framework/issues/371) (Remo)  
+2017-03-28    Optimize use of reflection and related classes [#378](https://github.com/katharsis-project/katharsis-framework/issues/378) (Remo)  
 2017-03-25    base implementation with main functionality: (remmeier)  
 2017-03-25    Make use of EntityGraph in katharsis-jpa optional [#380](https://github.com/katharsis-project/katharsis-framework/issues/380) (remmeier)  
 2017-03-25    Optimize use of reflection and related classes [#378](https://github.com/katharsis-project/katharsis-framework/issues/378) (remmeier)  

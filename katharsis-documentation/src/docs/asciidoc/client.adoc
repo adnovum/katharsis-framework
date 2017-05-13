@@ -1,0 +1,52 @@
+
+# Katharsis Client
+
+There is a Katharsis client for Java projects to allow
+communicating with JSON-API compliant servers. Two http client libraries are supported:
+
+* `OkHttp <http://square.github.io/okhttp>`
+  Library has been used to allow usage in both Android and server applications and services.
+
+* `Apache Http Client <https://hc.apache.org/httpcomponents-client-ga/index.html>`
+  Library widely used in the Java community.
+
+Add one of those library to the classpath and Katharsis will pick it up automatically.
+
+The client requires to define resources in the same manner as defined in the `Models`_ section.
+To start using the client just create an instance of `KatharsisClient` and pass the service
+URL and the location to the package where the models are defined.
+
+The client has three main methods:
+
+* `KatharsisClient#getRepositoryForInterface(Class)` to obtain a resource repository stub from an existing repository interface.
+* `KatharsisClient#getRepositoryForType(Class)` to obtain a generic resource repository stub from the provided resource type.
+* `KatharsisClient#getRepositoryForType(Class, Class)` to obtain a generic relationship repository stub from the provided source and target resource types.
+
+The interface of the repositories is as same as defined in `Repositories`_ section.
+
+An example of the usage:
+
+[source]
+----
+  KatharsisClient client = new KatharsisClient("http://localhost:8080/api");
+  ResourceRepositoryV2<Task, Long> taskRepo = client.getRepositoryForType(Task.class);
+  List<Task> tasks = taskRepo.findAll(new QuerySpec(Task.class));
+----
+
+Have a look at, for example, the QuerySpecClientTest to see more examples of how it is used.
+
+
+
+## HTTP customization
+
+It is possible to hook into the HTTP implementation used by Katharsis (OkHttp or Apache).
+Make use of `KatharsisClient#getHttpAdapter()` and cast it to either
+`HttpClientAdapter` or `OkHttpAdapter`. Both implementations provide a
+`addListener` method, which in turn gives access to the native builder used to construct
+the respective HTTP client implementation. This allows to cover various use cases:
+
+- add custom request headers (security, tracing, etc.)
+- collect statistics
+- ...
+
+You may have a look at `katharsis-brave` for an advanced example.

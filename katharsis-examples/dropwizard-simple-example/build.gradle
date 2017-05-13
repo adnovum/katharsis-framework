@@ -1,0 +1,8 @@
+
+description = 'Katharsis Simple Dropwizard Example'
+dependencies {
+
+    compile project(':katharsis-rs')
+
+    compile group: 'io.dropwizard', name: 'dropwizard-core', version:'1.0.0'
+}

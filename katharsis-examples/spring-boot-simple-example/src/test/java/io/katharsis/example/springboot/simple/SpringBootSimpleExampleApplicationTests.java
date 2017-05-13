@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.OK;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,8 @@ import io.katharsis.queryspec.QuerySpec;
 import io.katharsis.repository.ResourceRepositoryV2;
 import io.katharsis.resource.list.ResourceList;
 
+import javax.security.auth.message.config.AuthConfigFactory;
+
 /**
  * Shows two kinds of test cases: RestAssured and KatharsisClient.
  */
@@ -34,6 +37,10 @@ public class SpringBootSimpleExampleApplicationTests extends BaseTest {
 
 	@Before
 	public void setup() {
+		// NPE fix
+		if (AuthConfigFactory.getFactory() == null) {
+			AuthConfigFactory.setFactory(new AuthConfigFactoryImpl());
+		}
 	}
 
 	@Test
