@@ -31,7 +31,7 @@ import io.katharsis.jpa.query.AbstractJpaTest;
 import io.katharsis.jpa.query.querydsl.QuerydslQueryFactory;
 import io.katharsis.jpa.util.EntityManagerProducer;
 import io.katharsis.jpa.util.SpringTransactionRunner;
-import io.katharsis.jpa.util.TestConfig;
+import io.katharsis.jpa.util.JpaTestConfig;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
 import io.katharsis.legacy.queryParams.DefaultQueryParamsParser;
 import io.katharsis.legacy.queryParams.QueryParamsBuilder;
@@ -116,11 +116,11 @@ public abstract class AbstractJpaJerseyTest extends JerseyTest {
 	private class TestApplication extends ResourceConfig {
 
 		public TestApplication() {
-			property(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, "io.katharsis.client.mock");
+			property(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, "io.katharsis.test.mock");
 
 			Assert.assertNull(context);
 
-			context = new AnnotationConfigApplicationContext(TestConfig.class);
+			context = new AnnotationConfigApplicationContext(JpaTestConfig.class);
 			context.start();
 			EntityManagerFactory emFactory = context.getBean(EntityManagerFactory.class);
 			EntityManager em = context.getBean(EntityManagerProducer.class).getEntityManager();
@@ -140,7 +140,6 @@ public abstract class AbstractJpaJerseyTest extends JerseyTest {
 			Set<ManagedType<?>> managedTypes = emFactory.getMetamodel().getManagedTypes();
 			for (ManagedType<?> managedType : managedTypes) {
 				Class<?> managedJavaType = managedType.getJavaType();
-				System.out.println(managedJavaType);
 				if (managedJavaType.getAnnotation(Entity.class) != null && managedJavaType != CountryTranslationEntity.class) {
 					if(!module.hasRepository(managedJavaType)){
 						module.addRepository(JpaRepositoryConfig.builder(managedJavaType).build());

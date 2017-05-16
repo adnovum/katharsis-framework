@@ -3,7 +3,7 @@ package io.katharsis.spring.boot;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("katharsis")
-public class KatharsisSpringBootProperties {
+public class KatharsisSpringBootProperties  {
     private String resourcePackage;
 
     /**

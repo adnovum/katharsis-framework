@@ -29,12 +29,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
+import io.katharsis.core.internal.dispatcher.http.JsonApiRequestProcessor;
+import io.katharsis.core.internal.utils.StringUtils;
+import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.servlet.resource.model.Locale;
+import io.katharsis.servlet.resource.model.Node;
+import io.katharsis.servlet.resource.model.NodeComment;
+import io.katharsis.servlet.resource.repository.NodeRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,18 +51,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 
-import io.katharsis.core.internal.utils.StringUtils;
-import io.katharsis.core.properties.KatharsisProperties;
-import io.katharsis.invoker.internal.JsonApiMediaType;
-import io.katharsis.servlet.legacy.AbstractKatharsisServlet;
-import io.katharsis.servlet.resource.model.Locale;
-import io.katharsis.servlet.resource.model.Node;
-import io.katharsis.servlet.resource.model.NodeComment;
-import io.katharsis.servlet.resource.repository.NodeRepository;
-
-/**
- * Test for {@link AbstractKatharsisServlet}.
- */
 public class KatharsisServletTest {
 
 	private static final String FIRST_TASK_ATTRIBUTES = "{\"name\":\"First task\"}";
@@ -65,7 +59,9 @@ public class KatharsisServletTest {
 
 	private static final String FIRST_TASK_LINKS = "{\"self\":\"http://localhost:8080/api/tasks/1\"}";
 
-	private static final String PROJECT1_RELATIONSHIP_LINKS = "{\"self\":\"http://localhost:8080/api/tasks/1/relationships/project\",\"related\":\"http://localhost:8080/api/tasks/1/project\"}";
+	private static final String PROJECT1_RELATIONSHIP_LINKS =
+			"{\"self\":\"http://localhost:8080/api/tasks/1/relationships/project\","
+					+ "\"related\":\"http://localhost:8080/api/tasks/1/project\"}";
 
 	private static Logger log = LoggerFactory.getLogger(KatharsisServletTest.class);
 
@@ -88,8 +84,10 @@ public class KatharsisServletTest {
 		servletContext = new MockServletContext();
 		((MockServletContext) servletContext).setContextPath("");
 		servletConfig = new MockServletConfig(servletContext);
-		((MockServletConfig) servletConfig).addInitParameter(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, RESOURCE_SEARCH_PACKAGE);
-		((MockServletConfig) servletConfig).addInitParameter(KatharsisProperties.RESOURCE_DEFAULT_DOMAIN, RESOURCE_DEFAULT_DOMAIN);
+		((MockServletConfig) servletConfig)
+				.addInitParameter(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, RESOURCE_SEARCH_PACKAGE);
+		((MockServletConfig) servletConfig)
+				.addInitParameter(KatharsisProperties.RESOURCE_DEFAULT_DOMAIN, RESOURCE_DEFAULT_DOMAIN);
 
 		katharsisServlet.init(servletConfig);
 		nodeRepository = new NodeRepository();
@@ -109,7 +107,7 @@ public class KatharsisServletTest {
 		request.setServletPath("/api");
 		request.setPathInfo("/tasks/");
 		request.setRequestURI("/api/tasks/");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		request.addHeader("Accept", "*/*");
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -136,7 +134,7 @@ public class KatharsisServletTest {
 		request.setServletPath("/api");
 		request.setPathInfo("/tasks/1");
 		request.setRequestURI("/api/tasks/1");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		request.addHeader("Accept", "*/*");
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -163,7 +161,7 @@ public class KatharsisServletTest {
 		request.setServletPath("/api");
 		request.setPathInfo("/tasks");
 		request.setRequestURI("/api/tasks");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		request.addHeader("Accept", "*/*");
 		request.addParameter("filter[name]", "John");
 		request.setQueryString(URLEncoder.encode("filter[name]", StandardCharsets.UTF_8.name()) + "=John");
@@ -192,7 +190,7 @@ public class KatharsisServletTest {
 		request.setServletPath("/api");
 		request.setPathInfo("/tasks");
 		request.setRequestURI("/api/tasks");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		request.addHeader("Accept", "application/xml");
 		request.addParameter("filter[Task][name]", "John");
 		request.setQueryString(URLEncoder.encode("filter[Task][name]", StandardCharsets.UTF_8.name()) + "=John");
@@ -214,7 +212,7 @@ public class KatharsisServletTest {
 		request.setServletPath("/api");
 		request.setPathInfo("/tasks-matching-exception");
 		request.setRequestURI("/api/matching-exception");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		request.addHeader("Accept", "*/*");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		katharsisServlet.service(request, response);
@@ -241,7 +239,7 @@ public class KatharsisServletTest {
 		request.setPathInfo("/nodes/1");
 		request.setRequestURI("/api/nodes/1");
 		request.setQueryString("include[nodes]=parent");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		Map<String, String> params = new HashMap<>();
 		params.put("include[nodes]", "children");
 		request.setParameters(params);
@@ -271,7 +269,7 @@ public class KatharsisServletTest {
 		request.setPathInfo("/nodes/1");
 		request.setRequestURI("/api/nodes/1");
 		request.setQueryString("include[nodes]=children.nodeComments");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		Map<String, String> params = new HashMap<>();
 		params.put("include[nodes]", "children.nodeComments.langLocale");
 		request.setParameters(params);
@@ -299,7 +297,7 @@ public class KatharsisServletTest {
 		request.setPathInfo("/nodes");
 		request.setRequestURI("/api/nodes");
 		request.setQueryString("include[nodes]=children");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		Map<String, String> params = new HashMap<>();
 		params.put("include[nodes]", "children");
 		request.setParameters(params);
@@ -310,7 +308,6 @@ public class KatharsisServletTest {
 	}
 
 	private void assertTopLevelNodesCorrectWithChildren(String responseContent) {
-		System.out.println(responseContent);
 		assertJsonNodePresent(responseContent, "data.relationships.children.data");
 		assertJsonPartEquals("nodes", responseContent, "data.type");
 		assertJsonPartEquals("\"1\"", responseContent, "data.id");

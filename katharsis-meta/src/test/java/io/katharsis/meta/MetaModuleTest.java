@@ -118,7 +118,6 @@ public class MetaModuleTest extends AbstractMetaJerseyTest {
 		if (checked.contains(elem.getId()))
 			return;
 		checked.add(elem.getId());
-		System.out.println(elem.getId());
 
 		List<? extends MetaAttribute> attributes = elem.getAttributes();
 		Assert.assertTrue(isLoaded(attributes));

@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 
 import io.katharsis.client.http.apache.HttpClientAdapter;
 import io.katharsis.client.http.apache.HttpClientAdapterListener;
-import io.katharsis.client.mock.models.Task;
+import io.katharsis.test.mock.models.Task;
 import io.katharsis.queryspec.QuerySpec;
 
 public class ApacheHttpClientTest extends QuerySpecClientTest {

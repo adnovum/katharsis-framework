@@ -1,21 +1,20 @@
 package io.katharsis.servlet.internal;
 
-import javax.servlet.http.HttpServletRequest;
-
+import io.katharsis.module.http.HttpRequestContextProvider;
 import io.katharsis.security.SecurityProvider;
 
 public class ServletSecurityProvider implements SecurityProvider {
 
-	private ThreadLocal<HttpServletRequest> requestThreadLocal;
+	private HttpRequestContextProvider contextProvider;
 
-	public ServletSecurityProvider(ThreadLocal<HttpServletRequest> requestThreadLocal) {
-		this.requestThreadLocal = requestThreadLocal;
+	public ServletSecurityProvider(HttpRequestContextProvider contextProvider) {
+		this.contextProvider = contextProvider;
 	}
 
 	@Override
 	public boolean isUserInRole(String role) {
-		HttpServletRequest request = requestThreadLocal.get();
-		return request.isUserInRole(role);
+		ServletRequestContext request = (ServletRequestContext) contextProvider.getRequestContext();
+		return request.getRequest().isUserInRole(role);
 	}
 
 }

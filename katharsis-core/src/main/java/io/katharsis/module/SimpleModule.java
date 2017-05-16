@@ -9,6 +9,7 @@ import java.util.Set;
 
 import io.katharsis.core.internal.exception.ExceptionMapperLookup;
 import io.katharsis.errorhandling.mapper.JsonApiExceptionMapper;
+import io.katharsis.module.http.HttpRequestProcessor;
 import io.katharsis.repository.decorate.RepositoryDecoratorFactory;
 import io.katharsis.repository.filter.DocumentFilter;
 import io.katharsis.repository.filter.RepositoryFilter;
@@ -23,6 +24,8 @@ import io.katharsis.security.SecurityProvider;
 public class SimpleModule implements Module {
 
 	private List<ResourceInformationBuilder> resourceInformationBuilders = new ArrayList<>();
+
+	private List<HttpRequestProcessor> httpRequestProcessors = new ArrayList<>();
 
 	private List<RepositoryInformationBuilder> repositoryInformationBuilders = new ArrayList<>();
 
@@ -85,6 +88,9 @@ public class SimpleModule implements Module {
 		for (ExceptionMapperLookup exceptionMapperLookup : exceptionMapperLookups) {
 			context.addExceptionMapperLookup(exceptionMapperLookup);
 		}
+		for (HttpRequestProcessor httpRequestProcessor : httpRequestProcessors) {
+			context.addHttpRequestProcessor(httpRequestProcessor);
+		}
 	}
 
 	private void checkInitialized() {
@@ -95,7 +101,7 @@ public class SimpleModule implements Module {
 
 	/**
 	 * Registers a new {@link ResourceInformationBuilder} with this module.
-	 * 
+	 *
 	 * @param resourceInformationBuilder resource information builder
 	 */
 	public void addResourceInformationBuilder(ResourceInformationBuilder resourceInformationBuilder) {
@@ -105,7 +111,7 @@ public class SimpleModule implements Module {
 
 	/**
 	 * Registers a new {@link RepositoryInformationBuilder} with this module.
-	 * 
+	 *
 	 * @param repositoryInformationBuilder repository information builder
 	 */
 	public void addRepositoryInformationBuilder(RepositoryInformationBuilder repositoryInformationBuilder) {
@@ -181,7 +187,7 @@ public class SimpleModule implements Module {
 
 	/**
 	 * Registers a new {@link ResourceLookup} with this module.
-	 * 
+	 *
 	 * @param resourceLookup resource lookup
 	 */
 	public void addResourceLookup(ResourceLookup resourceLookup) {
@@ -242,4 +248,11 @@ public class SimpleModule implements Module {
 		return Collections.unmodifiableList(securityProviders);
 	}
 
+	public void addHttpRequestProcessor(HttpRequestProcessor httpRequestProcessor) {
+		httpRequestProcessors.add(httpRequestProcessor);
+	}
+
+	public List<HttpRequestProcessor> getHttpRequestProcessors() {
+		return Collections.unmodifiableList(httpRequestProcessors);
+	}
 }

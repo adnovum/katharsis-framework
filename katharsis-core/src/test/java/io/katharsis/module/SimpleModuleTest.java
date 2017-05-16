@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.katharsis.module.http.HttpRequestDispatcher;
+import io.katharsis.module.http.HttpRequestProcessor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -265,6 +268,16 @@ public class SimpleModuleTest {
 		}
 
 		@Override
+		public void addHttpRequestProcessor(HttpRequestProcessor processor) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public ObjectMapper getObjectMapper() {
+			return null;
+		}
+
+		@Override
 		public ServiceDiscovery getServiceDiscovery() {
 			throw new UnsupportedOperationException();
 		}
@@ -301,11 +314,16 @@ public class SimpleModuleTest {
 
 		@Override
 		public ResourceInformationBuilder getResourceInformationBuilder() {
-			return null;
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
 		public ExceptionMapperRegistry getExceptionMapperRegistry() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public HttpRequestDispatcher getRequestDispatcher() {
 			throw new UnsupportedOperationException();
 		}
 	}

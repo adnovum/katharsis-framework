@@ -2,26 +2,26 @@ package io.katharsis.jpa.internal.query.backend.querydsl;
 
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Map;
 import javax.persistence.TupleElement;
 
-import com.querydsl.core.types.Expression;
-
 import io.katharsis.jpa.query.criteria.JpaCriteriaTuple;
-import io.katharsis.jpa.query.querydsl.QuerydslTuple;
 
-public class ObjectArrayTupleImpl implements QuerydslTuple, JpaCriteriaTuple {
+public class ObjectArrayTupleImpl implements JpaCriteriaTuple {
 
 	private Object[] data;
 
 	private int numEntriesToIgnore;
 
-	public ObjectArrayTupleImpl(Object entity) {
+	private Map<String, Integer> selectionBindings;
+
+	public ObjectArrayTupleImpl(Object entity, Map<String, Integer> selectionBindings) {
+		this.selectionBindings = selectionBindings;
 		if (entity instanceof Object[]) {
 			data = (Object[]) entity;
 		}
 		else {
-			data = new Object[] { entity };
+			data = new Object[] {entity};
 		}
 	}
 
@@ -31,12 +31,6 @@ public class ObjectArrayTupleImpl implements QuerydslTuple, JpaCriteriaTuple {
 		return (T) data[index + numEntriesToIgnore];
 	}
 
-	@Override
-	public <T> T get(Expression<T> expr) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public int size() {
 		return data.length - numEntriesToIgnore;
 	}
@@ -53,7 +47,8 @@ public class ObjectArrayTupleImpl implements QuerydslTuple, JpaCriteriaTuple {
 
 	@Override
 	public <T> T get(String name, Class<T> clazz) {
-		throw new UnsupportedOperationException();
+		int index = selectionBindings.get(name);
+		return get(index, clazz);
 	}
 
 	@Override

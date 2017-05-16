@@ -1,8 +1,11 @@
 package io.katharsis.module;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.katharsis.module.http.HttpRequestDispatcher;
 import io.katharsis.core.internal.exception.ExceptionMapperLookup;
 import io.katharsis.core.internal.exception.ExceptionMapperRegistry;
 import io.katharsis.errorhandling.mapper.ExceptionMapper;
+import io.katharsis.module.http.HttpRequestProcessor;
 import io.katharsis.repository.decorate.RepositoryDecoratorFactory;
 import io.katharsis.repository.filter.DocumentFilter;
 import io.katharsis.repository.filter.RepositoryFilter;
@@ -30,8 +33,7 @@ public interface Module {
 	 * Called when the module is registered with Katharsis. Allows the module to
 	 * register functionality it provides.
 	 *
-	 * @param context
-	 *            context
+	 * @param context context
 	 */
 	void setupModule(ModuleContext context);
 
@@ -41,40 +43,40 @@ public interface Module {
 	 */
 	interface ModuleContext {
 
+		void addHttpRequestProcessor(HttpRequestProcessor processor);
+
+		ObjectMapper getObjectMapper();
+
 		/**
 		 * @return ServiceDiscovery
 		 */
-		public ServiceDiscovery getServiceDiscovery();
+		ServiceDiscovery getServiceDiscovery();
 
 		/**
 		 * Register the given {@link ResourceInformationBuilder} in Katharsis.
 		 *
-		 * @param resourceInformationBuilder
-		 *            resource information builder
+		 * @param resourceInformationBuilder resource information builder
 		 */
 		void addResourceInformationBuilder(ResourceInformationBuilder resourceInformationBuilder);
 
 		/**
 		 * Register the given {@link RepositoryInformationBuilder} in Katharsis.
 		 *
-		 * @param resourceInformationBuilder
-		 *            repository information builder
+		 * @param resourceInformationBuilder repository information builder
 		 */
 		void addRepositoryInformationBuilder(RepositoryInformationBuilder repositoryInformationBuilder);
 
 		/**
 		 * Register the given {@link ResourceLookup} in Katharsis.
 		 *
-		 * @param resourceLookup
-		 *            resource lookup
+		 * @param resourceLookup resource lookup
 		 */
 		void addResourceLookup(ResourceLookup resourceLookup);
 
 		/**
 		 * Registers an additional module for Jackson.
 		 *
-		 * @param module
-		 *            module
+		 * @param module module
 		 */
 		void addJacksonModule(com.fasterxml.jackson.databind.Module module);
 
@@ -86,10 +88,8 @@ public interface Module {
 		/**
 		 * Adds the given repository for the given type.
 		 *
-		 * @param resourceClass
-		 *            resource class
-		 * @param repository
-		 *            repository
+		 * @param resourceClass resource class
+		 * @param repository repository
 		 * @deprecated
 		 */
 		void addRepository(Class<?> resourceClass, Object repository);
@@ -97,12 +97,9 @@ public interface Module {
 		/**
 		 * Adds the given repository for the given source and target type.
 		 *
-		 * @param sourceResourceClass
-		 *            source resource class
-		 * @param targetResourceClass
-		 *            target resource class
-		 * @param repository
-		 *            repository
+		 * @param sourceResourceClass source resource class
+		 * @param targetResourceClass target resource class
+		 * @param repository repository
 		 * @deprecated
 		 */
 		void addRepository(Class<?> sourceResourceClass, Class<?> targetResourceClass, Object repository);
@@ -110,40 +107,35 @@ public interface Module {
 		/**
 		 * Adds a new exception mapper lookup.
 		 *
-		 * @param exceptionMapperLookup
-		 *            exception mapper lookup
+		 * @param exceptionMapperLookup exception mapper lookup
 		 */
 		void addExceptionMapperLookup(ExceptionMapperLookup exceptionMapperLookup);
 
 		/**
 		 * Adds a new exception mapper lookup.
 		 *
-		 * @param exceptionMapper
-		 *            exception mapper
+		 * @param exceptionMapper exception mapper
 		 */
 		void addExceptionMapper(ExceptionMapper<?> exceptionMapper);
 
 		/**
 		 * Adds a filter to intercept requests.
 		 *
-		 * @param filter
-		 *            filter
+		 * @param filter filter
 		 */
 		void addFilter(DocumentFilter filter);
 
 		/**
 		 * Adds a repository filter to intercept repository calls.
 		 *
-		 * @param RepositoryFilter
-		 *            filter
+		 * @param RepositoryFilter filter
 		 */
 		void addRepositoryFilter(RepositoryFilter filter);
 
 		/**
 		 * Adds a repository decorator to intercept repository calls.
 		 *
-		 * @param RepositoryDecoratorFactory
-		 *            decorator
+		 * @param RepositoryDecoratorFactory decorator
 		 */
 		void addRepositoryDecoratorFactory(RepositoryDecoratorFactory decorator);
 
@@ -158,9 +150,8 @@ public interface Module {
 
 		/**
 		 * Adds a securityProvider.
-		 * 
-		 * @param securityProvider
-		 *            Ask remo
+		 *
+		 * @param securityProvider Ask remo
 		 */
 		void addSecurityProvider(SecurityProvider securityProvider);
 
@@ -176,13 +167,15 @@ public interface Module {
 		public boolean isServer();
 
 		public TypeParser getTypeParser();
-		
+
 		/**
 		 * @return combined resource information build registered by all modules
 		 */
 		public ResourceInformationBuilder getResourceInformationBuilder();
 
 		public ExceptionMapperRegistry getExceptionMapperRegistry();
+
+		HttpRequestDispatcher getRequestDispatcher();
 
 	}
 }

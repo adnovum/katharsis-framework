@@ -131,9 +131,7 @@ public class ValidationTest extends AbstractValidationTest {
 
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
-		System.out.println(validator.validate(project));
-		
-		
+
 		try {
 			projectRepo.create(project);
 			Assert.fail();

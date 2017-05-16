@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.client.mock.models.Task;
+import io.katharsis.test.mock.models.Task;
 import io.katharsis.legacy.queryParams.QueryParams;
 
 public class HeadersTest extends AbstractClientTest {

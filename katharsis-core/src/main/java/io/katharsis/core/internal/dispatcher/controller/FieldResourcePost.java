@@ -43,6 +43,9 @@ public class FieldResourcePost extends ResourceUpsert {
 
     @Override
     public boolean isAcceptable(JsonPath jsonPath, String requestType) {
+        if(jsonPath == null){
+            throw new IllegalArgumentException();
+        }
         return !jsonPath.isCollection()
             && FieldPath.class.equals(jsonPath.getClass())
             && HttpMethod.POST.name()

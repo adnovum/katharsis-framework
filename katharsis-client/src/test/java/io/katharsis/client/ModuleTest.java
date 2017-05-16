@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import io.katharsis.client.http.HttpAdapter;
 import io.katharsis.client.http.okhttp.OkHttpAdapter;
 import io.katharsis.client.http.okhttp.OkHttpAdapterListener;
-import io.katharsis.client.mock.models.Task;
+import io.katharsis.test.mock.models.Task;
 import io.katharsis.client.module.HttpAdapterAware;
 import io.katharsis.module.Module;
 import io.katharsis.module.Module.ModuleContext;

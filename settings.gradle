@@ -1,17 +1,18 @@
 include ':katharsis-core'
 include ':katharsis-test'
 include ':katharsis-rs'
-
-include ':katharsis-servlet'
-include ':katharsis-cdi'
-include ':katharsis-spring'
-
 include ':katharsis-client'
 include ':katharsis-meta'
 include ':katharsis-jpa'
 include ':katharsis-validation'
+
+include ':katharsis-servlet'
+include ':katharsis-cdi'
+include ':katharsis-spring'
 include ':katharsis-brave'
 include ':katharsis-security'
+
+include ':katharsis-operations'
 
 include ':katharsis-examples:dropwizard-mongo-example'
 include ':katharsis-examples:jersey-example'
@@ -27,11 +28,15 @@ gradle.beforeProject { Project project ->
     project.with {
         buildscript {
             repositories {
-                jcenter()
+                maven(){
+                    url 'http://adnexus.adnovum.ch:8081/nexus/content/groups/adnovumpublic'
+                }
             }
         }
         repositories {
-            mavenCentral()
+            maven(){
+                url 'http://adnexus.adnovum.ch:8081/nexus/content/groups/adnovumpublic'
+            }
         }
         version = BUILD_VERSION
         group = GROUP_ID

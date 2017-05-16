@@ -4,14 +4,11 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import net.jodah.typetools.TypeResolver;
-
 import io.katharsis.core.internal.dispatcher.ControllerRegistry;
 import io.katharsis.core.internal.dispatcher.ControllerRegistryBuilder;
-import io.katharsis.core.internal.dispatcher.RequestDispatcher;
-import io.katharsis.core.internal.exception.ExceptionMapperLookup;
+import io.katharsis.core.internal.dispatcher.RequestDispatcherImpl;
+import io.katharsis.core.internal.dispatcher.http.JsonApiRequestProcessor;
 import io.katharsis.core.internal.exception.ExceptionMapperRegistry;
-import io.katharsis.core.internal.exception.ExceptionMapperRegistryBuilder;
 import io.katharsis.core.internal.jackson.JsonApiModuleBuilder;
 import io.katharsis.core.internal.query.QueryAdapterBuilder;
 import io.katharsis.core.internal.query.QuerySpecAdapterBuilder;
@@ -37,6 +34,7 @@ import io.katharsis.module.ModuleRegistry;
 import io.katharsis.module.ServiceDiscovery;
 import io.katharsis.module.ServiceDiscoveryFactory;
 import io.katharsis.module.SimpleModule;
+import io.katharsis.module.http.HttpRequestContextProvider;
 import io.katharsis.queryspec.DefaultQuerySpecDeserializer;
 import io.katharsis.queryspec.QuerySpecDeserializer;
 import io.katharsis.repository.RelationshipRepositoryV2;
@@ -47,6 +45,7 @@ import io.katharsis.resource.information.ResourceFieldNameTransformer;
 import io.katharsis.resource.registry.ConstantServiceUrlProvider;
 import io.katharsis.resource.registry.ResourceRegistry;
 import io.katharsis.resource.registry.ServiceUrlProvider;
+import net.jodah.typetools.TypeResolver;
 
 /**
  * Facilitates the startup of Katharsis in various environments (Spring, CDI,
@@ -71,13 +70,13 @@ public class KatharsisBoot {
 
 	private ResourceRegistry resourceRegistry;
 
-	private RequestDispatcher requestDispatcher;
+	private RequestDispatcherImpl requestDispatcher;
 
 	private PropertiesProvider propertiesProvider;
 
 	private ResourceFieldNameTransformer resourceFieldNameTransformer;
 
-	private ServiceUrlProvider defaultServiceUrlProvider;
+	private ServiceUrlProvider defaultServiceUrlProvider = new HttpRequestContextProvider();
 
 	private ServiceDiscoveryFactory serviceDiscoveryFactory = new DefaultServiceDiscoveryFactory();
 
@@ -102,8 +101,6 @@ public class KatharsisBoot {
 	/**
 	 * Set the {@link QueryParamsBuilder} to use to parse and handle query parameters.
 	 * When invoked, overwrites previous QueryParamsBuilders and {@link QuerySpecDeserializer}s.
-	 *
-	 * @param queryParamsBuilder
 	 */
 	public void setQueryParamsBuilds(QueryParamsBuilder queryParamsBuilder) {
 		PreconditionUtil.assertNotNull("A query params builder must be provided, but is null", queryParamsBuilder);
@@ -114,8 +111,6 @@ public class KatharsisBoot {
 	/**
 	 * Set the {@link QuerySpecDeserializer} to use to parse and handle query parameters.
 	 * When invoked, overwrites previous {@link QueryParamsBuilder}s and QuerySpecDeserializers.
-	 *
-	 * @param querySpecDeserializer
 	 */
 	public void setQuerySpecDeserializer(QuerySpecDeserializer querySpecDeserializer) {
 		PreconditionUtil.assertNotNull("A query spec deserializer must be provided, but is null", querySpecDeserializer);
@@ -127,8 +122,7 @@ public class KatharsisBoot {
 	 * Sets a JsonServiceLocator. No longer necessary if a ServiceDiscovery
 	 * implementation is in place.
 	 *
-	 * @param serviceLocator
-	 *            Ask Remmo
+	 * @param serviceLocator Ask Remmo
 	 */
 	public void setServiceLocator(JsonServiceLocator serviceLocator) {
 		this.serviceLocator = serviceLocator;
@@ -138,8 +132,7 @@ public class KatharsisBoot {
 	 * Adds a module. No longer necessary if a ServiceDiscovery implementation
 	 * is in place.
 	 *
-	 * @param module
-	 *            Ask Remmo
+	 * @param module Ask Remmo
 	 */
 	public void addModule(Module module) {
 		moduleRegistry.addModule(module);
@@ -149,8 +142,7 @@ public class KatharsisBoot {
 	 * Sets a ServiceUrlProvider. No longer necessary if a ServiceDiscovery
 	 * implementation is in place.
 	 *
-	 * @param serviceUrlProvider
-	 *            Ask Remmo
+	 * @param serviceUrlProvider Ask Remmo
 	 */
 	public void setServiceUrlProvider(ServiceUrlProvider serviceUrlProvider) {
 		checkNotConfiguredYet();
@@ -178,7 +170,8 @@ public class KatharsisBoot {
 		if (serviceDiscovery == null) {
 			// revert to reflection-based approach if no ServiceDiscovery is
 			// found
-			FallbackServiceDiscoveryFactory fallback = new FallbackServiceDiscoveryFactory(serviceDiscoveryFactory, serviceLocator, propertiesProvider);
+			FallbackServiceDiscoveryFactory fallback =
+					new FallbackServiceDiscoveryFactory(serviceDiscoveryFactory, serviceLocator, propertiesProvider);
 			setServiceDiscovery(fallback.getInstance());
 		}
 	}
@@ -210,22 +203,25 @@ public class KatharsisBoot {
 		return moduleRegistry.getExceptionMapperRegistry();
 	}
 
-	private RequestDispatcher createRequestDispatcher(ExceptionMapperRegistry exceptionMapperRegistry) {
-		ControllerRegistryBuilder controllerRegistryBuilder = new ControllerRegistryBuilder(resourceRegistry, moduleRegistry.getTypeParser(), objectMapper, propertiesProvider);
+	private RequestDispatcherImpl createRequestDispatcher(ExceptionMapperRegistry exceptionMapperRegistry) {
+		ControllerRegistryBuilder controllerRegistryBuilder =
+				new ControllerRegistryBuilder(resourceRegistry, moduleRegistry.getTypeParser(), objectMapper,
+						propertiesProvider);
 		ControllerRegistry controllerRegistry = controllerRegistryBuilder.build();
 		this.documentMapper = controllerRegistryBuilder.getDocumentMapper();
 
 		QueryAdapterBuilder queryAdapterBuilder;
 		if (queryParamsBuilder != null) {
 			queryAdapterBuilder = new QueryParamsAdapterBuilder(queryParamsBuilder, resourceRegistry);
-		} else {
+		}
+		else {
 			queryAdapterBuilder = new QuerySpecAdapterBuilder(querySpecDeserializer, moduleRegistry);
 		}
 
-		return new RequestDispatcher(moduleRegistry, controllerRegistry, exceptionMapperRegistry, queryAdapterBuilder);
+		return new RequestDispatcherImpl(moduleRegistry, controllerRegistry, exceptionMapperRegistry, queryAdapterBuilder);
 	}
-	
-	public DocumentMapper getDocumentMapper(){
+
+	public DocumentMapper getDocumentMapper() {
 		return documentMapper;
 	}
 
@@ -238,7 +234,14 @@ public class KatharsisBoot {
 		// as a consequence,
 		// can be overriden by other modules, like the
 		// JaxrsResourceRepositoryInformationBuilder.
-		SimpleModule module = new SimpleModule("discovery");
+		SimpleModule module = new SimpleModule("discovery"){
+
+			@Override
+			public void setupModule(ModuleContext context) {
+				this.addHttpRequestProcessor(new JsonApiRequestProcessor(context));
+				super.setupModule(context);
+			}
+		};
 		module.addRepositoryInformationBuilder(new DefaultResourceRepositoryInformationBuilder());
 		module.addRepositoryInformationBuilder(new DefaultRelationshipRepositoryInformationBuilder());
 		module.addResourceInformationBuilder(new AnnotationResourceInformationBuilder(resourceFieldNameTransformer));
@@ -254,12 +257,14 @@ public class KatharsisBoot {
 			setupRepository(module, repository);
 		}
 		for (Object repository : serviceDiscovery.getInstancesByAnnotation(JsonApiResourceRepository.class)) {
-			JsonApiResourceRepository annotation = ClassUtils.getAnnotation(repository.getClass(), JsonApiResourceRepository.class).get();
+			JsonApiResourceRepository annotation =
+					ClassUtils.getAnnotation(repository.getClass(), JsonApiResourceRepository.class).get();
 			Class<?> resourceClass = annotation.value();
 			module.addRepository(resourceClass, repository);
 		}
 		for (Object repository : serviceDiscovery.getInstancesByAnnotation(JsonApiRelationshipRepository.class)) {
-			JsonApiRelationshipRepository annotation = ClassUtils.getAnnotation(repository.getClass(), JsonApiRelationshipRepository.class).get();
+			JsonApiRelationshipRepository annotation =
+					ClassUtils.getAnnotation(repository.getClass(), JsonApiRelationshipRepository.class).get();
 			module.addRepository(annotation.source(), annotation.target(), repository);
 		}
 		moduleRegistry.addModule(module);
@@ -271,19 +276,23 @@ public class KatharsisBoot {
 			Class<?>[] typeArgs = TypeResolver.resolveRawArguments(ResourceRepository.class, resRepository.getClass());
 			Class resourceClass = typeArgs[0];
 			module.addRepository(resourceClass, resRepository);
-		} else if (repository instanceof RelationshipRepository) {
+		}
+		else if (repository instanceof RelationshipRepository) {
 			RelationshipRepository relRepository = (RelationshipRepository) repository;
 			Class<?>[] typeArgs = TypeResolver.resolveRawArguments(RelationshipRepository.class, relRepository.getClass());
 			Class sourceResourceClass = typeArgs[0];
 			Class targetResourceClass = typeArgs[2];
 			module.addRepository(sourceResourceClass, targetResourceClass, relRepository);
-		} else if (repository instanceof ResourceRepositoryV2) {
+		}
+		else if (repository instanceof ResourceRepositoryV2) {
 			ResourceRepositoryV2<?, ?> resRepository = (ResourceRepositoryV2<?, ?>) repository;
 			module.addRepository(resRepository.getResourceClass(), resRepository);
-		} else if (repository instanceof RelationshipRepositoryV2) {
+		}
+		else if (repository instanceof RelationshipRepositoryV2) {
 			RelationshipRepositoryV2<?, ?, ?, ?> relRepository = (RelationshipRepositoryV2<?, ?, ?, ?>) repository;
 			module.addRepository(relRepository.getSourceResourceClass(), relRepository.getTargetResourceClass(), relRepository);
-		} else {
+		}
+		else {
 			throw new IllegalStateException(repository.toString());
 		}
 	}
@@ -303,7 +312,8 @@ public class KatharsisBoot {
 			if (resourceDefaultDomain != null) {
 				String serviceUrl = buildServiceUrl(resourceDefaultDomain, webPathPrefix);
 				serviceUrlProvider = new ConstantServiceUrlProvider(serviceUrl);
-			} else {
+			}
+			else {
 				// serviceUrl is obtained from incoming request context
 				serviceUrlProvider = defaultServiceUrlProvider;
 			}
@@ -312,8 +322,9 @@ public class KatharsisBoot {
 	}
 
 	private String getProperty(String key) {
-		if (propertiesProvider != null)
+		if (propertiesProvider != null) {
 			return propertiesProvider.getProperty(key);
+		}
 		return null;
 	}
 
@@ -321,7 +332,7 @@ public class KatharsisBoot {
 		return resourceDefaultDomain + (webPathPrefix != null ? webPathPrefix : "");
 	}
 
-	public RequestDispatcher getRequestDispatcher() {
+	public RequestDispatcherImpl getRequestDispatcher() {
 		PreconditionUtil.assertNotNull("expected requestDispatcher", requestDispatcher);
 		return requestDispatcher;
 	}
@@ -349,6 +360,10 @@ public class KatharsisBoot {
 		this.defaultServiceUrlProvider = defaultServiceUrlProvider;
 	}
 
+	public ServiceUrlProvider getDefaultServiceUrlProvider(){
+		return defaultServiceUrlProvider;
+	}
+
 	public String getWebPathPrefix() {
 		return getProperty(KatharsisProperties.WEB_PATH_PREFIX);
 	}
@@ -365,8 +380,6 @@ public class KatharsisBoot {
 	 * <p>
 	 * NOTE: This using this feature requires a {@link QuerySpecDeserializer} and it does not work with the
 	 * deprecated {@link QueryParamsBuilder}.
-	 *
-	 * @param defaultPageLimit
 	 */
 	public void setDefaultPageLimit(Long defaultPageLimit) {
 		PreconditionUtil.assertNotNull("Setting the default page limit requires using the QuerySpecDeserializer, but " +
@@ -381,8 +394,6 @@ public class KatharsisBoot {
 	 * <p>
 	 * NOTE: This using this feature requires a {@link QuerySpecDeserializer} and it does not work with the
 	 * deprecated {@link QueryParamsBuilder}.
-	 *
-	 * @param maxPageLimit
 	 */
 	public void setMaxPageLimit(Long maxPageLimit) {
 		PreconditionUtil.assertNotNull("Setting the max page limit requires using the QuerySpecDeserializer, but " +
@@ -396,5 +407,9 @@ public class KatharsisBoot {
 
 	public QuerySpecDeserializer getQuerySpecDeserializer() {
 		return querySpecDeserializer;
+	}
+
+	public boolean isNullDataResponseEnabled() {
+		return Boolean.parseBoolean(getProperty(KatharsisProperties.NULL_DATA_RESPONSE_ENABLED));
 	}
 }

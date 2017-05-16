@@ -27,7 +27,10 @@ public class FallbackServiceDiscoveryFactory implements ServiceDiscoveryFactory 
 			return instance;
 		}
 		String resourceSearchPackage = propertiesProvider.getProperty(KatharsisProperties.RESOURCE_SEARCH_PACKAGE);
-		return new ReflectionsServiceDiscovery(resourceSearchPackage, serviceLocator);
+		if (resourceSearchPackage != null) {
+			return new ReflectionsServiceDiscovery(resourceSearchPackage, serviceLocator);
+		}
+		return new EmptyServiceDiscovery();
 	}
 
 }

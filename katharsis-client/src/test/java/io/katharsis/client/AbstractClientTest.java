@@ -15,11 +15,11 @@ import org.junit.Before;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.katharsis.client.action.JerseyActionStubFactory;
-import io.katharsis.client.mock.repository.ProjectRepository;
-import io.katharsis.client.mock.repository.ProjectToTaskRepository;
-import io.katharsis.client.mock.repository.ScheduleRepositoryImpl;
-import io.katharsis.client.mock.repository.TaskRepository;
-import io.katharsis.client.mock.repository.TaskToProjectRepository;
+import io.katharsis.test.mock.repository.ProjectRepository;
+import io.katharsis.test.mock.repository.ProjectToTaskRepository;
+import io.katharsis.test.mock.repository.ScheduleRepositoryImpl;
+import io.katharsis.test.mock.repository.TaskRepository;
+import io.katharsis.test.mock.repository.TaskToProjectRepository;
 import io.katharsis.core.properties.KatharsisProperties;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
 import io.katharsis.legacy.queryParams.DefaultQueryParamsParser;
@@ -82,7 +82,7 @@ public abstract class AbstractClientTest extends JerseyTest {
 		}
 
 		public TestApplication(boolean querySpec, boolean jsonApiFilter) {
-			property(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, "io.katharsis.client.mock");
+			property(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, "io.katharsis.test.mock");
 
 			if (!querySpec) {
 				feature = new KatharsisTestFeature(new ObjectMapper(), new QueryParamsBuilder(new DefaultQueryParamsParser()), new SampleJsonServiceLocator());

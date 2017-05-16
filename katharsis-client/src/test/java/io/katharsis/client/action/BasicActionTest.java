@@ -9,8 +9,8 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import io.katharsis.client.AbstractClientTest;
 import io.katharsis.client.KatharsisTestFeature;
-import io.katharsis.client.mock.models.Schedule;
-import io.katharsis.client.mock.repository.ScheduleRepository;
+import io.katharsis.test.mock.models.Schedule;
+import io.katharsis.test.mock.repository.ScheduleRepository;
 import io.katharsis.core.internal.dispatcher.path.ActionPath;
 import io.katharsis.module.SimpleModule;
 import io.katharsis.queryspec.QuerySpec;

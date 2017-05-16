@@ -11,7 +11,7 @@ import io.katharsis.errorhandling.exception.MethodNotFoundException;
 /**
  * Stores a list of controllers which are used to process the incoming requests.
  *
- * @see io.katharsis.core.internal.dispatcher.RequestDispatcher
+ * @see RequestDispatcherImpl
  */
 public class ControllerRegistry {
 

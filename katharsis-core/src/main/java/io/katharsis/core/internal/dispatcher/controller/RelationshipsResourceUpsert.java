@@ -72,6 +72,9 @@ public abstract class RelationshipsResourceUpsert extends BaseController {
 
     @Override
     public final boolean isAcceptable(JsonPath jsonPath, String requestType) {
+        if(jsonPath == null){
+            throw new IllegalArgumentException();
+        }
         return !jsonPath.isCollection()
                 && RelationshipsPath.class.equals(jsonPath.getClass())
                 && method().name().equals(requestType);

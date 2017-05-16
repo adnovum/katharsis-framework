@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import io.katharsis.module.http.HttpRequestDispatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,13 +73,12 @@ public class RequestDispatcherTest {
 		CollectionGet collectionGet = mock(CollectionGet.class);
 		controllerRegistry.addController(collectionGet);
 		QuerySpecAdapterBuilder queryAdapterBuilder = new QuerySpecAdapterBuilder(new DefaultQuerySpecDeserializer(), moduleRegistry);
-		RequestDispatcher sut = new RequestDispatcher(moduleRegistry, controllerRegistry, null, queryAdapterBuilder);
+		HttpRequestDispatcher sut = new RequestDispatcherImpl(moduleRegistry, controllerRegistry, null, queryAdapterBuilder);
 
 		// WHEN
 		when(collectionGet.isAcceptable(any(JsonPath.class), eq(requestType))).thenCallRealMethod();
-		JsonPath jsonPath = pathBuilder.buildPath(path);
 		Map<String, Set<String>> parameters = new HashMap<>();
-		sut.dispatchRequest(jsonPath, requestType, parameters, null, null);
+		sut.dispatchRequest(path, requestType, parameters, null, null);
 
 		// THEN
 		verify(collectionGet, times(1)).handle(any(JsonPath.class), any(QueryAdapter.class), any(RepositoryMethodParameterProvider.class), any(Document.class));
@@ -92,9 +92,10 @@ public class RequestDispatcherTest {
 		when(controllerRegistry.getController(any(JsonPath.class), anyString())).thenThrow(IllegalStateException.class);
 
 		QuerySpecAdapterBuilder queryAdapterBuilder = new QuerySpecAdapterBuilder(new DefaultQuerySpecDeserializer(), moduleRegistry);
-		RequestDispatcher requestDispatcher = new RequestDispatcher(moduleRegistry, controllerRegistry, ExceptionMapperRegistryTest.exceptionMapperRegistry, queryAdapterBuilder);
+		HttpRequestDispatcher
+				requestDispatcher = new RequestDispatcherImpl(moduleRegistry, controllerRegistry, ExceptionMapperRegistryTest.exceptionMapperRegistry, queryAdapterBuilder);
 
-		Response response = requestDispatcher.dispatchRequest(null, null, null, null, null);
+		Response response = requestDispatcher.dispatchRequest("tasks", null, null, null, null);
 		assertThat(response).isNotNull();
 
 		assertThat(response.getHttpStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
@@ -108,10 +109,11 @@ public class RequestDispatcherTest {
 		when(controllerRegistry.getController(any(JsonPath.class), anyString())).thenThrow(ArithmeticException.class);
 
 		QuerySpecAdapterBuilder queryAdapterBuilder = new QuerySpecAdapterBuilder(new DefaultQuerySpecDeserializer(), moduleRegistry);
-		RequestDispatcher requestDispatcher = new RequestDispatcher(moduleRegistry, controllerRegistry, ExceptionMapperRegistryTest.exceptionMapperRegistry, queryAdapterBuilder);
+		HttpRequestDispatcher
+				requestDispatcher = new RequestDispatcherImpl(moduleRegistry, controllerRegistry, ExceptionMapperRegistryTest.exceptionMapperRegistry, queryAdapterBuilder);
 
 		expectedException.expect(ArithmeticException.class);
 
-		Response response = requestDispatcher.dispatchRequest(null, null, null, null, null);
+		Response response = requestDispatcher.dispatchRequest("tasks", null, null, null, null);
 	}
 }

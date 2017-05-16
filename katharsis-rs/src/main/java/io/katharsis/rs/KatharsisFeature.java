@@ -2,7 +2,6 @@ package io.katharsis.rs;
 
 import java.io.Serializable;
 import java.util.Collection;
-
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.WebApplicationException;
@@ -13,10 +12,9 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.katharsis.core.internal.boot.KatharsisBoot;
 import io.katharsis.core.internal.boot.PropertiesProvider;
-import io.katharsis.core.internal.dispatcher.RequestDispatcher;
+import io.katharsis.core.internal.dispatcher.path.PathBuilder;
 import io.katharsis.core.internal.repository.adapter.ResourceRepositoryAdapter;
 import io.katharsis.legacy.locator.JsonServiceLocator;
 import io.katharsis.legacy.queryParams.QueryParamsBuilder;
@@ -30,7 +28,6 @@ import io.katharsis.resource.registry.ServiceUrlProvider;
 import io.katharsis.rs.internal.JaxrsModule;
 import io.katharsis.rs.internal.parameterProvider.RequestContextParameterProviderRegistry;
 import io.katharsis.rs.internal.parameterProvider.RequestContextParameterProviderRegistryBuilder;
-import io.katharsis.rs.resource.registry.UriInfoServiceUrlProvider;
 
 /**
  * Basic Katharsis feature that initializes core classes and provides a starting point to use the framework in
@@ -43,6 +40,8 @@ import io.katharsis.rs.resource.registry.UriInfoServiceUrlProvider;
 public class KatharsisFeature implements Feature {
 
 	private KatharsisBoot boot = new KatharsisBoot();
+
+	private RequestContextParameterProviderRegistry parameterProviderRegistry;
 
 	@Context
 	private SecurityContext securityContext;
@@ -67,8 +66,6 @@ public class KatharsisFeature implements Feature {
 
 	/**
 	 * Sets a custom ServiceUrlProvider.
-	 * 
-	 * @param serviceUrlProvider
 	 */
 	public void setServiceUrlProvider(ServiceUrlProvider serviceUrlProvider) {
 		boot.setServiceUrlProvider(serviceUrlProvider);
@@ -92,7 +89,6 @@ public class KatharsisFeature implements Feature {
 			}
 		};
 
-		boot.setDefaultServiceUrlProvider(new UriInfoServiceUrlProvider());
 		boot.setPropertiesProvider(propertiesProvider);
 		boot.setResourceFieldNameTransformer(resourceFieldNameTransformer);
 		boot.addModule(new JaxrsModule(securityContext));
@@ -100,19 +96,14 @@ public class KatharsisFeature implements Feature {
 
 		KatharsisFilter katharsisFilter;
 		try {
-			RequestContextParameterProviderRegistry parameterProviderRegistry = buildParameterProviderRegistry();
-
-			String webPathPrefix = boot.getWebPathPrefix();
-			ResourceRegistry resourceRegistry = boot.getResourceRegistry();
-			RequestDispatcher requestDispatcher = boot.getRequestDispatcher();
-			katharsisFilter = createKatharsisFilter(resourceRegistry, parameterProviderRegistry, webPathPrefix,
-					requestDispatcher);
+			parameterProviderRegistry = buildParameterProviderRegistry();
+			katharsisFilter = createKatharsisFilter();
 		}
 		catch (Exception e) {
 			throw new WebApplicationException(e);
 		}
 		context.register(katharsisFilter);
-		
+
 		registerActionRepositories(context, boot);
 
 		return true;
@@ -120,21 +111,21 @@ public class KatharsisFeature implements Feature {
 
 	/**
 	 * All repositories with JAX-RS action need to be registered with JAX-RS as singletons.
-	 * 
+	 *
 	 * @param context of jaxrs
 	 * @param boot of katharsis
 	 */
 	private void registerActionRepositories(FeatureContext context, KatharsisBoot boot) {
 		ResourceRegistry resourceRegistry = boot.getResourceRegistry();
 		Collection<RegistryEntry> registryEntries = resourceRegistry.getResources();
-		for(RegistryEntry registryEntry : registryEntries){
+		for (RegistryEntry registryEntry : registryEntries) {
 			ResourceRepositoryInformation repositoryInformation = registryEntry.getRepositoryInformation();
-			if(!repositoryInformation.getActions().isEmpty()){
+			if (!repositoryInformation.getActions().isEmpty()) {
 				ResourceRepositoryAdapter<?, Serializable> repositoryAdapter = registryEntry.getResourceRepository(null);
 				Object resourceRepository = repositoryAdapter.getResourceRepository();
 				context.register(resourceRepository);
 			}
-		}		
+		}
 	}
 
 	private RequestContextParameterProviderRegistry buildParameterProviderRegistry() {
@@ -142,26 +133,39 @@ public class KatharsisFeature implements Feature {
 		return builder.build(boot.getServiceDiscovery());
 	}
 
-	protected KatharsisFilter createKatharsisFilter(ResourceRegistry resourceRegistry,
-			RequestContextParameterProviderRegistry parameterProviderRegistry, String webPathPrefix,
-			RequestDispatcher requestDispatcher) {
-		return new KatharsisFilter(boot.getObjectMapper(), resourceRegistry, requestDispatcher, parameterProviderRegistry,
-				webPathPrefix);
+	protected KatharsisFilter createKatharsisFilter() {
+		return new KatharsisFilter(this);
 	}
-	
-	public ObjectMapper getObjectMapper(){
+
+	public ObjectMapper getObjectMapper() {
 		return boot.getObjectMapper();
 	}
-	
-	public void setDefaultPageLimit(Long defaultPageLimit){
+
+	public void setDefaultPageLimit(Long defaultPageLimit) {
 		boot.setDefaultPageLimit(defaultPageLimit);
 	}
 
 	public QuerySpecDeserializer getQuerySpecDeserializer() {
 		return boot.getQuerySpecDeserializer();
 	}
-	
-	public KatharsisBoot getBoot(){
-	  return boot;
+
+	public KatharsisBoot getBoot() {
+		return boot;
 	}
+
+	public RequestContextParameterProviderRegistry getParameterProviderRegistry() {
+		return parameterProviderRegistry;
+	}
+
+	public String getWebPathPrefix() {
+		String prefix = boot.getWebPathPrefix();
+		if (prefix != null && prefix.startsWith(PathBuilder.SEPARATOR)) {
+			return prefix.substring(1);
+		}
+		else {
+			return prefix;
+		}
+	}
+
+
 }

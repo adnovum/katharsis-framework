@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.katharsis.core.internal.dispatcher.RequestDispatcherImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.katharsis.core.internal.dispatcher.RequestDispatcher;
+import io.katharsis.module.http.HttpRequestDispatcher;
 import io.katharsis.core.internal.query.QueryAdapterBuilder;
 import io.katharsis.core.internal.query.QuerySpecAdapterBuilder;
 import io.katharsis.core.internal.repository.adapter.ResourceRepositoryAdapter;
@@ -86,7 +87,7 @@ public class KatharsisBootTest {
 		Assert.assertSame(deserializer, boot.getQuerySpecDeserializer());
 		boot.boot();
 
-		RequestDispatcher requestDispatcher = boot.getRequestDispatcher();
+		RequestDispatcherImpl requestDispatcher = boot.getRequestDispatcher();
 		QueryAdapterBuilder queryAdapterBuilder = requestDispatcher.getQueryAdapterBuilder();
 		Assert.assertTrue(queryAdapterBuilder instanceof QuerySpecAdapterBuilder);
 	}
@@ -101,7 +102,7 @@ public class KatharsisBootTest {
 		boot.setQueryParamsBuilds(deserializer);
 		boot.boot();
 
-		RequestDispatcher requestDispatcher = boot.getRequestDispatcher();
+		RequestDispatcherImpl requestDispatcher = boot.getRequestDispatcher();
 		QueryAdapterBuilder queryAdapterBuilder = requestDispatcher.getQueryAdapterBuilder();
 		Assert.assertTrue(queryAdapterBuilder instanceof QueryParamsAdapterBuilder);
 	}
@@ -223,7 +224,7 @@ public class KatharsisBootTest {
 		boot.addModule(new SimpleModule("test"));
 		boot.boot();
 
-		RequestDispatcher requestDispatcher = boot.getRequestDispatcher();
+		HttpRequestDispatcher requestDispatcher = boot.getRequestDispatcher();
 
 		ResourceRegistry resourceRegistry = boot.getResourceRegistry();
 		RegistryEntry taskEntry = resourceRegistry.findEntry(Task.class);

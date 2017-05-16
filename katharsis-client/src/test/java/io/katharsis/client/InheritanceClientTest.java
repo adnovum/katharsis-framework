@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.katharsis.client.internal.proxy.ObjectProxy;
-import io.katharsis.client.mock.models.Project;
-import io.katharsis.client.mock.models.Task;
-import io.katharsis.client.mock.models.TaskSubType;
+import io.katharsis.test.mock.models.Project;
+import io.katharsis.test.mock.models.Task;
+import io.katharsis.test.mock.models.TaskSubType;
 import io.katharsis.queryspec.Direction;
 import io.katharsis.queryspec.QuerySpec;
 import io.katharsis.queryspec.SortSpec;

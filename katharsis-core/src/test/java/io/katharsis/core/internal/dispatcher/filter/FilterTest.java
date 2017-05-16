@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import io.katharsis.core.internal.dispatcher.RequestDispatcherImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,7 @@ import org.mockito.ArgumentCaptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.katharsis.core.internal.dispatcher.ControllerRegistry;
-import io.katharsis.core.internal.dispatcher.RequestDispatcher;
+import io.katharsis.module.http.HttpRequestDispatcher;
 import io.katharsis.core.internal.dispatcher.controller.CollectionGet;
 import io.katharsis.core.internal.dispatcher.path.JsonPath;
 import io.katharsis.core.internal.dispatcher.path.PathBuilder;
@@ -47,7 +48,7 @@ public class FilterTest {
 
 	private ResourceRegistry resourceRegistry;
 	private TestFilter filter;
-	private RequestDispatcher dispatcher;
+	private HttpRequestDispatcher dispatcher;
 	private CollectionGet collectionGet;
 	private PathBuilder pathBuilder;
 	private ModuleRegistry moduleRegistry;
@@ -68,7 +69,7 @@ public class FilterTest {
 		collectionGet = mock(CollectionGet.class);
 		controllerRegistry.addController(collectionGet);
 		QuerySpecAdapterBuilder queryAdapterBuilder = new QuerySpecAdapterBuilder(new DefaultQuerySpecDeserializer(), moduleRegistry);
-		dispatcher = new RequestDispatcher(moduleRegistry, controllerRegistry, null, queryAdapterBuilder);
+		dispatcher = new RequestDispatcherImpl(moduleRegistry, controllerRegistry, null, queryAdapterBuilder);
 	}
 
 	@Test
@@ -86,11 +87,10 @@ public class FilterTest {
 		ArgumentCaptor<DocumentFilterContext> captor = ArgumentCaptor.forClass(DocumentFilterContext.class);
 		when(collectionGet.isAcceptable(any(JsonPath.class), eq(requestType))).thenCallRealMethod();
 		when(filter.filter(any(DocumentFilterContext.class), any(DocumentFilterChain.class))).thenCallRealMethod();
-		JsonPath jsonPath = pathBuilder.buildPath(path);
 		Map<String, Set<String>> queryParams = new HashMap<>();
 		RepositoryMethodParameterProvider parameterProvider = new NewInstanceRepositoryMethodParameterProvider();
 		Document requestBody = new Document();
-		dispatcher.dispatchRequest(jsonPath, requestType, queryParams, parameterProvider, requestBody);
+		dispatcher.dispatchRequest(path, requestType, queryParams, parameterProvider, requestBody);
 
 		// THEN
 		verify(filter).filter(captor.capture(), any(DocumentFilterChain.class));

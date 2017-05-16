@@ -13,9 +13,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import io.katharsis.client.mock.models.Project;
-import io.katharsis.client.mock.models.Schedule;
-import io.katharsis.client.mock.models.Task;
+import io.katharsis.test.mock.models.Project;
+import io.katharsis.test.mock.models.Schedule;
+import io.katharsis.test.mock.models.Task;
 import io.katharsis.errorhandling.exception.ResourceNotFoundException;
 import io.katharsis.legacy.queryParams.QueryParams;
 

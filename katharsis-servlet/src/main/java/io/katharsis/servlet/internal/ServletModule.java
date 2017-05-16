@@ -1,20 +1,20 @@
 package io.katharsis.servlet.internal;
 
-import javax.servlet.http.HttpServletRequest;
-
 import io.katharsis.module.Module;
+import io.katharsis.module.http.HttpRequestContextProvider;
 
 public class ServletModule implements Module {
 
-	private ThreadLocal<HttpServletRequest> requestThreadLocal;
 
-	public ServletModule(ThreadLocal<HttpServletRequest> requestThreadLocal) {
-		this.requestThreadLocal = requestThreadLocal;
+	private HttpRequestContextProvider contextProvider;
+
+	public ServletModule(HttpRequestContextProvider contextProvider) {
+		this.contextProvider = contextProvider;
 	}
 
 	@Override
 	public void setupModule(ModuleContext context) {
-		context.addSecurityProvider(new ServletSecurityProvider(requestThreadLocal));
+		context.addSecurityProvider(new ServletSecurityProvider(contextProvider));
 	}
 
 	@Override

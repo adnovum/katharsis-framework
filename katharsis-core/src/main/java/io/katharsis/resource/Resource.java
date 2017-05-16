@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * “Resource objects” appear in a JSON API document to represent resources.
+ * Resource objects appear in a JSON API document to represent resources.
  * <p/>
  * http://jsonapi.org/format/#document-resource-objects
  */

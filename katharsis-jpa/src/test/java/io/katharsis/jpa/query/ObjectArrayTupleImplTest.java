@@ -2,16 +2,14 @@ package io.katharsis.jpa.query;
 
 import javax.persistence.TupleElement;
 
+import com.querydsl.core.types.Expression;
+import io.katharsis.jpa.internal.query.backend.querydsl.QuerydslObjectArrayTupleImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.querydsl.core.types.Expression;
-
-import io.katharsis.jpa.internal.query.backend.querydsl.ObjectArrayTupleImpl;
-
 public class ObjectArrayTupleImplTest {
 
-	private ObjectArrayTupleImpl impl = new ObjectArrayTupleImpl(new Object[] { "0", "1" });
+	private QuerydslObjectArrayTupleImpl impl = new QuerydslObjectArrayTupleImpl(new Object[] { "0", "1" }, null);
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testGetByExpressionNotSupported() {

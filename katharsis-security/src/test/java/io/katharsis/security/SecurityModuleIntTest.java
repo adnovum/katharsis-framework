@@ -4,10 +4,31 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
-
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import io.katharsis.client.KatharsisClient;
+import io.katharsis.client.http.okhttp.OkHttpAdapter;
+import io.katharsis.client.http.okhttp.OkHttpAdapterListenerBase;
+import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.errorhandling.exception.ForbiddenException;
+import io.katharsis.errorhandling.exception.UnauthorizedException;
+import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.repository.RelationshipRepositoryV2;
+import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.resource.list.ResourceList;
+import io.katharsis.rs.KatharsisFeature;
+import io.katharsis.security.SecurityConfig.Builder;
+import io.katharsis.security.model.Project;
+import io.katharsis.security.model.ProjectRepository;
+import io.katharsis.security.model.Task;
+import io.katharsis.security.model.TaskRepository;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -21,34 +42,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import io.katharsis.client.KatharsisClient;
-import io.katharsis.client.http.okhttp.OkHttpAdapter;
-import io.katharsis.client.http.okhttp.OkHttpAdapterListenerBase;
-import io.katharsis.core.properties.KatharsisProperties;
-import io.katharsis.errorhandling.exception.ForbiddenException;
-import io.katharsis.errorhandling.exception.UnauthorizedException;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.list.ResourceList;
-import io.katharsis.rs.KatharsisFeature;
-import io.katharsis.security.ResourcePermission;
-import io.katharsis.security.ResourcePermissionInformation;
-import io.katharsis.security.ResourcePermissionInformationImpl;
-import io.katharsis.security.SecurityConfig;
-import io.katharsis.security.SecurityModule;
-import io.katharsis.security.SecurityConfig.Builder;
-import io.katharsis.security.model.Project;
-import io.katharsis.security.model.ProjectRepository;
-import io.katharsis.security.model.Task;
-import io.katharsis.security.model.TaskRepository;
-import okhttp3.Authenticator;
-import okhttp3.Credentials;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.Route;
 
 public class SecurityModuleIntTest extends JerseyTest {
 
@@ -89,8 +82,6 @@ public class SecurityModuleIntTest extends JerseyTest {
 						securityHandler.setHandler(handler);
 					}
 					server.setHandler(securityHandler);
-
-					System.out.println(server);
 				}
 				catch (Exception e) {
 					throw new IllegalStateException(e);

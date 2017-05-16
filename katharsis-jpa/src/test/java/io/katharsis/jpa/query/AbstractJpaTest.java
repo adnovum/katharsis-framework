@@ -1,20 +1,11 @@
 package io.katharsis.jpa.query;
 
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.katharsis.core.internal.registry.ResourceRegistryImpl;
 import io.katharsis.jpa.JpaModule;
 import io.katharsis.jpa.meta.JpaMetaProvider;
@@ -41,16 +32,22 @@ import io.katharsis.jpa.model.TestSubclassWithSuperclassPk;
 import io.katharsis.jpa.model.UuidTestEntity;
 import io.katharsis.jpa.query.criteria.JpaCriteriaQueryFactory;
 import io.katharsis.jpa.util.SpringTransactionRunner;
-import io.katharsis.jpa.util.TestConfig;
+import io.katharsis.jpa.util.JpaTestConfig;
 import io.katharsis.meta.MetaLookup;
 import io.katharsis.module.CoreModule;
 import io.katharsis.module.ModuleRegistry;
 import io.katharsis.resource.information.ResourceFieldNameTransformer;
 import io.katharsis.resource.registry.ConstantServiceUrlProvider;
 import io.katharsis.resource.registry.ResourceRegistry;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = JpaTestConfig.class)
 public abstract class AbstractJpaTest {
 
 	@PersistenceContext
@@ -109,7 +106,6 @@ public abstract class AbstractJpaTest {
 			embValue.setEmbIntValue(i);
 			embValue.setEmbStringValue("emb" + i);
 			embValue.setNestedValue(new TestNestedEmbeddable(i == 0));
-			// embValue.setRelatedValue(related);
 			embValue.setAnyValue(anyValue);
 
 			TestEntity test = new TestEntity();
@@ -117,11 +113,6 @@ public abstract class AbstractJpaTest {
 			test.setId((long) i);
 			test.setLongValue(i);
 			test.setEmbValue(embValue);
-			// test.setLocalTimeValue(LocalTime.now());
-			// test.setOffsetDateTimeValue(OffsetDateTime.now());
-			// test.setOffsetTimeValue(OffsetTime.now());
-			// test.setLocalDateTimeValue(LocalDateTime.now());
-			// test.setLocalDateValue(LocalDate.now());
 
 			// do not include relation/map for last value to check for proper
 			// left join sorting

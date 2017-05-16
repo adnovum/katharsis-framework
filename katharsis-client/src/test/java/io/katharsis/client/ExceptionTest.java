@@ -4,10 +4,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.client.mock.models.Task;
-import io.katharsis.client.module.TestException;
-import io.katharsis.client.mock.models.Schedule;
-import io.katharsis.client.mock.repository.ScheduleRepository;
+import io.katharsis.test.mock.models.Task;
+import io.katharsis.test.mock.TestException;
+import io.katharsis.test.mock.models.Schedule;
+import io.katharsis.test.mock.repository.ScheduleRepository;
 
 public class ExceptionTest extends AbstractClientTest {
 

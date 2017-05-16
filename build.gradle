@@ -19,44 +19,23 @@ wrapper {
 
 allprojects {
     apply plugin: 'maven'
-
     group = 'io.katharsis'
     version = '3.0.1-SNAPSHOT'
 }
 
 
-
-
 gradle.beforeProject { Project project ->
     project.with {
-        if (!project.name == 'katharsis-documentation') {
-
+        if (project.name != 'katharsis-documentation') {
             apply plugin: 'java'
-            sourceCompatibility = 1.7
-            targetCompatibility = 1.7
+			sourceCompatibility = 1.7
+			targetCompatibility = 1.7
 
-            // e.g. CDI expects those directories to be equal
-            sourceSets {
-                main {
-                    output.resourcesDir = output.classesDir
-                }
-                test {
-                    output.resourcesDir = output.classesDir
-                }
-            }
-            jar {
-                duplicatesStrategy = 'exclude'
-            }
-
-            apply plugin: 'io.spring.dependency-management'
-            dependencies {
+            dependencies{
                 testCompile group: 'junit', name: 'junit', version: '4.12'
                 testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
                 testCompile group: 'org.assertj', name: 'assertj-core', version: '2.2.0'
             }
         }
-
-
     }
 }
-// end::bomSetup[]

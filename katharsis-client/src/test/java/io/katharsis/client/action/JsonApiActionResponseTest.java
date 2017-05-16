@@ -3,7 +3,6 @@ package io.katharsis.client.action;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -11,8 +10,8 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import io.katharsis.client.AbstractClientTest;
 import io.katharsis.client.KatharsisTestFeature;
-import io.katharsis.client.mock.models.Schedule;
-import io.katharsis.client.mock.repository.ScheduleRepository;
+import io.katharsis.test.mock.models.Schedule;
+import io.katharsis.test.mock.repository.ScheduleRepository;
 import io.katharsis.core.internal.dispatcher.path.ActionPath;
 import io.katharsis.module.SimpleModule;
 import io.katharsis.queryspec.QuerySpec;
@@ -105,7 +104,6 @@ public class JsonApiActionResponseTest extends AbstractClientTest {
 		String url = getBaseUri() + "schedules/repositoryActionWithException?msg=hello";
 		io.restassured.response.Response response = RestAssured.get(url);
 		Assert.assertEquals(403, response.getStatusCode());
-		System.out.println("body: " + response.body().asString());
 
 		response.then().assertThat().body("errors[0].status", Matchers.equalTo("403"));
 

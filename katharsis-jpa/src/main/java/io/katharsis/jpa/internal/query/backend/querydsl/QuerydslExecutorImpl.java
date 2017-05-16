@@ -76,7 +76,7 @@ public class QuerydslExecutorImpl<T> extends AbstractQueryExecutorImpl<T> implem
 				tuples.add(new QuerydslTupleImpl((Tuple) result, selectionBindings));
 			}
 			else {
-				tuples.add(new ObjectArrayTupleImpl(result));
+				tuples.add(new QuerydslObjectArrayTupleImpl(result, selectionBindings));
 			}
 		}
 		return tuples;

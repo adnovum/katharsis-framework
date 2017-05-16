@@ -4,12 +4,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.client.mock.models.Project;
-import io.katharsis.client.mock.models.Project.ProjectLinks;
-import io.katharsis.client.mock.models.Project.ProjectMeta;
-import io.katharsis.client.mock.models.Task;
-import io.katharsis.client.mock.repository.ProjectRepository.ProjectsLinksInformation;
-import io.katharsis.client.mock.repository.ProjectRepository.ProjectsMetaInformation;
+import io.katharsis.test.mock.models.Project;
+import io.katharsis.test.mock.models.Project.ProjectLinks;
+import io.katharsis.test.mock.models.Project.ProjectMeta;
+import io.katharsis.test.mock.models.Task;
+import io.katharsis.test.mock.repository.ProjectRepository.ProjectsLinksInformation;
+import io.katharsis.test.mock.repository.ProjectRepository.ProjectsMetaInformation;
 import io.katharsis.queryspec.QuerySpec;
 import io.katharsis.repository.ResourceRepositoryV2;
 import io.katharsis.resource.list.ResourceList;

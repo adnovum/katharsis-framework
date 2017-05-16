@@ -1,4 +1,5 @@
-description = 'katharsis-validation'
+apply plugin: 'java'
+
 dependencies {
     compile project(':katharsis-core')
     compile project(':katharsis-meta')

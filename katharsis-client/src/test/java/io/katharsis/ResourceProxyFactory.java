@@ -3,7 +3,7 @@
 //import java.lang.reflect.Method;
 //import java.util.List;
 //
-//import io.katharsis.client.mock.models.Task;
+//import io.katharsis.test.mock.models.Task;
 //import io.katharsis.resource.field.ResourceFieldNameTransformer;
 //import io.katharsis.resource.information.AnnotationResourceInformationBuilder;
 //import io.katharsis.resource.information.ResourceInformation;

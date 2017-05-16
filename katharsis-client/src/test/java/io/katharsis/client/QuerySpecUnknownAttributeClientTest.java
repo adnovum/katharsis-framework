@@ -11,8 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.client.mock.models.Project;
-import io.katharsis.client.mock.models.Task;
+import io.katharsis.test.mock.models.Project;
+import io.katharsis.test.mock.models.Task;
 import io.katharsis.queryspec.DefaultQuerySpecDeserializer;
 import io.katharsis.queryspec.Direction;
 import io.katharsis.queryspec.FilterOperator;

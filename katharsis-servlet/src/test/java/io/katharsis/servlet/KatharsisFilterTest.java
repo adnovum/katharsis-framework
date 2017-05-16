@@ -17,19 +17,18 @@
 package io.katharsis.servlet;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonPartEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 
+import io.katharsis.core.internal.dispatcher.http.JsonApiRequestProcessor;
+import io.katharsis.core.properties.KatharsisProperties;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -40,13 +39,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 
-import io.katharsis.core.properties.KatharsisProperties;
-import io.katharsis.invoker.internal.JsonApiMediaType;
-import io.katharsis.servlet.legacy.AbstractKatharsisFilter;
-
-/**
- * Test for {@link AbstractKatharsisFilter}.
- */
 public class KatharsisFilterTest {
 
 	private static final String FIRST_TASK_ATTRIBUTES = "{\"name\":\"First task\"}";
@@ -55,7 +47,9 @@ public class KatharsisFilterTest {
 
 	private static final String FIRST_TASK_LINKS = "{\"self\":\"http://localhost:8080/api/tasks/1\"}";
 
-	private static final String PROJECT1_RELATIONSHIP_LINKS = "{\"self\":\"http://localhost:8080/api/tasks/1/relationships/project\",\"related\":\"http://localhost:8080/api/tasks/1/project\"}";
+	private static final String PROJECT1_RELATIONSHIP_LINKS =
+			"{\"self\":\"http://localhost:8080/api/tasks/1/relationships/project\","
+					+ "\"related\":\"http://localhost:8080/api/tasks/1/project\"}";
 
 	private static Logger log = LoggerFactory.getLogger(KatharsisFilterTest.class);
 
@@ -98,12 +92,14 @@ public class KatharsisFilterTest {
 		request.setServletPath(null);
 		request.setPathInfo(null);
 		request.setRequestURI("/api/tasks/");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		request.addHeader("Accept", "*/*");
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		katharsisFilter.doFilter(request, response, filterChain);
+
+		Assert.assertEquals(200, response.getStatus());
 
 		String responseContent = response.getContentAsString();
 
@@ -127,7 +123,7 @@ public class KatharsisFilterTest {
 		request.setServletPath(null);
 		request.setPathInfo(null);
 		request.setRequestURI("/api/tasks/1");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		request.addHeader("Accept", "*/*");
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -156,7 +152,7 @@ public class KatharsisFilterTest {
 		request.setServletPath(null);
 		request.setPathInfo(null);
 		request.setRequestURI("/api/tasks");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
+		request.setContentType(JsonApiRequestProcessor.JSONAPI_CONTENT_TYPE);
 		request.addHeader("Accept", "*/*");
 		request.addParameter("filter[name]", "John");
 		request.setQueryString(URLEncoder.encode("filter[name]", StandardCharsets.UTF_8.name()) + "=John");
@@ -175,27 +171,5 @@ public class KatharsisFilterTest {
 		assertJsonPartEquals(FIRST_TASK_ATTRIBUTES, responseContent, "data[0].attributes");
 		assertJsonPartEquals(FIRST_TASK_LINKS, responseContent, "data[0].links");
 		assertJsonPartEquals(PROJECT1_RELATIONSHIP_LINKS, responseContent, "data[0].relationships.project.links");
-	}
-
-	@Test
-	public void testUnacceptableRequestContentType() throws Exception {
-		MockFilterChain filterChain = new MockFilterChain();
-
-		MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
-		request.setMethod("GET");
-		request.setContextPath("");
-		request.setServletPath(null);
-		request.setPathInfo(null);
-		request.setRequestURI("/api/tasks/");
-		request.setContentType(JsonApiMediaType.APPLICATION_JSON_API);
-		request.addHeader("Accept", "application/xml");
-
-		MockHttpServletResponse response = new MockHttpServletResponse();
-
-		katharsisFilter.doFilter(request, response, filterChain);
-
-		assertEquals(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
-		String responseContent = response.getContentAsString();
-		assertTrue(responseContent == null || "".equals(responseContent.trim()));
 	}
 }

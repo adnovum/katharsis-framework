@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
@@ -58,7 +57,7 @@ public class JpaCriteriaQueryExecutorImpl<T> extends AbstractQueryExecutorImpl<T
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	public long getTotalRowCount() {
 		Selection<T> selection = query.getSelection();
 		List<Order> orderList = query.getOrderList();
@@ -99,7 +98,7 @@ public class JpaCriteriaQueryExecutorImpl<T> extends AbstractQueryExecutorImpl<T
 				tuples.add(new CriteriaTupleImpl((Object[]) result, selectionBindings));
 			}
 			else {
-				tuples.add(new ObjectArrayTupleImpl(result));
+				tuples.add(new ObjectArrayTupleImpl(result, selectionBindings));
 			}
 		}
 		return tuples;
