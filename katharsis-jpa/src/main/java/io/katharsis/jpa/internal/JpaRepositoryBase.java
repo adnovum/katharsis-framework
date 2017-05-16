@@ -2,8 +2,7 @@ package io.katharsis.jpa.internal;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
+import io.katharsis.errorhandling.exception.ResourceNotFoundException;
 import io.katharsis.jpa.JpaModule;
 import io.katharsis.jpa.JpaRepositoryConfig;
 import io.katharsis.jpa.JpaRepositoryFilter;
@@ -36,9 +35,9 @@ public abstract class JpaRepositoryBase<T> {
 		return false;
 	}
 
-	protected static <D> D getUniqueOrNull(List<D> list) {
+	protected static <D> D getUnique(List<D> list, Object id) {
 		if (list.isEmpty()) {
-			return null;
+			throw new ResourceNotFoundException("resource not found: id=" + id);
 		}
 		else if (list.size() == 1) {
 			return list.get(0);

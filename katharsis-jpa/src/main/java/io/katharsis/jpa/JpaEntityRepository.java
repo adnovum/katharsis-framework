@@ -4,10 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.EntityManager;
 
-import io.katharsis.core.internal.utils.PropertyUtils;
 import io.katharsis.jpa.internal.JpaRepositoryBase;
 import io.katharsis.jpa.internal.JpaRepositoryUtils;
 import io.katharsis.jpa.internal.JpaRequestContext;
@@ -47,7 +45,7 @@ public class JpaEntityRepository<T, I extends Serializable> extends JpaRepositor
 		QuerySpec idQuerySpec = querySpec.duplicate();
 		idQuerySpec.addFilter(new FilterSpec(Arrays.asList(primaryKeyAttr.getName()), FilterOperator.EQ, id));
 		List<T> results = findAll(idQuerySpec);
-		return getUniqueOrNull(results);
+		return getUnique(results, id);
 	}
 
 	@Override
@@ -109,7 +107,7 @@ public class JpaEntityRepository<T, I extends Serializable> extends JpaRepositor
 		// save since reads do a detach
 		EntityManager em = module.getEntityManager();
 		em.persist(entity);
-		I id = (I) PropertyUtils.getProperty(resource, primaryKeyAttr.getName());
+		I id = (I) em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
 
 		// fetch again since we may have to fetch tuple data and do DTO mapping
 		QuerySpec querySpec = new QuerySpec(repositoryConfig.getResourceClass());

@@ -7,20 +7,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.persistence.OptimisticLockException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import io.katharsis.client.ResourceRepositoryStub;
+import io.katharsis.errorhandling.exception.ResourceNotFoundException;
 import io.katharsis.jpa.model.RelatedEntity;
 import io.katharsis.jpa.model.TestEmbeddedIdEntity;
 import io.katharsis.jpa.model.TestEntity;
 import io.katharsis.jpa.model.TestIdEmbeddable;
 import io.katharsis.jpa.model.VersionedEntity;
 import io.katharsis.legacy.queryParams.QueryParams;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class JpaQueryParamsEndToEndTest extends AbstractJpaJerseyTest {
 
@@ -62,10 +61,9 @@ public class JpaQueryParamsEndToEndTest extends AbstractJpaJerseyTest {
 		Assert.assertTrue(list.isEmpty());
 	}
 
-	@Test
-	public void testFindNull() {
-		TestEntity test = testRepo.findOne(1L, new QueryParams());
-		Assert.assertNull(test);
+	@Test(expected = ResourceNotFoundException.class)
+	public void testNotFound() {
+		testRepo.findOne(1L, new QueryParams());
 	}
 
 	@Test
@@ -184,7 +182,8 @@ public class JpaQueryParamsEndToEndTest extends AbstractJpaJerseyTest {
 
 	@Test
 	public void testEmbeddableIds() throws InstantiationException, IllegalAccessException {
-		ResourceRepositoryStub<TestEmbeddedIdEntity, Serializable> rep = client.getQueryParamsRepository(TestEmbeddedIdEntity.class);
+		ResourceRepositoryStub<TestEmbeddedIdEntity, Serializable> rep =
+				client.getQueryParamsRepository(TestEmbeddedIdEntity.class);
 
 		// add
 		TestEmbeddedIdEntity entity = new TestEmbeddedIdEntity();

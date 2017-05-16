@@ -3,18 +3,13 @@ package io.katharsis.jpa;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.persistence.OptimisticLockException;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import io.katharsis.client.ResourceRepositoryStub;
 import io.katharsis.client.internal.proxy.ObjectProxy;
 import io.katharsis.client.response.JsonLinksInformation;
 import io.katharsis.client.response.JsonMetaInformation;
+import io.katharsis.errorhandling.exception.ResourceNotFoundException;
 import io.katharsis.jpa.model.OtherRelatedEntity;
 import io.katharsis.jpa.model.RelatedEntity;
 import io.katharsis.jpa.model.TestEmbeddedIdEntity;
@@ -29,6 +24,10 @@ import io.katharsis.queryspec.QuerySpec;
 import io.katharsis.repository.RelationshipRepositoryV2;
 import io.katharsis.repository.ResourceRepositoryV2;
 import io.katharsis.resource.list.ResourceList;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class JpaQuerySpecEndToEndTest extends AbstractJpaJerseyTest {
 
@@ -152,7 +151,8 @@ public class JpaQuerySpecEndToEndTest extends AbstractJpaJerseyTest {
 
 	@Test
 	public void testMappedSuperTypeWithPkOnSuperType() throws InstantiationException, IllegalAccessException {
-		ResourceRepositoryV2<TestSubclassWithSuperclassPk, Serializable> repo = client.getQuerySpecRepository(TestSubclassWithSuperclassPk.class);
+		ResourceRepositoryV2<TestSubclassWithSuperclassPk, Serializable> repo =
+				client.getQuerySpecRepository(TestSubclassWithSuperclassPk.class);
 		ResourceRepositoryV2<RelatedEntity, Serializable> relatedRepo = client.getQuerySpecRepository(RelatedEntity.class);
 
 		RelatedEntity related = new RelatedEntity();
@@ -235,7 +235,8 @@ public class JpaQuerySpecEndToEndTest extends AbstractJpaJerseyTest {
 		RelationshipRepositoryV2<TestEntity, Serializable, RelatedEntity, Serializable> relRepo = client
 				.getQuerySpecRepository(TestEntity.class, RelatedEntity.class);
 
-		RelatedEntity related = relRepo.findOneTarget(test.getId(), TestEntity.ATTR_oneRelatedValue, new QuerySpec(RelatedEntity.class));
+		RelatedEntity related =
+				relRepo.findOneTarget(test.getId(), TestEntity.ATTR_oneRelatedValue, new QuerySpec(RelatedEntity.class));
 		Assert.assertNull(related);
 	}
 
@@ -246,7 +247,8 @@ public class JpaQuerySpecEndToEndTest extends AbstractJpaJerseyTest {
 		RelationshipRepositoryV2<TestEntity, Serializable, RelatedEntity, Serializable> relRepo = client
 				.getQuerySpecRepository(TestEntity.class, RelatedEntity.class);
 
-		RelatedEntity related = relRepo.findOneTarget(test.getId(), TestEntity.ATTR_oneRelatedValue, new QuerySpec(RelatedEntity.class));
+		RelatedEntity related =
+				relRepo.findOneTarget(test.getId(), TestEntity.ATTR_oneRelatedValue, new QuerySpec(RelatedEntity.class));
 		Assert.assertNotNull(related);
 	}
 
@@ -286,11 +288,12 @@ public class JpaQuerySpecEndToEndTest extends AbstractJpaJerseyTest {
 		// query relation
 		RelationshipRepositoryV2<TestEntity, Long, RelatedEntity, Long> relRepo = client
 				.getQuerySpecRepository(TestEntity.class, RelatedEntity.class);
-    
+
 		if (!onSave) {
 			relRepo.addRelations(test, Arrays.asList(1L, 2L), TestEntity.ATTR_manyRelatedValues);
 		}
-		List<RelatedEntity> related = relRepo.findManyTargets(test.getId(), TestEntity.ATTR_manyRelatedValues, new QuerySpec(RelatedEntity.class));
+		List<RelatedEntity> related =
+				relRepo.findManyTargets(test.getId(), TestEntity.ATTR_manyRelatedValues, new QuerySpec(RelatedEntity.class));
 		Assert.assertEquals(2, related.size());
 
 		// query relation in opposite direction
@@ -320,10 +323,9 @@ public class JpaQuerySpecEndToEndTest extends AbstractJpaJerseyTest {
 		Assert.assertTrue(list.isEmpty());
 	}
 
-	@Test
-	public void testFindNull() {
-		TestEntity test = testRepo.findOne(1L, new QuerySpec(TestEntity.class));
-		Assert.assertNull(test);
+	@Test(expected = ResourceNotFoundException.class)
+	public void testNotFound() {
+		testRepo.findOne(1L, new QuerySpec(TestEntity.class));
 	}
 
 	@Test
@@ -418,10 +420,14 @@ public class JpaQuerySpecEndToEndTest extends AbstractJpaJerseyTest {
 		Assert.assertNotNull(links);
 
 		String baseUri = getBaseUri().toString();
-		Assert.assertEquals(baseUri + "test/1/relationships/manyRelatedValues/?page[limit]=2", links.asJsonNode().get("first").asText());
-		Assert.assertEquals(baseUri + "test/1/relationships/manyRelatedValues/?page[limit]=2&page[offset]=4", links.asJsonNode().get("last").asText());
-		Assert.assertEquals(baseUri + "test/1/relationships/manyRelatedValues/?page[limit]=2", links.asJsonNode().get("prev").asText());
-		Assert.assertEquals(baseUri + "test/1/relationships/manyRelatedValues/?page[limit]=2&page[offset]=4", links.asJsonNode().get("next").asText());
+		Assert.assertEquals(baseUri + "test/1/relationships/manyRelatedValues/?page[limit]=2",
+				links.asJsonNode().get("first").asText());
+		Assert.assertEquals(baseUri + "test/1/relationships/manyRelatedValues/?page[limit]=2&page[offset]=4",
+				links.asJsonNode().get("last").asText());
+		Assert.assertEquals(baseUri + "test/1/relationships/manyRelatedValues/?page[limit]=2",
+				links.asJsonNode().get("prev").asText());
+		Assert.assertEquals(baseUri + "test/1/relationships/manyRelatedValues/?page[limit]=2&page[offset]=4",
+				links.asJsonNode().get("next").asText());
 	}
 
 	@Test
@@ -447,7 +453,8 @@ public class JpaQuerySpecEndToEndTest extends AbstractJpaJerseyTest {
 		try {
 			saved = repo.save(saved);
 			Assert.fail();
-		} catch (OptimisticLockException e) {
+		}
+		catch (OptimisticLockException e) {
 			// ok
 		}
 
