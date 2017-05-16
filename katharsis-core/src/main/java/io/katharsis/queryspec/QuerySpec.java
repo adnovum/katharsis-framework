@@ -46,10 +46,8 @@ public class QuerySpec {
 	 * TODO currently ignores relations and inclusions, has room for
 	 * improvements
 	 *
-	 * @param <T>
-	 *            the type of resources in this Iterable
-	 * @param resources
-	 *            resources
+	 * @param <T> the type of resources in this Iterable
+	 * @param resources resources
 	 * @return sorted, filtered list.
 	 */
 	public <T> DefaultResourceList<T> apply(Iterable<T> resources) {
@@ -67,12 +65,9 @@ public class QuerySpec {
 	 * <p>
 	 * TODO currently ignores relations and inclusions
 	 *
-	 * @param <T>
-	 *            resource type
-	 * @param resources
-	 *            to apply the querySpec to
-	 * @param resultList
-	 *            used to return the result (including paging meta information)
+	 * @param <T> resource type
+	 * @param resources to apply the querySpec to
+	 * @param resultList used to return the result (including paging meta information)
 	 */
 	public <T> void apply(Iterable<T> resources, ResourceList<T> resultList) {
 		InMemoryEvaluator eval = new InMemoryEvaluator();
@@ -95,14 +90,18 @@ public class QuerySpec {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null || getClass() != obj.getClass())
+		}
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
+		}
 		QuerySpec other = (QuerySpec) obj;
 		return CompareUtils.isEquals(filters, other.filters) // NOSONAR
-				&& CompareUtils.isEquals(includedFields, other.includedFields) && CompareUtils.isEquals(includedRelations, other.includedRelations) && CompareUtils.isEquals(limit, other.limit)
-				&& CompareUtils.isEquals(offset, other.offset) && CompareUtils.isEquals(relatedSpecs, other.relatedSpecs) && CompareUtils.isEquals(sort, other.sort);
+				&& CompareUtils.isEquals(includedFields, other.includedFields) && CompareUtils
+				.isEquals(includedRelations, other.includedRelations) && CompareUtils.isEquals(limit, other.limit)
+				&& CompareUtils.isEquals(offset, other.offset) && CompareUtils.isEquals(relatedSpecs, other.relatedSpecs)
+				&& CompareUtils.isEquals(sort, other.sort);
 	}
 
 	public Long getLimit() {
@@ -178,14 +177,14 @@ public class QuerySpec {
 	}
 
 	/**
-	 * @param resourceClass
-	 *            resource class
+	 * @param resourceClass resource class
 	 * @return QuerySpec for the given class, either the root QuerySpec or any
-	 *         related QuerySpec.
+	 * related QuerySpec.
 	 */
 	public QuerySpec getQuerySpec(Class<?> resourceClass) {
-		if (resourceClass.equals(this.resourceClass))
+		if (resourceClass.equals(this.resourceClass)) {
 			return this;
+		}
 		return relatedSpecs.get(resourceClass);
 	}
 
@@ -228,5 +227,20 @@ public class QuerySpec {
 
 	public QuerySpec getOrCreateQuerySpec(ResourceInformation resourceInformation) {
 		return getOrCreateQuerySpec(resourceInformation.getResourceClass());
+	}
+
+
+	@Override
+	public String toString() {
+		return "QuerySpec{" +
+				"resourceClass=" + resourceClass +
+				", limit=" + limit +
+				", offset=" + offset +
+				", filters=" + filters +
+				", sort=" + sort +
+				", includedFields=" + includedFields +
+				", includedRelations=" + includedRelations +
+				", relatedSpecs=" + relatedSpecs +
+				'}';
 	}
 }

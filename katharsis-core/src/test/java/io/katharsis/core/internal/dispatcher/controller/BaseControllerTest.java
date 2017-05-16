@@ -5,12 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.katharsis.core.internal.boot.EmptyPropertiesProvider;
 import io.katharsis.core.internal.boot.PropertiesProvider;
 import io.katharsis.core.internal.dispatcher.path.PathBuilder;
@@ -37,32 +32,46 @@ import io.katharsis.resource.registry.ResourceRegistry;
 import io.katharsis.resource.registry.ResourceRegistryBuilderTest;
 import io.katharsis.resource.registry.ResourceRegistryTest;
 import io.katharsis.utils.parser.TypeParser;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 public abstract class BaseControllerTest {
 
 	protected static final long TASK_ID = 1;
+
 	protected static final long PROJECT_ID = 2;
 
 	protected static final QueryParams REQUEST_PARAMS = new QueryParams();
-	
+
 	protected static final PropertiesProvider PROPERTIES_PROVIDER = new EmptyPropertiesProvider();
 
 	protected ObjectMapper objectMapper;
+
 	protected PathBuilder pathBuilder;
+
 	protected ResourceRegistry resourceRegistry;
+
 	protected TypeParser typeParser;
+
 	protected DocumentMapper documentMapper;
+
 	protected QueryParamsBuilder queryParamsBuilder = new QueryParamsBuilder(new DefaultQueryParamsParser());
+
+	protected ModuleRegistry moduleRegistry;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Before
 	public void prepare() {
-		ModuleRegistry moduleRegistry = new ModuleRegistry();
-		ResourceInformationBuilder resourceInformationBuilder = new AnnotationResourceInformationBuilder(new ResourceFieldNameTransformer());
-		ResourceRegistryBuilder registryBuilder = new ResourceRegistryBuilder(moduleRegistry, new SampleJsonServiceLocator(), resourceInformationBuilder);
-		resourceRegistry = registryBuilder.build(ResourceRegistryBuilderTest.TEST_MODELS_PACKAGE, moduleRegistry, new ConstantServiceUrlProvider(ResourceRegistryTest.TEST_MODELS_URL));
+		moduleRegistry = new ModuleRegistry();
+		ResourceInformationBuilder resourceInformationBuilder =
+				new AnnotationResourceInformationBuilder(new ResourceFieldNameTransformer());
+		ResourceRegistryBuilder registryBuilder =
+				new ResourceRegistryBuilder(moduleRegistry, new SampleJsonServiceLocator(), resourceInformationBuilder);
+		resourceRegistry = registryBuilder.build(ResourceRegistryBuilderTest.TEST_MODELS_PACKAGE, moduleRegistry,
+				new ConstantServiceUrlProvider(ResourceRegistryTest.TEST_MODELS_URL));
 		pathBuilder = new PathBuilder(resourceRegistry);
 		typeParser = moduleRegistry.getTypeParser();
 		objectMapper = new ObjectMapper();
@@ -84,7 +93,8 @@ public abstract class BaseControllerTest {
 		try {
 			data.setAttribute("name", objectMapper.readTree("\"sample task\""));
 			data.setAttribute("data", objectMapper.readTree("\"asd\""));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 		return data;
@@ -97,7 +107,8 @@ public abstract class BaseControllerTest {
 
 		try {
 			data.setAttribute("name", objectMapper.readTree("\"sample user\""));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 		return data;
@@ -115,7 +126,8 @@ public abstract class BaseControllerTest {
 		try {
 			data.setAttribute("name", objectMapper.readTree("\"sample project\""));
 			data.setAttribute("data", objectMapper.readTree("{\"data\" : \"asd\"}"));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 		return data;
