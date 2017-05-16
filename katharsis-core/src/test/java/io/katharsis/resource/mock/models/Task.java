@@ -3,8 +3,8 @@ package io.katharsis.resource.mock.models;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import io.katharsis.resource.annotations.JsonApiField;
 import io.katharsis.resource.annotations.JsonApiId;
 import io.katharsis.resource.annotations.JsonApiIncludeByDefault;
@@ -27,6 +27,13 @@ public class Task {
 	private String name;
 
 	private String category;
+
+	private boolean completed;
+
+	private boolean deleted;
+
+	@JsonIgnore
+	private boolean ignoredField;
 
 	@JsonApiToOne(opposite = "tasks")
 	@JsonApiIncludeByDefault
@@ -56,13 +63,37 @@ public class Task {
 
 	@JsonApiField(patchable = false, postable = false)
 	private String status;
-	
+
 	private String readOnlyValue = "someReadOnlyValue";
 
-	public String getReadOnlyValue(){
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
+	}
+
+	public boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public boolean isIgnoredField() {
+		return ignoredField;
+	}
+
+	public void setIgnoredField(boolean ignoredField) {
+		this.ignoredField = ignoredField;
+	}
+
+	public String getReadOnlyValue() {
 		return readOnlyValue;
 	}
-	
+
 	public List<Task> getOtherTasks() {
 		return otherTasks;
 	}
@@ -102,8 +133,9 @@ public class Task {
 	}
 
 	public void setCategory(String category) {
-		if (category == null)
+		if (category == null) {
 			throw new IllegalArgumentException("Category cannot be set to null!");
+		}
 		this.category = category;
 	}
 

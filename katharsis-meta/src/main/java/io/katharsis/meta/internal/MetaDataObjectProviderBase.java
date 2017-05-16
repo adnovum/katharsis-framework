@@ -24,7 +24,7 @@ public abstract class MetaDataObjectProviderBase<T extends MetaDataObject> exten
 		List<Method> getters = ClassUtils.getClassGetters(implClass);
 		
 		Map<String, Field> fieldMap = toFieldMap(fields);
-		Map<String, Method> getterMap = toMethodMap(getters);
+		Map<String, Method> getterMap = toGetterMethodMap(getters);
 		
 		List<String> propertyNames = getOrderedPropertyNames(fields, getters, fieldMap);
 		for (String name : propertyNames) {
@@ -52,7 +52,7 @@ public abstract class MetaDataObjectProviderBase<T extends MetaDataObject> exten
 			propertyNames.add(field.getName());
 		}
 		for(Method method : getters){
-			String name = NAME_TRANSFORMER.getMethodName(method);
+			String name = ClassUtils.getGetterFieldName(method);
 			if(!fieldMap.containsKey(name)){
 				propertyNames.add(name);
 			}
@@ -68,10 +68,10 @@ public abstract class MetaDataObjectProviderBase<T extends MetaDataObject> exten
 		return map;
 	}
 	
-	private Map<String, Method> toMethodMap(List<Method> members) {
+	private Map<String, Method> toGetterMethodMap(List<Method> members) {
 		Map<String, Method> map = new HashMap<>();
 		for(Method member : members){
-			String name = NAME_TRANSFORMER.getMethodName(member);
+			String name = ClassUtils.getGetterFieldName(member);
 			map.put(name, member);
 		}
 		return map;

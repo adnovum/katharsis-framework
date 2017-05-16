@@ -135,8 +135,11 @@ public class AnnotationResourceInformationBuilder implements ResourceInformation
 	private List<ResourceFieldWrapper> getGetterResourceFields(Class<?> resourceClass, List<Method> classGetters) {
 		List<ResourceFieldWrapper> fieldWrappers = new ArrayList<>(classGetters.size());
 		for (Method getter : classGetters) {
+			String underlyingName = ClassUtils.getGetterFieldName(getter);
+			if(underlyingName == null){
+				continue;
+			}
 			String jsonName = resourceFieldNameTransformer.getName(getter);
-			String underlyingName = resourceFieldNameTransformer.getMethodName(getter);
 			fieldWrappers.add(getResourceField(resourceClass, getter, jsonName, underlyingName, getter.getReturnType(), getter.getGenericReturnType(), Arrays.asList(getter.getAnnotations())));
 		}
 		return fieldWrappers;

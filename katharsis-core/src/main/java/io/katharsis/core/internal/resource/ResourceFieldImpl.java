@@ -35,18 +35,20 @@ public class ResourceFieldImpl implements ResourceField {
 	private String oppositeName;
 
 	private ResourceInformation parentResourceInformation;
-	
+
 	private ResourceFieldAccessor accessor;
-	
+
 	private ResourceFieldAccess access;
-	
-	public ResourceFieldImpl(String jsonName, String underlyingName, ResourceFieldType resourceFieldType, Class<?> type, Type genericType, String oppositeResourceType) {
-		this(jsonName, underlyingName, resourceFieldType, type, genericType, 
+
+	public ResourceFieldImpl(String jsonName, String underlyingName, ResourceFieldType resourceFieldType, Class<?> type,
+			Type genericType, String oppositeResourceType) {
+		this(jsonName, underlyingName, resourceFieldType, type, genericType,
 				oppositeResourceType, null, true, false, LookupIncludeBehavior.NONE,
 				new ResourceFieldAccess(true, true, true, true));
 	}
 
-	public ResourceFieldImpl(String jsonName, String underlyingName, ResourceFieldType resourceFieldType, Class<?> type, Type genericType, String oppositeResourceType, String oppositeName, boolean lazy,
+	public ResourceFieldImpl(String jsonName, String underlyingName, ResourceFieldType resourceFieldType, Class<?> type,
+			Type genericType, String oppositeResourceType, String oppositeName, boolean lazy,
 			boolean includeByDefault, LookupIncludeBehavior lookupIncludeBehavior,
 			ResourceFieldAccess access) {
 		this.jsonName = jsonName;
@@ -109,7 +111,7 @@ public class ResourceFieldImpl implements ResourceField {
 	/**
 	 * Returns a flag which indicate if a field should not be serialized
 	 * automatically.
-	 * 
+	 *
 	 * @return true if a field is lazy
 	 */
 	public boolean isLazy() {
@@ -122,13 +124,17 @@ public class ResourceFieldImpl implements ResourceField {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
+		}
 		ResourceFieldImpl that = (ResourceFieldImpl) o;
-		return Objects.equals(jsonName, that.jsonName) && Objects.equals(underlyingName, that.underlyingName) && Objects.equals(type, that.type) && Objects.equals(lookupIncludeBehavior, that.lookupIncludeBehavior)
-				&& Objects.equals(includeByDefault, that.includeByDefault) && Objects.equals(genericType, that.genericType) && Objects.equals(lazy, that.lazy)
+		return Objects.equals(jsonName, that.jsonName) && Objects.equals(underlyingName, that.underlyingName) && Objects
+				.equals(type, that.type) && Objects.equals(lookupIncludeBehavior, that.lookupIncludeBehavior)
+				&& Objects.equals(includeByDefault, that.includeByDefault) && Objects.equals(genericType, that.genericType)
+				&& Objects.equals(lazy, that.lazy)
 				&& Objects.equals(access, that.access);
 	}
 
@@ -146,7 +152,8 @@ public class ResourceFieldImpl implements ResourceField {
 	public Class<?> getElementType() {
 		if (Iterable.class.isAssignableFrom(type)) {
 			return (Class<?>) ((ParameterizedType) getGenericType()).getActualTypeArguments()[0];
-		} else {
+		}
+		else {
 			return type;
 		}
 	}
@@ -154,22 +161,22 @@ public class ResourceFieldImpl implements ResourceField {
 	public ResourceInformation getParentResourceInformation() {
 		return parentResourceInformation;
 	}
-	
+
 	@Override
-	public ResourceFieldAccessor getAccessor(){
-		if(accessor == null){
+	public ResourceFieldAccessor getAccessor() {
+		if (accessor == null) {
 			throw new IllegalStateException("field not properly initialized");
 		}
 		return accessor;
 	}
-	
+
 	public void setAccessor(ResourceFieldAccessor accessor) {
 		// TODO to be eliminated by a builder pattern soon
 		this.accessor = accessor;
 	}
-	
+
 	public void setResourceInformation(ResourceInformation resourceInformation) {
-		if(this.accessor == null){
+		if (this.accessor == null) {
 			this.accessor = new ReflectionFieldAccessor(resourceInformation.getResourceClass(), underlyingName, type);
 		}
 		this.parentResourceInformation = resourceInformation;
@@ -177,7 +184,13 @@ public class ResourceFieldImpl implements ResourceField {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[jsonName=" + jsonName + ",resourceType=" + (parentResourceInformation != null ? parentResourceInformation.getResourceType() : null) + "]";
+		StringBuilder sb = new StringBuilder();
+		sb.append("[jsonName=").append(jsonName);
+		if (parentResourceInformation != null && parentResourceInformation.getResourceType() != null) {
+			sb.append(",resourceType=").append(parentResourceInformation);
+		}
+		sb.append("]");
+		return sb.toString();
 	}
 
 	public boolean isCollection() {

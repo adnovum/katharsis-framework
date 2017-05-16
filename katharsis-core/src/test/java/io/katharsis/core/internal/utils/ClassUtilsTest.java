@@ -7,16 +7,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import io.katharsis.errorhandling.exception.ResourceException;
 import io.katharsis.legacy.repository.ResourceRepository;
 import io.katharsis.resource.annotations.JsonApiResource;
 import io.katharsis.resource.mock.repository.ProjectRepository;
 import io.katharsis.utils.Optional;
+import org.junit.Test;
 
 public class ClassUtilsTest {
 
@@ -114,7 +112,13 @@ public class ClassUtilsTest {
 		List<Method> result = ClassUtils.getClassGetters(ChildClass.class);
 
 		// THEN
-		assertThat(result).hasSize(4);
+		assertThat(result).hasSize(5);
+	}
+
+	@Test
+	public void onFindGetterShouldReturnBooleanPropertyWithGet() throws Exception {
+		Method method = ClassUtils.findGetter(ParentClass.class, "booleanPropertyWithGet");
+		assertThat(method.getName()).isEqualTo("getBooleanPropertyWithGet");
 	}
 
 	@Test
@@ -195,39 +199,39 @@ public class ClassUtilsTest {
 		// WHEN
 		ClassUtils.newInstance(ClassWithoutDefaultConstructor.class);
 	}
-	
+
 	@Test
 	public void onFindGetterShouldReturnIntegerMethod() throws Exception {
 		Method method = ClassUtils.findGetter(IntegerClass.class, "id");
 		assertThat(method.getName()).isEqualTo("getId");
 	}
-	
+
 	@Test
 	public void onFindSetterShouldReturnIntegerMethod() throws Exception {
 		Method method = ClassUtils.findSetter(IntegerClass.class, "id", Integer.class);
 		assertThat(method.getName()).isEqualTo("setId");
 	}
-	
+
 	@Test
 	public void onFindGetterShouldReturnPrimitiveBooleanMethod() throws Exception {
 		Method method = ClassUtils.findGetter(ParentClass.class, "primitiveBooleanProperty");
 		assertThat(method.getName()).isEqualTo("isPrimitiveBooleanProperty");
 	}
-	
+
 	@Test
 	public void onFindGetterShouldReturnBooleanMethod() throws Exception {
 		Method method = ClassUtils.findGetter(ParentClass.class, "booleanProperty");
 		assertThat(method.getName()).isEqualTo("isBooleanProperty");
 	}
-	
+
 	@Test
 	public void onFindGetterShouldNotReturnNonBooleanIsMethods() throws Exception {
 		Method method = ClassUtils.findGetter(InvalidBooleanClass.class, "notABooleanReturnType");
 		assertThat(method).isNull();
 	}
-	
+
 	@Test
-	public void testIsPrimitiveType(){
+	public void testIsPrimitiveType() {
 		assertThat(ClassUtils.isPrimitiveType(boolean.class)).isTrue();
 		assertThat(ClassUtils.isPrimitiveType(byte.class)).isTrue();
 		assertThat(ClassUtils.isPrimitiveType(short.class)).isTrue();
@@ -247,7 +251,7 @@ public class ClassUtilsTest {
 		public abstract void setId(T id);
 
 	}
-	
+
 	private class InvalidBooleanClass {
 
 		public int isNotABooleanReturnType() {
@@ -302,6 +306,10 @@ public class ClassUtilsTest {
 		}
 
 		public Boolean isBooleanProperty() {
+			return true;
+		}
+
+		public boolean getBooleanPropertyWithGet() {
 			return true;
 		}
 

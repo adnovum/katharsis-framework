@@ -4,21 +4,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.PropertyUtilsBean;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.katharsis.core.internal.utils.ClassUtils;
 import io.katharsis.core.internal.utils.PreconditionUtil;
 import io.katharsis.resource.annotations.JsonApiRelation;
 import io.katharsis.resource.annotations.JsonApiResource;
 import io.katharsis.resource.annotations.SerializeType;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.PropertyUtilsBean;
 
 @JsonApiResource(type = "meta/attribute")
 public class MetaAttribute extends MetaElement {
@@ -101,6 +98,9 @@ public class MetaAttribute extends MetaElement {
 
 	public Method getReadMethod() {
 		this.initAccessors();
+		if(readMethod == null){
+			throw new IllegalStateException();
+		}
 		return readMethod;
 	}
 

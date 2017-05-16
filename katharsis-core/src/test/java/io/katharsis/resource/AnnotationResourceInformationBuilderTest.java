@@ -5,17 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collection;
 import java.util.concurrent.Future;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.core.internal.resource.ResourceAttributesBridge;
 import io.katharsis.errorhandling.exception.MultipleJsonApiLinksInformationException;
 import io.katharsis.errorhandling.exception.MultipleJsonApiMetaInformationException;
 import io.katharsis.errorhandling.exception.RepositoryAnnotationNotFoundException;
@@ -36,9 +30,15 @@ import io.katharsis.resource.information.ResourceFieldType;
 import io.katharsis.resource.information.ResourceInformation;
 import io.katharsis.resource.information.ResourceInformationBuilder;
 import io.katharsis.resource.information.ResourceInformationBuilderContext;
+import io.katharsis.resource.mock.models.ShapeResource;
 import io.katharsis.resource.mock.models.Task;
 import io.katharsis.resource.mock.models.UnAnnotatedTask;
 import io.katharsis.utils.parser.TypeParser;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class AnnotationResourceInformationBuilderTest {
 
@@ -47,9 +47,11 @@ public class AnnotationResourceInformationBuilderTest {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
-	private final ResourceInformationBuilder resourceInformationBuilder = new AnnotationResourceInformationBuilder(new ResourceFieldNameTransformer());
+	private final ResourceInformationBuilder resourceInformationBuilder =
+			new AnnotationResourceInformationBuilder(new ResourceFieldNameTransformer());
 
-	private final ResourceInformationBuilderContext context = new DefaultResourceInformationBuilderContext(resourceInformationBuilder, new TypeParser());
+	private final ResourceInformationBuilderContext context =
+			new DefaultResourceInformationBuilderContext(resourceInformationBuilder, new TypeParser());
 
 	@Before
 	public void setup() {
@@ -72,6 +74,62 @@ public class AnnotationResourceInformationBuilderTest {
 	}
 
 	@Test
+	public void shouldDiscardParametrizedTypeWithJsonIgnore() throws Exception {
+		ResourceInformation resourceInformation = resourceInformationBuilder.build(ShapeResource.class);
+
+		// if we get this far, that is good, it means parsing the class didn't trigger the
+		// IllegalStateException when calling ClassUtils#getRawType on a parameterized type T
+
+		assertThat(resourceInformation.findAttributeFieldByName("type")).isNotNull();
+		// This assert fails, because JsonIgnore is on the getter not the field itself
+		// assertThat(resourceInformation.findAttributeFieldByName("delegate")).isNull();
+		assertThat(resourceInformation.getIdField().getUnderlyingName()).isNotNull().isEqualTo("id");
+		assertThat(containsFieldWithName(resourceInformation, "delegate")).isFalse();
+	}
+
+	@Test
+	public void shouldHaveGetterBooleanWithGetPrefix() throws Exception {
+		ResourceInformation resourceInformation = resourceInformationBuilder.build(Task.class);
+		assertThat(containsFieldWithName(resourceInformation, "deleted")).isTrue();
+		assertThat(containsFieldWithName(resourceInformation, "tDeleted")).isFalse();
+	}
+
+	@Test
+	public void shouldHaveGetterBooleanWithIsPrefix() throws Exception {
+		ResourceInformation resourceInformation = resourceInformationBuilder.build(Task.class);
+		assertThat(containsFieldWithName(resourceInformation, "completed")).isTrue();
+	}
+
+	@Test
+	public void shouldNotHaveIgnoredField() throws Exception {
+		// GIVEN a field that has the JsonIgnore annotation, and a corresponding getter that does not
+		ResourceInformation resourceInformation = resourceInformationBuilder.build(Task.class);
+		// THEN we should not pick up the java bean property
+		assertThat(containsFieldWithName(resourceInformation, "ignoredField")).isFalse();
+	}
+
+	@Test
+	public void shouldHaveOneIdFieldOfTypeLong() {
+				/*
+ 			Task has a Long getId() field and a boolean hasId() which is ignored, only the former should have survived
+ 		 */
+		ResourceInformation resourceInformation = resourceInformationBuilder.build(Task.class);
+		assertThat(resourceInformation.getIdField()).isNotNull();
+		assertThat(resourceInformation.getIdField().getType()).isEqualTo(Long.class);
+		assertThat(containsFieldWithName(resourceInformation, "hasId")).isFalse();
+	}
+
+	private boolean containsFieldWithName(ResourceInformation resourceInformation, String name) {
+		ResourceAttributesBridge<?> attributeFields = resourceInformation.getAttributeFields();
+		for (ResourceField field : attributeFields.getFields()) {
+			if (field.getUnderlyingName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Test
 	public void checkJsonPropertyAccessPolicy() throws Exception {
 		ResourceInformation resourceInformation = resourceInformationBuilder.build(JsonIngoreTestResource.class);
 		ResourceField defaultAttribute = resourceInformation.findAttributeFieldByName("defaultAttribute");
@@ -91,12 +149,12 @@ public class AnnotationResourceInformationBuilderTest {
 
 		@JsonApiId
 		public String id;
-		
+
 		public String defaultAttribute;
 
 		@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 		public String readOnlyAttribute;
-		
+
 		@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 		public String readWriteAttribute;
 	}
@@ -161,7 +219,8 @@ public class AnnotationResourceInformationBuilderTest {
 	public void shouldHaveProperRelationshipFieldInfoForValidResource() throws Exception {
 		ResourceInformation resourceInformation = resourceInformationBuilder.build(Task.class);
 
-		assertThat(resourceInformation.getRelationshipFields()).isNotNull().hasSize(5).extracting(NAME_PROPERTY).contains("project", "projects");
+		assertThat(resourceInformation.getRelationshipFields()).isNotNull().hasSize(5).extracting(NAME_PROPERTY)
+				.contains("project", "projects");
 	}
 
 	@Test
@@ -231,26 +290,33 @@ public class AnnotationResourceInformationBuilderTest {
 	public void shouldRecognizeJsonAPIRelationTypeWithDefaults() throws Exception {
 		ResourceInformation resourceInformation = resourceInformationBuilder.build(JsonApiRelationType.class);
 
-		assertThat(resourceInformation.getRelationshipFields()).isNotEmpty().hasSize(2).extracting("type").contains(Future.class).contains(Collection.class);
+		assertThat(resourceInformation.getRelationshipFields()).isNotEmpty().hasSize(2).extracting("type").contains(Future.class)
+				.contains(Collection.class);
 		assertThat(resourceInformation.getRelationshipFields()).extracting("lazy").contains(true, true);
 		assertThat(resourceInformation.getRelationshipFields()).extracting("includeByDefault").contains(false, false);
-		assertThat(resourceInformation.getRelationshipFields()).extracting("lookupIncludeBehavior").contains(LookupIncludeBehavior.NONE, LookupIncludeBehavior.NONE);
-		assertThat(resourceInformation.getRelationshipFields()).extracting("resourceFieldType").contains(ResourceFieldType.RELATIONSHIP, ResourceFieldType.RELATIONSHIP);
+		assertThat(resourceInformation.getRelationshipFields()).extracting("lookupIncludeBehavior")
+				.contains(LookupIncludeBehavior.NONE, LookupIncludeBehavior.NONE);
+		assertThat(resourceInformation.getRelationshipFields()).extracting("resourceFieldType")
+				.contains(ResourceFieldType.RELATIONSHIP, ResourceFieldType.RELATIONSHIP);
 	}
 
 	@Test
 	public void shouldRecognizeJsonAPIRelationTypeWithNonDefaults() throws Exception {
 		ResourceInformation resourceInformation = resourceInformationBuilder.build(JsonApiRelationTypeNonDefaults.class);
 
-		assertThat(resourceInformation.getRelationshipFields()).isNotEmpty().hasSize(2).extracting("type").contains(Future.class).contains(Collection.class);
+		assertThat(resourceInformation.getRelationshipFields()).isNotEmpty().hasSize(2).extracting("type").contains(Future.class)
+				.contains(Collection.class);
 		assertThat(resourceInformation.getRelationshipFields()).extracting("lazy").contains(false, false);
 		assertThat(resourceInformation.getRelationshipFields()).extracting("includeByDefault").contains(false, true);
-		assertThat(resourceInformation.getRelationshipFields()).extracting("lookupIncludeBehavior").contains(LookupIncludeBehavior.AUTOMATICALLY_ALWAYS, LookupIncludeBehavior.AUTOMATICALLY_WHEN_NULL);
-		assertThat(resourceInformation.getRelationshipFields()).extracting("resourceFieldType").contains(ResourceFieldType.RELATIONSHIP, ResourceFieldType.RELATIONSHIP);
+		assertThat(resourceInformation.getRelationshipFields()).extracting("lookupIncludeBehavior")
+				.contains(LookupIncludeBehavior.AUTOMATICALLY_ALWAYS, LookupIncludeBehavior.AUTOMATICALLY_WHEN_NULL);
+		assertThat(resourceInformation.getRelationshipFields()).extracting("resourceFieldType")
+				.contains(ResourceFieldType.RELATIONSHIP, ResourceFieldType.RELATIONSHIP);
 	}
 
 	@JsonApiResource(type = "duplicatedIdAnnotationResources")
 	private static class DuplicatedIdResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -260,6 +326,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "ignoredId")
 	private static class IgnoredIdResource {
+
 		@JsonApiId
 		@JsonIgnore
 		private Long id;
@@ -267,6 +334,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "ignoredAttribute")
 	private static class IgnoredAttributeResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -276,6 +344,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "accessorGetter")
 	private static class AccessorGetterResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -286,6 +355,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "ignoredAccessorGetter")
 	private static class IgnoredAccessorGetterResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -297,6 +367,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "fieldWithAccessorGetterResource")
 	private static class FieldWithAccessorGetterResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -318,6 +389,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "annotationOnFieldAndMethod")
 	private static class AnnotationOnFieldAndMethodResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -332,6 +404,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "ignoredAttribute")
 	private static class IgnoredStaticAttributeResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -354,6 +427,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "ignoredAttribute")
 	private static class IgnoredStaticGetterResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -362,30 +436,37 @@ public class AnnotationResourceInformationBuilderTest {
 		}
 	}
 
-	@JsonPropertyOrder({ "b", "a", "c" })
+	@JsonPropertyOrder({"b", "a", "c"})
 	@JsonApiResource(type = "orderedResource")
 	private static class OrderedResource {
+
 		@JsonApiId
 		private Long id;
 
 		public String c;
+
 		public String b;
+
 		public String a;
 	}
 
 	@JsonPropertyOrder(alphabetic = true)
 	@JsonApiResource(type = "AlphabeticResource")
 	private static class AlphabeticResource {
+
 		@JsonApiId
 		private Long id;
 
 		public String c;
+
 		public String b;
+
 		public String a;
 	}
 
 	@JsonApiResource(type = "multipleMetaInformationResource")
 	private static class MultipleMetaInformationResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -398,6 +479,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "multipleLinksInformationResource")
 	private static class MultipleLinksInformationResource {
+
 		@JsonApiId
 		private Long id;
 
@@ -410,6 +492,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "differentTypes")
 	private static class DifferentTypes {
+
 		@JsonApiId
 		private Long id;
 
@@ -423,6 +506,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "differentTypesv2")
 	private static class DifferentTypesv2 {
+
 		@JsonApiId
 		private Long id;
 
@@ -436,6 +520,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "jsonAPIRelationType")
 	private static class JsonApiRelationType {
+
 		@JsonApiId
 		private Long id;
 
@@ -452,6 +537,7 @@ public class AnnotationResourceInformationBuilderTest {
 
 	@JsonApiResource(type = "jsonAPIRelationType")
 	private static class JsonApiRelationTypeNonDefaults {
+
 		@JsonApiId
 		private Long id;
 
