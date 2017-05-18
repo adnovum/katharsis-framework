@@ -13,6 +13,7 @@ import io.katharsis.errorhandling.exception.KatharsisMappableException;
 import io.katharsis.errorhandling.exception.KatharsisMatchingException;
 import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
 import io.katharsis.module.Module;
+import io.katharsis.module.http.HttpHeaders;
 import io.katharsis.module.http.HttpRequestContext;
 import io.katharsis.module.http.HttpRequestContextProvider;
 import io.katharsis.module.http.HttpRequestDispatcher;
@@ -37,10 +38,15 @@ public class JsonApiRequestProcessor implements HttpRequestProcessor {
 	}
 
 	public static boolean isJsonApiRequest(HttpRequestContext requestContext) {
+		if (requestContext.getMethod().equalsIgnoreCase(HttpMethod.PATCH.toString()) || requestContext.getMethod()
+				.equalsIgnoreCase(HttpMethod.POST.toString())) {
+			String contentType = requestContext.getRequestHeader(HttpHeaders.HTTP_CONTENT_TYPE);
+			if (contentType == null || !contentType.startsWith(JSONAPI_CONTENT_TYPE)) {
+				return false;
+			}
+		}
 		boolean acceptsJsonApi = requestContext.accepts(JSONAPI_CONTENT_TYPE);
-		boolean acceptsAny = requestContext.getMethod().equalsIgnoreCase(HttpMethod.GET.toString()) && requestContext.accepts
-				("*") ||
-				requestContext.accepts("*/*");
+		boolean acceptsAny = requestContext.acceptsAny();
 		return acceptsJsonApi || acceptsAny;
 	}
 

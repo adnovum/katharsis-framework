@@ -9,4 +9,6 @@ public interface HttpRequestContext extends HttpRequestContextBase {
 	void setContentType(String contentType);
 
 	void setResponse(int statusCode, String text) throws IOException;
+
+	boolean acceptsAny();
 }

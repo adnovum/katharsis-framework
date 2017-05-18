@@ -76,6 +76,11 @@ public class HttpRequestContextBaseAdapter implements HttpRequestContext {
 		}
 	}
 
+	@Override
+	public boolean acceptsAny() {
+		return accepts("*") || accepts("*/*");
+	}
+
 	protected boolean isCompatible(String accept, String contentType) {
 		String acceptLower = accept.toLowerCase();
 		if (accept.equals(contentType)) {

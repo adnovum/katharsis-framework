@@ -6,17 +6,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.github.kristofa.brave.Brave;
 import com.github.kristofa.brave.InheritableServerClientAndLocalSpanState;
 import com.twitter.zipkin.gen.Endpoint;
-
 import io.katharsis.brave.BraveModule;
+import io.katharsis.core.home.HomeModule;
 import io.katharsis.core.internal.boot.TransactionRunner;
 import io.katharsis.example.springboot.simple.domain.model.ScheduleDto;
 import io.katharsis.example.springboot.simple.domain.model.ScheduleEntity;
@@ -27,6 +21,11 @@ import io.katharsis.jpa.query.Tuple;
 import io.katharsis.jpa.query.criteria.JpaCriteriaExpressionFactory;
 import io.katharsis.jpa.query.criteria.JpaCriteriaQueryFactory;
 import io.katharsis.validation.ValidationModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import zipkin.reporter.Reporter;
 
 @Configuration
@@ -40,6 +39,7 @@ public class ModuleConfig {
 
 	/**
 	 * Bean Validation
+	 *
 	 * @return module
 	 */
 	@Bean
@@ -48,7 +48,18 @@ public class ModuleConfig {
 	}
 
 	/**
+	 * Provide list of repositories in root document.
+	 *
+	 * @return module
+	 */
+	@Bean
+	public HomeModule homeModule() {
+		return HomeModule.newInstance();
+	}
+
+	/**
 	 * Basic monitoring setup with Brave
+	 *
 	 * @return module
 	 */
 	@Bean
@@ -74,6 +85,7 @@ public class ModuleConfig {
 
 	/**
 	 * Expose JPA entities as repositories.
+	 *
 	 * @return module
 	 */
 	@Bean
@@ -92,7 +104,7 @@ public class ModuleConfig {
 		queryFactory.registerComputedAttribute(ScheduleEntity.class, "upperName", String.class,
 				new JpaCriteriaExpressionFactory<From<?, ScheduleEntity>>() {
 
-					@SuppressWarnings({ "rawtypes", "unchecked" })
+					@SuppressWarnings({"rawtypes", "unchecked"})
 					@Override
 					public Expression<String> getExpression(From<?, ScheduleEntity> entity, CriteriaQuery<?> query) {
 						CriteriaBuilder builder = em.getCriteriaBuilder();

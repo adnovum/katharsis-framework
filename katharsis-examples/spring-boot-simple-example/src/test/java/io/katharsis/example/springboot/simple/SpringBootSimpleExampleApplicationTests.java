@@ -6,17 +6,11 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.io.Serializable;
 import java.util.Map;
-
-import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.http.HttpStatus;
+import javax.security.auth.message.config.AuthConfigFactory;
 
 import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.ValidatableResponse;
-
 import io.katharsis.example.springboot.simple.domain.model.Project;
 import io.katharsis.example.springboot.simple.domain.model.ScheduleDto;
 import io.katharsis.example.springboot.simple.domain.model.ScheduleEntity;
@@ -27,8 +21,11 @@ import io.katharsis.example.springboot.simple.domain.repository.ProjectRepositor
 import io.katharsis.queryspec.QuerySpec;
 import io.katharsis.repository.ResourceRepositoryV2;
 import io.katharsis.resource.list.ResourceList;
-
-import javax.security.auth.message.config.AuthConfigFactory;
+import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.http.HttpStatus;
 
 /**
  * Shows two kinds of test cases: RestAssured and KatharsisClient.
@@ -135,7 +132,8 @@ public class SpringBootSimpleExampleApplicationTests extends BaseTest {
 
 		Map dataMap = ImmutableMap.of("data", ImmutableMap.of("type", "tasks", "attributes", attributeMap));
 
-		ValidatableResponse response = RestAssured.given().contentType("application/json").body(dataMap).when().post("/api/tasks")
+		ValidatableResponse response = RestAssured.given().contentType("application/vnd.api+json").body(dataMap).when().post
+				("/api/tasks")
 				.then().statusCode(CREATED.value());
 		response.assertThat().body(matchesJsonSchema(jsonApiSchema));
 	}
@@ -147,7 +145,7 @@ public class SpringBootSimpleExampleApplicationTests extends BaseTest {
 
 		Map dataMap = ImmutableMap.of("data", ImmutableMap.of("type", "tasks", "id", 1, "attributes", attributeMap));
 
-		RestAssured.given().contentType("application/json").body(dataMap).when().patch("/api/tasks/1").then()
+		RestAssured.given().contentType("application/vnd.api+json").body(dataMap).when().patch("/api/tasks/1").then()
 				.statusCode(OK.value());
 	}
 
@@ -158,8 +156,14 @@ public class SpringBootSimpleExampleApplicationTests extends BaseTest {
 
 		Map dataMap = ImmutableMap.of("data", ImmutableMap.of("type", "tasks", "id", 1, "attributes", attributeMap));
 
-		ValidatableResponse response = RestAssured.given().contentType("application/json").body(dataMap).when()
+		ValidatableResponse response = RestAssured.given().contentType("application/vnd.api+json").body(dataMap).when()
 				.patch("/api/tasks/1").then().statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
 		response.assertThat().body(matchesJsonSchema(jsonApiSchema));
+	}
+
+	@Test
+	public void testAccessHome() {
+		RestAssured.given().contentType("*").when().get("/api/").then()
+				.statusCode(OK.value());
 	}
 }
