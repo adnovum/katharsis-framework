@@ -8,6 +8,7 @@ buildscript {
         classpath "io.spring.gradle:dependency-management-plugin:${depMgmtVersion}"
         classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
         classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.11'
+        classpath 'com.moowork.gradle:gradle-node-plugin:1.1.1'
     }
 }
 

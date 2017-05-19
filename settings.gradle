@@ -20,6 +20,7 @@ include ':katharsis-examples:dropwizard-simple-example'
 include ':katharsis-examples:wildfly-example'
 include ':katharsis-examples:spring-boot-simple-example'
 
+include ':katharsis-ui'
 include ':katharsis-documentation'
 
 gradle.startParameter.showStacktrace = org.gradle.api.logging.configuration.ShowStacktrace.ALWAYS
