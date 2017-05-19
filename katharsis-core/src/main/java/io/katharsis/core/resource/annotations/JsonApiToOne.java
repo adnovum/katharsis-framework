@@ -1,0 +1,33 @@
+package io.katharsis.core.resource.annotations;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Indicates an association to single value which need to be handled by a separate document.
+ *
+ * @deprecated It is recommended to to implement {@link JsonApiRelation}.
+ */
+@Deprecated
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD})
+public @interface JsonApiToOne {
+
+    /**
+     * Defines whether the data associated to the relation should be visible when requesting information about a
+     * document that contains this relation.
+     * @return <i>true</i> if lazy, <i>false</i> otherwise
+     */
+    boolean lazy() default false;
+
+    /**
+     * @return opposite attribute name in case of a bidirectional association. Used by {@link RelationshipRepositoryBase} to implement
+     * its findOneTarget and findManyTarget functions by directly searching in the related document document with a filter in the opposite direction.
+     * Allow to work with relations with only implementing document repositories!
+     */
+    String opposite() default "";
+}

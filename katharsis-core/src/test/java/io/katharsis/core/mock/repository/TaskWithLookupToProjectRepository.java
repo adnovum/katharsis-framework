@@ -1,0 +1,16 @@
+package io.katharsis.core.mock.repository;
+
+import io.katharsis.legacy.repository.annotations.JsonApiFindOneTarget;
+import io.katharsis.legacy.repository.annotations.JsonApiRelationshipRepository;
+import io.katharsis.core.mock.models.Project;
+import io.katharsis.core.mock.models.TaskWithLookup;
+
+@JsonApiRelationshipRepository(source = TaskWithLookup.class, target = Project.class)
+public class TaskWithLookupToProjectRepository {
+
+    @JsonApiFindOneTarget
+    public Project findOneTarget(String sourceId, String fieldName) {
+        return new Project()
+            .setId(1L);
+    }
+}

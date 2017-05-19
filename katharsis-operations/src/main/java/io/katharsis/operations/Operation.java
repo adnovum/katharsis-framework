@@ -1,6 +1,6 @@
 package io.katharsis.operations;
 
-import io.katharsis.resource.Resource;
+import io.katharsis.core.engine.document.Resource;
 
 public class Operation {
 

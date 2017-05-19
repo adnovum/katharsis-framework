@@ -1,7 +1,7 @@
 package io.katharsis.servlet.internal;
 
-import io.katharsis.module.http.HttpRequestContextProvider;
-import io.katharsis.security.SecurityProvider;
+import io.katharsis.core.engine.http.HttpRequestContextProvider;
+import io.katharsis.core.engine.security.SecurityProvider;
 
 public class ServletSecurityProvider implements SecurityProvider {
 

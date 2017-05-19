@@ -8,7 +8,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 @JsonApiResource(type = "meta/collectionType")
 public abstract class MetaCollectionType extends MetaType {

@@ -4,15 +4,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.core.internal.boot.KatharsisBoot;
-import io.katharsis.core.internal.boot.ReflectionsServiceDiscovery;
+import io.katharsis.core.boot.KatharsisBoot;
+import io.katharsis.core.module.discovery.ReflectionsServiceDiscovery;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaElement;
 import io.katharsis.meta.model.resource.MetaResource;
 import io.katharsis.meta.provider.resource.ResourceMetaProvider;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
+import io.katharsis.core.engine.url.ConstantServiceUrlProvider;
 
 public class MetaMetaTest {
 

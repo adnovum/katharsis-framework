@@ -1,13 +1,13 @@
 package io.katharsis.legacy.registry;
 
-import io.katharsis.core.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
 import io.katharsis.legacy.internal.AnnotatedRelationshipRepositoryAdapter;
 import io.katharsis.legacy.internal.ParametersFactory;
 import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
 import io.katharsis.legacy.repository.annotations.JsonApiRelationshipRepository;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.resource.registry.ResponseRelationshipEntry;
-import io.katharsis.utils.Optional;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.engine.registry.ResponseRelationshipEntry;
+import io.katharsis.core.utils.Optional;
 
 public class AnnotatedRelationshipEntryBuilder implements ResponseRelationshipEntry {
 

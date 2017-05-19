@@ -2,7 +2,7 @@ package io.katharsis.spring.jpa;
 
 import java.util.concurrent.Callable;
 
-import io.katharsis.core.internal.boot.TransactionRunner;
+import io.katharsis.core.engine.transaction.TransactionRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;

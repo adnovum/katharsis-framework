@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import io.katharsis.client.KatharsisClient;
 import io.katharsis.client.http.okhttp.OkHttpAdapter;
 import io.katharsis.client.http.okhttp.OkHttpAdapterListenerBase;
-import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.core.boot.KatharsisProperties;
 import io.katharsis.meta.mock.model.Schedule;
 import io.katharsis.meta.provider.resource.ResourceMetaProvider;
 import io.katharsis.rs.KatharsisFeature;

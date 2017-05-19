@@ -4,9 +4,9 @@
 //import java.util.List;
 //
 //import io.katharsis.test.mock.models.Task;
-//import io.katharsis.resource.field.ResourceFieldNameTransformer;
-//import io.katharsis.resource.information.AnnotationResourceInformationBuilder;
-//import io.katharsis.resource.information.ResourceInformation;
+//import io.katharsis.core.document.field.ResourceFieldNameTransformer;
+//import io.katharsis.core.document.information.AnnotationResourceInformationBuilder;
+//import io.katharsis.core.engine.information.document.ResourceInformation;
 //import nl.jqno.equalsverifier.internal.cglib.proxy.Enhancer;
 //
 //public class ResourceProxyFactory {
@@ -90,11 +90,11 @@
 //		//Class<T> dynamicType = (Class<T>) subclass.make().load(getClass().getClassLoader()).getLoaded();
 //
 //		try {
-//			T resource = dynamicType.newInstance();
-//			ResourceProxy proxy = (ResourceProxy) resource;
+//			T document = dynamicType.newInstance();
+//			ResourceProxy proxy = (ResourceProxy) document;
 //			proxy.setResourceId(id);
 //			proxy.setResourceUrl(url);
-//			return resource;
+//			return document;
 //		}
 //		catch (InstantiationException | IllegalAccessException e) {
 //			throw new IllegalStateException(e);

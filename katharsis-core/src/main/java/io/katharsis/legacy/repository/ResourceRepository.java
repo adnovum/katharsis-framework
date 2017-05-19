@@ -2,12 +2,12 @@ package io.katharsis.legacy.repository;
 
 import java.io.Serializable;
 
-import io.katharsis.errorhandling.exception.ResourceNotFoundException;
+import io.katharsis.core.exception.ResourceNotFoundException;
 import io.katharsis.legacy.queryParams.QueryParams;
-import io.katharsis.repository.Repository;
+import io.katharsis.core.repository.Repository;
 
 /**
- * Base repository which is used to operate on the resources. Each resource should have a corresponding repository
+ * Base document which is used to operate on the resources. Each document should have a corresponding document
  * implementation.
  *
  * @param <T>  Type of an entity
@@ -19,12 +19,12 @@ import io.katharsis.repository.Repository;
 public interface ResourceRepository<T, ID extends Serializable> extends Repository{
 
     /**
-     * Search one resource with a given ID. If a resource cannot be found, a {@link ResourceNotFoundException}
+     * Search one document with a given ID. If a document cannot be found, a {@link ResourceNotFoundException}
      * exception should be thrown.
      *
-     * @param id an identifier of the resource
+     * @param id an identifier of the document
      * @param queryParams parameters sent along with the request
-     * @return an instance of the resource
+     * @return an instance of the document
      */
     T findOne(ID id, QueryParams queryParams);
 
@@ -41,25 +41,25 @@ public interface ResourceRepository<T, ID extends Serializable> extends Reposito
      * Search for resources constrained by a list of identifiers. An instance of {@link QueryParams} can be used if
      * necessary. If no resources can be found, an empty {@link Iterable} or <i>null</i> must be returned.
      *
-     * @param ids an {@link Iterable} of passed resource identifiers
+     * @param ids an {@link Iterable} of passed document identifiers
      * @param queryParams parameters send with the request
      * @return a list of found resources
      */
     Iterable<T> findAll(Iterable<ID> ids, QueryParams queryParams);
 
     /**
-     * Saves a resource. A Returning resource must include assigned identifier created for the instance of resource.
+     * Saves a document. A Returning document must include assigned identifier created for the instance of document.
      *
-     * @param entity resource to be saved
-     * @param <S> type of the resource
-     * @return saved resource. Must include set identifier.
+     * @param entity document to be saved
+     * @param <S> type of the document
+     * @return saved document. Must include set identifier.
      */
     <S extends T> S save(S entity);
 
     /**
-     * Removes a resource identified by id parameter.
+     * Removes a document identified by id parameter.
      *
-     * @param id identified of the resource to be removed
+     * @param id identified of the document to be removed
      */
     void delete(ID id);
 }

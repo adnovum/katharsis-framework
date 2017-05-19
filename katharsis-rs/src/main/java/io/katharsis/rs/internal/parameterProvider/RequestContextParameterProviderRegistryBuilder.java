@@ -3,7 +3,7 @@ package io.katharsis.rs.internal.parameterProvider;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.katharsis.module.ServiceDiscovery;
+import io.katharsis.core.module.discovery.ServiceDiscovery;
 import io.katharsis.rs.internal.parameterProvider.provider.ContainerRequestContextProvider;
 import io.katharsis.rs.internal.parameterProvider.provider.CookieParamProvider;
 import io.katharsis.rs.internal.parameterProvider.provider.HeaderParamProvider;

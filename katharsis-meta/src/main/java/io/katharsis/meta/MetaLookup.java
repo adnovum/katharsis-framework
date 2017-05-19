@@ -18,8 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.core.internal.utils.MultivaluedMap;
-import io.katharsis.core.internal.utils.PreconditionUtil;
+import io.katharsis.core.engine.internal.utils.MultivaluedMap;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
 import io.katharsis.meta.model.MetaArrayType;
 import io.katharsis.meta.model.MetaElement;
 import io.katharsis.meta.model.MetaEnumType;
@@ -31,7 +31,7 @@ import io.katharsis.meta.model.MetaSetType;
 import io.katharsis.meta.model.MetaType;
 import io.katharsis.meta.provider.MetaProvider;
 import io.katharsis.meta.provider.MetaProviderContext;
-import io.katharsis.module.Module.ModuleContext;
+import io.katharsis.core.module.Module.ModuleContext;
 
 public class MetaLookup {
 

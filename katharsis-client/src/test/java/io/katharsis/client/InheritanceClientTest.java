@@ -11,11 +11,11 @@ import io.katharsis.client.internal.proxy.ObjectProxy;
 import io.katharsis.test.mock.models.Project;
 import io.katharsis.test.mock.models.Task;
 import io.katharsis.test.mock.models.TaskSubType;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.queryspec.SortSpec;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.SortSpec;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.repository.ResourceRepositoryV2;
 
 public class InheritanceClientTest extends AbstractClientTest {
 

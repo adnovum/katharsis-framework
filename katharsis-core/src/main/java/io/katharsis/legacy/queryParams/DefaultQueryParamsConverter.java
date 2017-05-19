@@ -3,13 +3,13 @@ package io.katharsis.legacy.queryParams;
 import java.math.BigDecimal;
 import java.util.*;
 
-import io.katharsis.core.internal.utils.StringUtils;
+import io.katharsis.core.engine.internal.utils.StringUtils;
 import io.katharsis.legacy.queryParams.include.Inclusion;
 import io.katharsis.legacy.queryParams.params.*;
-import io.katharsis.queryspec.*;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.queryspec.*;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 
 @SuppressWarnings({"deprecation"})
 public class DefaultQueryParamsConverter implements QueryParamsConverter {

@@ -16,9 +16,9 @@ import io.katharsis.meta.model.MetaElement;
 import io.katharsis.meta.model.MetaPrimitiveType;
 import io.katharsis.meta.model.MetaType;
 import io.katharsis.meta.model.resource.MetaResource;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.list.ResourceList;
 
 public class MetaModuleTest extends AbstractMetaJerseyTest {
 
@@ -48,7 +48,8 @@ public class MetaModuleTest extends AbstractMetaJerseyTest {
 			else {
 				Assert.assertTrue(elem.getId(),
 						elem.getId().startsWith("app.resources.") || elem.getId().startsWith("io.katharsis.meta.")
-								|| elem.getId().startsWith("io.katharsis.resource.")
+								|| elem.getId().startsWith("io.katharsis.core.repository.")
+								|| elem.getId().startsWith("io.katharsis.core.resource.")
 								|| elem.getId().startsWith("io.katharsis.jpa."));
 			}
 		}

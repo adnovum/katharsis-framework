@@ -2,9 +2,9 @@ package io.katharsis.rs.internal;
 
 import javax.ws.rs.WebApplicationException;
 
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.ExceptionMapperHelper;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.engine.error.ExceptionMapperHelper;
+import io.katharsis.core.engine.error.ExceptionMapper;
 
 /**
  * Maps all exceptions which are subclasses of WebApplicationException to a JSON API exception response.<br />

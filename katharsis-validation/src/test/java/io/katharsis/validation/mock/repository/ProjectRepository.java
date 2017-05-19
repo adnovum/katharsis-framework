@@ -12,7 +12,7 @@ import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import io.katharsis.errorhandling.exception.ResourceNotFoundException;
+import io.katharsis.core.exception.ResourceNotFoundException;
 import io.katharsis.legacy.queryParams.QueryParams;
 import io.katharsis.legacy.repository.ResourceRepository;
 import io.katharsis.validation.mock.models.Project;

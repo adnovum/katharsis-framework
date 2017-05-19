@@ -8,21 +8,21 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.core.internal.registry.DirectResponseRelationshipEntry;
-import io.katharsis.core.internal.registry.DirectResponseResourceEntry;
-import io.katharsis.errorhandling.exception.RepositoryInstanceNotFoundException;
+import io.katharsis.core.engine.internal.registry.DirectResponseRelationshipEntry;
+import io.katharsis.core.engine.internal.registry.DirectResponseResourceEntry;
+import io.katharsis.core.exception.RepositoryInstanceNotFoundException;
 import io.katharsis.legacy.locator.JsonServiceLocator;
 import io.katharsis.legacy.repository.RelationshipRepository;
 import io.katharsis.legacy.repository.ResourceRepository;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.registry.ResourceEntry;
-import io.katharsis.resource.registry.ResourceLookup;
-import io.katharsis.resource.registry.ResponseRelationshipEntry;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.engine.registry.ResourceEntry;
+import io.katharsis.core.module.discovery.ResourceLookup;
+import io.katharsis.core.engine.registry.ResponseRelationshipEntry;
 import net.jodah.typetools.TypeResolver;
 
 /**
- * Repository entries builder for classes implementing repository interfaces.
+ * Repository entries builder for classes implementing document interfaces.
  */
 public class DirectRepositoryEntryBuilder implements RepositoryEntryBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DirectRepositoryEntryBuilder.class);
@@ -77,7 +77,8 @@ public class DirectRepositoryEntryBuilder implements RepositoryEntryBuilder {
 				throw new RepositoryInstanceNotFoundException(relationshipRepositoryClass.getCanonicalName());
 			}
 
-			LOGGER.debug("Assigned {} RelationshipRepository  to {} resource class", relationshipRepositoryClass.getCanonicalName(), resourceClass.getCanonicalName());
+			LOGGER.debug("Assigned {} RelationshipRepository  to {} resource class", relationshipRepositoryClass.getCanonicalName
+					(), resourceClass.getCanonicalName());
 
 			@SuppressWarnings("unchecked")
 			DirectResponseRelationshipEntry relationshipEntry = new DirectResponseRelationshipEntry(new RepositoryInstanceBuilder<>(jsonServiceLocator, (Class<RelationshipRepository>) relationshipRepositoryClass));

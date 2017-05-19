@@ -4,10 +4,10 @@ import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.katharsis.core.internal.utils.ClassUtils;
-import io.katharsis.resource.annotations.JsonApiRelation;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.SerializeType;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
+import io.katharsis.core.resource.annotations.JsonApiRelation;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.SerializeType;
 
 @JsonApiResource(type = "meta/type")
 public class MetaType extends MetaElement {

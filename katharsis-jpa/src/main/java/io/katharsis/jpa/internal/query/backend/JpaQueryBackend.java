@@ -6,8 +6,8 @@ import javax.persistence.criteria.JoinType;
 
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaAttributePath;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
 
 public interface JpaQueryBackend<F, O, P, E> {
 

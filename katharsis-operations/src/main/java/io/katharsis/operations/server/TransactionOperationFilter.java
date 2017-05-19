@@ -3,8 +3,8 @@ package io.katharsis.operations.server;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import io.katharsis.core.internal.boot.TransactionRunner;
-import io.katharsis.module.ServiceDiscovery;
+import io.katharsis.core.engine.transaction.TransactionRunner;
+import io.katharsis.core.module.discovery.ServiceDiscovery;
 import io.katharsis.operations.OperationResponse;
 
 public class TransactionOperationFilter implements OperationFilter {

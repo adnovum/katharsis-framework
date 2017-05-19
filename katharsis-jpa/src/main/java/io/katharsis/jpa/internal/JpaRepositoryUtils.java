@@ -1,26 +1,23 @@
 package io.katharsis.jpa.internal;
 
-import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Set;
 
-import io.katharsis.core.internal.utils.PreconditionUtil;
-import io.katharsis.core.internal.utils.PropertyUtils;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
+import io.katharsis.core.engine.internal.utils.PropertyUtils;
 import io.katharsis.jpa.annotations.JpaMergeRelations;
-import io.katharsis.jpa.meta.MetaJpaDataObject;
 import io.katharsis.jpa.query.JpaQuery;
 import io.katharsis.jpa.query.JpaQueryExecutor;
-import io.katharsis.meta.MetaLookup;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaKey;
-import io.katharsis.queryspec.FilterSpec;
-import io.katharsis.queryspec.IncludeSpec;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.queryspec.SortSpec;
+import io.katharsis.core.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.IncludeSpec;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.SortSpec;
 
 public class JpaRepositoryUtils {
 

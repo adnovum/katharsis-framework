@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
-import io.katharsis.module.http.HttpRequestContextBase;
-import io.katharsis.utils.Nullable;
+import io.katharsis.core.engine.http.HttpRequestContextBase;
+import io.katharsis.core.utils.Nullable;
 
 public class ServletRequestContext implements HttpRequestContextBase {
 

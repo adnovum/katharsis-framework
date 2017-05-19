@@ -14,10 +14,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.SecurityContext;
 
-import io.katharsis.core.internal.repository.information.DefaultResourceRepositoryInformationBuilder;
-import io.katharsis.module.Module;
-import io.katharsis.repository.information.RepositoryAction;
-import io.katharsis.repository.information.RepositoryAction.RepositoryActionType;
+import io.katharsis.legacy.repository.information.DefaultResourceRepositoryInformationBuilder;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.engine.information.repository.RepositoryAction;
+import io.katharsis.core.engine.information.repository.RepositoryAction.RepositoryActionType;
 
 public class JaxrsModule implements Module {
 

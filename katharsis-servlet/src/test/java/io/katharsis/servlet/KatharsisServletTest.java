@@ -34,9 +34,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
-import io.katharsis.core.internal.dispatcher.http.JsonApiRequestProcessor;
-import io.katharsis.core.internal.utils.StringUtils;
-import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.core.engine.internal.http.JsonApiRequestProcessor;
+import io.katharsis.core.engine.internal.utils.StringUtils;
+import io.katharsis.core.boot.KatharsisProperties;
 import io.katharsis.servlet.resource.model.Locale;
 import io.katharsis.servlet.resource.model.Node;
 import io.katharsis.servlet.resource.model.NodeComment;
@@ -218,7 +218,7 @@ public class KatharsisServletTest {
 		katharsisServlet.service(request, response);
 
 		String responseContent = response.getContentAsString();
-		assertTrue("Response should not be returned for non matching resource type", StringUtils.isBlank(responseContent));
+		assertTrue("Response should not be returned for non matching document type", StringUtils.isBlank(responseContent));
 		assertEquals(404, response.getStatus());
 
 	}

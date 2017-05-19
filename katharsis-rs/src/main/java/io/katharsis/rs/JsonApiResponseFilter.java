@@ -8,19 +8,19 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import io.katharsis.core.internal.boot.KatharsisBoot;
-import io.katharsis.core.internal.dispatcher.HttpRequestContextBaseAdapter;
-import io.katharsis.core.internal.resource.DocumentMapper;
-import io.katharsis.module.http.HttpRequestContext;
-import io.katharsis.module.http.HttpRequestContextProvider;
-import io.katharsis.repository.response.JsonApiResponse;
-import io.katharsis.resource.Document;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.list.ResourceListBase;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.resource.registry.ServiceUrlProvider;
+import io.katharsis.core.boot.KatharsisBoot;
+import io.katharsis.core.engine.internal.dispatcher.HttpRequestContextBaseAdapter;
+import io.katharsis.core.engine.internal.document.mapper.DocumentMapper;
+import io.katharsis.core.engine.http.HttpRequestContext;
+import io.katharsis.core.engine.http.HttpRequestContextProvider;
+import io.katharsis.core.repository.response.JsonApiResponse;
+import io.katharsis.core.engine.document.Document;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.list.ResourceListBase;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.engine.url.ServiceUrlProvider;
 import io.katharsis.rs.type.JsonApiMediaType;
-import io.katharsis.utils.Nullable;
+import io.katharsis.core.utils.Nullable;
 
 /**
  * Uses the Katharsis {@link DocumentMapper} to create a JSON API response for
@@ -86,11 +86,11 @@ public class JsonApiResponseFilter implements ContainerResponseFilter {
 
 	/**
 	 * Determines whether the given response entity is either a Katharsis
-	 * resource or a list of Katharsis resources.
+	 * document or a list of Katharsis resources.
 	 *
 	 * @param response the response entity
 	 * @return <code>true</code>, if <code>response</code> is a (list of)
-	 * Katharsis resource(s),<br />
+	 * Katharsis document(s),<br />
 	 * <code>false</code>, otherwise
 	 */
 	private boolean isResourceResponse(Object response) {

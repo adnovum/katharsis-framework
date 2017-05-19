@@ -1,0 +1,226 @@
+package io.katharsis.core.engine.internal.registry;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.katharsis.core.exception.ResourceNotFoundInitializationException;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.engine.url.ServiceUrlProvider;
+import io.katharsis.core.utils.Optional;
+
+public class ResourceRegistryImpl implements ResourceRegistry {
+	protected final Map<Class, RegistryEntry> resources;
+	private final ServiceUrlProvider serviceUrlProvider;
+	private final Logger logger = LoggerFactory.getLogger(ResourceRegistryImpl.class);
+	private ModuleRegistry moduleRegistry;
+
+	public ResourceRegistryImpl(ModuleRegistry moduleRegistry, ServiceUrlProvider serviceUrlProvider) {
+		this.moduleRegistry = moduleRegistry;
+		this.serviceUrlProvider = serviceUrlProvider;
+		this.resources = new HashMap<>();
+		this.moduleRegistry.setResourceRegistry(this);
+	}
+
+	/**
+	 * Adds a new document definition to a registry.
+	 *
+	 * @param resource
+	 *            class of a document
+	 * @param registryEntry
+	 *            document information
+	 * @param <T>
+	 *            type of a document
+	 */
+	public RegistryEntry addEntry(Class<?> resource, RegistryEntry registryEntry) {
+		resources.put(resource, registryEntry);
+		registryEntry.initialize(moduleRegistry);
+		logger.debug("Added resource {} to ResourceRegistry", resource.getName());
+		return registryEntry;
+	}
+
+	/**
+	 * Searches the registry for a document identified by a JSON API document
+	 * type. If a document cannot be found, <i>null</i> is returned.
+	 *
+	 * @param searchType
+	 *            document type
+	 * @return registry entry or <i>null</i>
+	 */
+	public RegistryEntry getEntry(String searchType) {
+		for (Map.Entry<Class, RegistryEntry> entry : resources.entrySet()) {
+			String type = getResourceType(entry.getKey());
+			if (type == null) {
+				return null;
+			}
+			if (type.equals(searchType)) {
+				return entry.getValue();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Searches the registry for a document identified by, 1) JSON API document
+	 * type. 2) JSON API document class.
+	 * <p>
+	 * If a document cannot be found,
+	 * {@link ResourceNotFoundInitializationException} is thrown.
+	 *
+	 * @param searchType
+	 *            document type
+	 * @param clazz
+	 *            document type
+	 * @return registry entry
+	 * @throws ResourceNotFoundInitializationException
+	 *             if document is not found
+	 */
+	public RegistryEntry findEntry(String searchType, Class<?> clazz) {
+		RegistryEntry entry = getEntry(searchType);
+		if (entry == null) {
+			return getEntry(clazz, false);
+		}
+		return entry;
+	}
+
+	/**
+	 * Searches the registry for a document identified by a JSON API document
+	 * class. If a document cannot be found,
+	 * {@link ResourceNotFoundInitializationException} is thrown.
+	 *
+	 * @param clazz
+	 *            document type
+	 * @return registry entry
+	 * @throws ResourceNotFoundInitializationException
+	 *             if document is not found
+	 */
+	public RegistryEntry findEntry(Class<?> clazz) {
+		return (RegistryEntry) getEntry(clazz, false);
+	}
+
+	public boolean hasEntry(Class<?> clazz) {
+		return getEntry(clazz, true) != null;
+	}
+
+	protected RegistryEntry getEntry(Class<?> clazz, boolean allowNull) {
+		Optional<Class<?>> resourceClazz = getResourceClass(clazz);
+		if (allowNull && !resourceClazz.isPresent())
+			return null;
+		else if (!resourceClazz.isPresent())
+			throw new ResourceNotFoundInitializationException(clazz.getCanonicalName());
+		return resources.get(resourceClazz.get());
+	}
+
+	public <T> RegistryEntry getEntry(T targetDataObject) {
+		Class<?> targetDataObjClass = targetDataObject.getClass();
+		RegistryEntry relationshipEntry;
+		if (targetDataObjClass.getAnnotation(JsonApiResource.class) != null) {
+			relationshipEntry = findEntry(targetDataObjClass.getAnnotation(JsonApiResource.class).type(), targetDataObjClass.getClass());
+		} else {
+			relationshipEntry = findEntry(targetDataObject.getClass());
+		}
+		return relationshipEntry;
+	}
+
+	/**
+	 * Returns a JSON API document type used by Katharsis. If a class cannot be
+	 * found, <i>null</i> is returned. The value is fetched from
+	 * {@link ResourceInformation#getResourceType()} attribute.
+	 *
+	 * @param clazz
+	 *            document class
+	 * @return document type or null
+	 */
+	public String getResourceType(Class<?> clazz) {
+		RegistryEntry entry = getEntry(clazz, true);
+		if (entry == null) {
+			return null;
+		}
+		ResourceInformation resourceInformation = entry.getResourceInformation();
+		if (resourceInformation == null) {
+			return null;
+		}
+		return resourceInformation.getResourceType();
+	}
+
+	public Optional<Class<?>> getResourceClass(Object resource) {
+		return getResourceClass(resource.getClass());
+	}
+
+	public Optional<Class<?>> getResourceClass(Class<?> resourceClass) {
+		Class<?> currentClass = resourceClass;
+		while (currentClass != null && currentClass != Object.class) {
+			RegistryEntry entry = resources.get(currentClass);
+			if (entry != null) {
+				return (Optional) Optional.of(currentClass);
+			}
+			currentClass = currentClass.getSuperclass();
+		}
+		return Optional.empty();
+	}
+
+	public String getResourceUrl(Class<?> clazz) {
+		return serviceUrlProvider.getUrl() + "/" + getResourceType(clazz);
+	}
+
+	public String getServiceUrl() {
+		return serviceUrlProvider.getUrl();
+	}
+
+	public ServiceUrlProvider getServiceUrlProvider() {
+		return serviceUrlProvider;
+	}
+
+	/**
+	 * Get a list of all registered resources by Katharsis.
+	 *
+	 * @return resources
+	 */
+	public Set<RegistryEntry> getResources() {
+		return Collections.unmodifiableSet(new HashSet<>(resources.values()));
+	}
+
+	public RegistryEntry getEntryForClass(Class<?> resourceClass) {
+		return resources.get(resourceClass);
+	}
+
+
+	@Override
+	public String getResourceUrl(ResourceInformation resourceInformation) {
+		String url = serviceUrlProvider.getUrl();
+		if(!url.endsWith("/")){
+			url += "/";
+		}
+		return url + resourceInformation.getResourceType();
+	}
+
+	private ConcurrentHashMap<String, ResourceInformation> baseTypeCache = new ConcurrentHashMap<>();
+	
+	@Override
+	public ResourceInformation getBaseResourceInformation(String resourceType) {
+		ResourceInformation baseInformation = baseTypeCache.get(resourceType);
+		if(baseInformation != null){
+			return baseInformation;
+		}
+		
+		RegistryEntry entry = getEntry(resourceType);
+		baseInformation = entry.getResourceInformation();
+		while(baseInformation.getSuperResourceType() != null){
+			entry = getEntry(baseInformation.getSuperResourceType());
+			baseInformation = entry.getResourceInformation();
+		}
+		
+		baseTypeCache.put(resourceType, baseInformation);
+		return baseInformation;
+	}
+}

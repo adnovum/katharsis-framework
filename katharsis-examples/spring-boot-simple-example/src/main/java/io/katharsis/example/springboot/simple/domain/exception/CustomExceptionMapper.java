@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.ErrorDataBuilder;
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.engine.document.ErrorDataBuilder;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.engine.error.ExceptionMapper;
 
 @Component
 public class CustomExceptionMapper implements ExceptionMapper<CustomException> {

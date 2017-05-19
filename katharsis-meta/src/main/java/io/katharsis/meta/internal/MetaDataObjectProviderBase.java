@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.katharsis.core.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.provider.MetaProviderBase;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
 
 public abstract class MetaDataObjectProviderBase<T extends MetaDataObject> extends MetaProviderBase {
 

@@ -1,6 +1,6 @@
 package io.katharsis.security;
 
-import io.katharsis.resource.meta.MetaInformation;
+import io.katharsis.core.resource.meta.MetaInformation;
 
 /**
  * Can be implemented by MetaInformation classes to let the SecurityModule fill in the permissions.

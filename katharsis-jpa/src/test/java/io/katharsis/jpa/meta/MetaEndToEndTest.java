@@ -21,8 +21,8 @@ import io.katharsis.meta.model.MetaKey;
 import io.katharsis.meta.model.resource.MetaJsonObject;
 import io.katharsis.meta.model.resource.MetaResource;
 import io.katharsis.meta.model.resource.MetaResourceBase;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
 
 public class MetaEndToEndTest extends AbstractJpaJerseyTest {
 

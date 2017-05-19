@@ -9,22 +9,21 @@ import io.katharsis.client.internal.proxy.ClientProxyFactory;
 import io.katharsis.client.internal.proxy.ObjectProxy;
 import io.katharsis.client.response.JsonLinksInformation;
 import io.katharsis.client.response.JsonMetaInformation;
-import io.katharsis.core.internal.boot.PropertiesProvider;
-import io.katharsis.core.internal.resource.DocumentMapper;
-import io.katharsis.core.internal.resource.DocumentMapperUtil;
-import io.katharsis.core.internal.resource.ResourceMapper;
-import io.katharsis.core.internal.utils.PropertyUtils;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.repository.request.QueryAdapter;
-import io.katharsis.resource.Document;
-import io.katharsis.resource.Relationship;
-import io.katharsis.resource.Resource;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.utils.Nullable;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.engine.properties.PropertiesProvider;
+import io.katharsis.core.engine.internal.document.mapper.DocumentMapper;
+import io.katharsis.core.engine.internal.document.mapper.DocumentMapperUtil;
+import io.katharsis.core.engine.internal.document.mapper.ResourceMapper;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.engine.query.QueryAdapter;
+import io.katharsis.core.engine.document.Document;
+import io.katharsis.core.engine.document.Relationship;
+import io.katharsis.core.engine.document.Resource;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.utils.Nullable;
+import io.katharsis.core.engine.parser.TypeParser;
 
 public class ClientDocumentMapper extends DocumentMapper {
 

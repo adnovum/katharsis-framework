@@ -3,16 +3,16 @@ package io.katharsis.legacy.queryParams;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.katharsis.core.internal.registry.ResourceRegistryImpl;
-import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.core.engine.internal.registry.ResourceRegistryImpl;
+import io.katharsis.core.engine.internal.information.resource.AnnotationResourceInformationBuilder;
 import io.katharsis.legacy.internal.QueryParamsAdapter;
 import io.katharsis.legacy.registry.DefaultResourceInformationBuilderContext;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.mock.models.Task;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.mock.models.Task;
+import io.katharsis.core.engine.url.ConstantServiceUrlProvider;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 
 public class QueryParamsAdapterTest {
 

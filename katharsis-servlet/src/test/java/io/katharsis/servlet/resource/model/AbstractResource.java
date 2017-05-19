@@ -2,7 +2,7 @@ package io.katharsis.servlet.resource.model;
 
 import java.util.Objects;
 
-import io.katharsis.resource.annotations.JsonApiId;
+import io.katharsis.core.resource.annotations.JsonApiId;
 
 public class AbstractResource {
 

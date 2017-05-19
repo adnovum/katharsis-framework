@@ -16,11 +16,11 @@ import io.katharsis.meta.MetaLookup;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaAttributePath;
 import io.katharsis.meta.model.MetaDataObject;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
-import io.katharsis.queryspec.FilterSpec;
-import io.katharsis.queryspec.IncludeFieldSpec;
-import io.katharsis.queryspec.SortSpec;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.IncludeFieldSpec;
+import io.katharsis.core.queryspec.SortSpec;
 
 public abstract class AbstractJpaQueryImpl<T, B extends JpaQueryBackend<?, ?, ?, ?>> implements JpaQuery<T> {
 

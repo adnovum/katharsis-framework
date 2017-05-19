@@ -12,17 +12,17 @@ import io.katharsis.legacy.queryParams.QueryParams;
 /**
  * <p>
  * Method annotated with this annotation will be used to perform find one
- * operation on a particular resource. The method must be defined in a class
+ * operation on a particular document. The method must be defined in a class
  * annotated with {@link JsonApiResourceRepository}.
  * </p>
  * <p>
  * The requirements for the method parameters are as follows:
  * </p>
  * <ol>
- * <li>A resource identifier</li>
+ * <li>A document identifier</li>
  * </ol>
  * <p>
- * The return value should be a resource of
+ * The return value should be a document of
  * {@link JsonApiResourceRepository#value()} type.
  * </p>
  *

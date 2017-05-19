@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.katharsis.core.internal.utils.PreconditionUtil;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.JsonApiToMany;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiToMany;
 
 @JsonApiResource(type = "meta/key")
 public class MetaKey extends MetaElement {

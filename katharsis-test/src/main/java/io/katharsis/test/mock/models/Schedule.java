@@ -4,10 +4,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import io.katharsis.resource.annotations.JsonApiId;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.JsonApiToMany;
-import io.katharsis.resource.annotations.JsonApiToOne;
+import io.katharsis.core.resource.annotations.JsonApiId;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiToMany;
+import io.katharsis.core.resource.annotations.JsonApiToOne;
 
 @JsonApiResource(type = "schedules")
 public class Schedule {

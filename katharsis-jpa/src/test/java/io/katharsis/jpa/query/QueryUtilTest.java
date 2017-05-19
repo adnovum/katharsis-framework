@@ -7,7 +7,7 @@ import java.lang.reflect.Modifier;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.katharsis.core.internal.utils.PreconditionUtil;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
 
 public class QueryUtilTest {
 

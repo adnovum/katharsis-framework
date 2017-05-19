@@ -1,6 +1,6 @@
 package io.katharsis.meta.model.resource;
 
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 /**
  * A JSON API resource.

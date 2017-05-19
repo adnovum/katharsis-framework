@@ -8,24 +8,24 @@ import java.util.Set;
 import com.github.kristofa.brave.Brave;
 import com.github.kristofa.brave.LocalTracer;
 
-import io.katharsis.core.internal.query.QuerySpecAdapter;
-import io.katharsis.core.internal.utils.StringUtils;
-import io.katharsis.module.Module;
-import io.katharsis.module.Module.ModuleContext;
-import io.katharsis.queryspec.DefaultQuerySpecSerializer;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.filter.RepositoryFilterBase;
-import io.katharsis.repository.filter.RepositoryFilterContext;
-import io.katharsis.repository.filter.RepositoryRequestFilterChain;
-import io.katharsis.repository.request.QueryAdapter;
-import io.katharsis.repository.request.RepositoryRequestSpec;
-import io.katharsis.repository.response.JsonApiResponse;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.registry.RegistryEntry;
+import io.katharsis.core.queryspec.internal.QuerySpecAdapter;
+import io.katharsis.core.engine.internal.utils.StringUtils;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.module.Module.ModuleContext;
+import io.katharsis.core.queryspec.DefaultQuerySpecSerializer;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.engine.filter.RepositoryFilterBase;
+import io.katharsis.core.engine.filter.RepositoryFilterContext;
+import io.katharsis.core.engine.filter.RepositoryRequestFilterChain;
+import io.katharsis.core.engine.query.QueryAdapter;
+import io.katharsis.core.engine.dispatcher.RepositoryRequestSpec;
+import io.katharsis.core.repository.response.JsonApiResponse;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.registry.RegistryEntry;
 
 /**
  * Performs a local trace for each repository call. Keep in mind that a single HTTP request
- * can trigger multiple repository calls if inclusions of relations are in use. . 
+ * can trigger multiple repository calls if inclusions of relations are in use. .
  */
 public class BraveRepositoryFilter extends RepositoryFilterBase {
 

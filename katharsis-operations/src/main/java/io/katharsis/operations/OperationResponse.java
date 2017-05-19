@@ -2,7 +2,7 @@ package io.katharsis.operations;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import io.katharsis.resource.Document;
+import io.katharsis.core.engine.document.Document;
 
 @XmlRootElement
 public class OperationResponse extends Document {

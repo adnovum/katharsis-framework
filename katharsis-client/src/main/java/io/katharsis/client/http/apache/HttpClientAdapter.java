@@ -10,7 +10,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import io.katharsis.client.http.HttpAdapter;
 import io.katharsis.client.http.HttpAdapterRequest;
-import io.katharsis.repository.request.HttpMethod;
+import io.katharsis.core.engine.http.HttpMethod;
 
 public class HttpClientAdapter implements HttpAdapter {
 

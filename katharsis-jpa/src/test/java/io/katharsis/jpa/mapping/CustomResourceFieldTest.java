@@ -12,10 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import io.katharsis.core.internal.resource.ResourceFieldImpl;
+import io.katharsis.core.engine.internal.information.resource.ResourceFieldImpl;
 import io.katharsis.jpa.AbstractJpaJerseyTest;
 import io.katharsis.jpa.JpaModule;
 import io.katharsis.jpa.internal.JpaResourceInformationBuilder;
@@ -27,12 +24,11 @@ import io.katharsis.jpa.query.AbstractJpaTest;
 import io.katharsis.jpa.util.EntityManagerProducer;
 import io.katharsis.jpa.util.SpringTransactionRunner;
 import io.katharsis.meta.MetaLookup;
-import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaDataObject;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceFieldAccess;
-import io.katharsis.resource.information.ResourceFieldAccessor;
-import io.katharsis.resource.information.ResourceFieldType;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceFieldAccess;
+import io.katharsis.core.engine.information.resource.ResourceFieldAccessor;
+import io.katharsis.core.engine.information.resource.ResourceFieldType;
 import io.katharsis.rs.type.JsonApiMediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;

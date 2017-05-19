@@ -3,18 +3,17 @@ package io.katharsis.legacy.internal;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import io.katharsis.core.internal.utils.ClassUtils;
-import io.katharsis.legacy.queryParams.QueryParams;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
 import io.katharsis.legacy.repository.annotations.JsonApiDelete;
 import io.katharsis.legacy.repository.annotations.JsonApiFindAll;
 import io.katharsis.legacy.repository.annotations.JsonApiFindAllWithIds;
 import io.katharsis.legacy.repository.annotations.JsonApiFindOne;
 import io.katharsis.legacy.repository.annotations.JsonApiSave;
-import io.katharsis.repository.request.QueryAdapter;
+import io.katharsis.core.engine.query.QueryAdapter;
 
 /**
- * An adapter for annotation-based resource repository. Stores references to repository methods and call o proper one
- * when a repository method has to be called. This class is instantiated in {@link io.katharsis.legacy.registry.RepositoryInstanceBuilder}
+ * An adapter for annotation-based document document. Stores references to document methods and call o proper one
+ * when a document method has to be called. This class is instantiated in {@link io.katharsis.legacy.registry.RepositoryInstanceBuilder}
  */
 public class AnnotatedResourceRepositoryAdapter<T, ID extends Serializable>
     extends AnnotatedRepositoryAdapter<T> {

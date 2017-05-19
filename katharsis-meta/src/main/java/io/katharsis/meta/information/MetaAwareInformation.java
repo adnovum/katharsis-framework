@@ -1,7 +1,7 @@
 package io.katharsis.meta.information;
 
 import io.katharsis.meta.model.MetaElement;
-import io.katharsis.utils.Optional;
+import io.katharsis.core.utils.Optional;
 
 /**
  * resource, repository or field information backed by meta data.

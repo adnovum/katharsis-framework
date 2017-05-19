@@ -28,11 +28,11 @@ import ch.adnovum.jcan.katharsis.util.KatharsisNetworkUtil;
 import io.katharsis.client.KatharsisClient;
 import io.katharsis.client.QuerySpecRelationshipRepositoryStub;
 import io.katharsis.client.QuerySpecResourceRepositoryStub;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.resource.list.ResourceList;
 import io.katharsis.rs.KatharsisFeature;
-import io.katharsis.security.ForbiddenException;
-import io.katharsis.security.UnauthorizedException;
+import io.katharsis.core.engine.security.ForbiddenException;
+import io.katharsis.core.engine.security.UnauthorizedException;
 
 @RunWith(CdiTestRunner.class)
 @Singleton

@@ -10,14 +10,14 @@ import java.lang.annotation.Target;
 /**
  * <p>
  * Method annotated with this annotation will be used to perform delete
- * operation on a particular resource. The method must be defined in a class
+ * operation on a particular document. The method must be defined in a class
  * annotated with {@link JsonApiResourceRepository}.
  * </p>
  * <p>
  * The requirements for the method parameters are as follows:
  * </p>
  * <ol>
- * <li>An identifier of a resource</li>
+ * <li>An identifier of a document</li>
  * </ol>
  * <p>
  * The method's return value should be <i>void</i>.

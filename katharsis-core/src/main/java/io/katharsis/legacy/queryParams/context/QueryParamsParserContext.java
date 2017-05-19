@@ -1,6 +1,6 @@
 package io.katharsis.legacy.queryParams.context;
 
-import io.katharsis.resource.information.ResourceInformation;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
 
 import java.util.Set;
 
@@ -26,7 +26,7 @@ public interface QueryParamsParserContext {
 	Iterable<String> getParameterNames();
 
 	/**
-	 * Returns ResourceInformation for the primary resource of the current
+	 * Returns ResourceInformation for the primary document of the current
 	 * request.
 	 */
 	ResourceInformation getRequestedResourceInformation();

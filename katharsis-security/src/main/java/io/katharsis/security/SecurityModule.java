@@ -5,16 +5,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.katharsis.core.engine.security.SecurityProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.module.InitializingModule;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.security.SecurityProvider;
+import io.katharsis.core.module.InitializingModule;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 import io.katharsis.security.internal.SecurityFilter;
-import io.katharsis.utils.Supplier;
+import io.katharsis.core.utils.Supplier;
 
 public class SecurityModule implements InitializingModule {
 

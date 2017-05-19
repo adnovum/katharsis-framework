@@ -1,6 +1,6 @@
 package io.katharsis.meta.mock.model;
 
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 @JsonApiResource(type = "extendsBase")
 public class ExtendsBaseResource extends BaseObject {

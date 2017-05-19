@@ -13,15 +13,15 @@ import org.junit.Test;
 
 import io.katharsis.test.mock.models.Project;
 import io.katharsis.test.mock.models.Task;
-import io.katharsis.queryspec.DefaultQuerySpecDeserializer;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
-import io.katharsis.queryspec.FilterSpec;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.queryspec.SortSpec;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.information.ResourceInformation;
+import io.katharsis.core.queryspec.DefaultQuerySpecDeserializer;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.SortSpec;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
 
 public class QuerySpecUnknownAttributeClientTest extends AbstractClientTest {
 

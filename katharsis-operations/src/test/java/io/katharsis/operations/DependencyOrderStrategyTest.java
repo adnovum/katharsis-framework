@@ -7,11 +7,11 @@ import java.util.List;
 
 import io.katharsis.operations.server.order.DependencyOrderStrategy;
 import io.katharsis.operations.server.order.OrderedOperation;
-import io.katharsis.repository.request.HttpMethod;
-import io.katharsis.resource.Relationship;
-import io.katharsis.resource.Resource;
-import io.katharsis.resource.ResourceIdentifier;
-import io.katharsis.utils.Nullable;
+import io.katharsis.core.engine.http.HttpMethod;
+import io.katharsis.core.engine.document.Relationship;
+import io.katharsis.core.engine.document.Resource;
+import io.katharsis.core.engine.document.ResourceIdentifier;
+import io.katharsis.core.utils.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 

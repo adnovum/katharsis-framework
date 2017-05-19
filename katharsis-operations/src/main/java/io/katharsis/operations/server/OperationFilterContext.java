@@ -3,7 +3,7 @@ package io.katharsis.operations.server;
 import java.util.List;
 
 import io.katharsis.operations.server.order.OrderedOperation;
-import io.katharsis.module.ServiceDiscovery;
+import io.katharsis.core.module.discovery.ServiceDiscovery;
 
 public interface OperationFilterContext {
 

@@ -9,10 +9,10 @@ import java.util.Map;
 
 import io.katharsis.client.KatharsisClient;
 import io.katharsis.client.action.ActionStubFactory;
-import io.katharsis.core.internal.utils.ClassUtils;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceListBase;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.resource.list.ResourceListBase;
 import net.jodah.typetools.TypeResolver;
 
 public class ClientStubInvocationHandler implements InvocationHandler {
@@ -34,7 +34,7 @@ public class ClientStubInvocationHandler implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		try {
 			if (method.getDeclaringClass().isAssignableFrom(ResourceRepositoryV2.class)) {
-				// execute repository method
+				// execute document method
 				return method.invoke(repositoryStub, args);
 			}
 			else if (interfaceStubMethodMap.containsKey(method)) {

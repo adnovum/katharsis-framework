@@ -18,7 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-import io.katharsis.core.internal.utils.PreconditionUtil;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
 import io.katharsis.jpa.internal.query.JoinRegistry;
 import io.katharsis.jpa.internal.query.MetaComputedAttribute;
 import io.katharsis.jpa.internal.query.QueryUtil;
@@ -29,8 +29,8 @@ import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaAttributePath;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaKey;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
 
 public class JpaCriteriaQueryBackend<T> implements JpaQueryBackend<From<?, ?>, Order, Predicate, Expression<?>> {
 

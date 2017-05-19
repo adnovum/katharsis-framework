@@ -6,10 +6,10 @@ import java.util.Map;
 
 import javax.persistence.OptimisticLockException;
 
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
-import io.katharsis.repository.response.HttpStatus;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.engine.error.ExceptionMapper;
+import io.katharsis.core.engine.http.HttpStatus;
 
 public class OptimisticLockExceptionMapper implements ExceptionMapper<OptimisticLockException> {
 

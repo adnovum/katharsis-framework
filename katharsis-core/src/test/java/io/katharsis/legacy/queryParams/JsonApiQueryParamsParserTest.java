@@ -12,10 +12,10 @@ import org.junit.Test;
 
 import io.katharsis.legacy.queryParams.context.SimpleQueryParamsParserContext;
 import io.katharsis.legacy.queryParams.include.Inclusion;
-import io.katharsis.module.TestResource;
-import io.katharsis.module.TestResourceInformationBuilder;
-import io.katharsis.resource.information.ResourceInformationBuilderContext;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.module.TestResource;
+import io.katharsis.core.module.TestResourceInformationBuilder;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilderContext;
+import io.katharsis.core.engine.parser.TypeParser;
 
 public class JsonApiQueryParamsParserTest {
 

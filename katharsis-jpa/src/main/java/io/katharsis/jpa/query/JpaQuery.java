@@ -4,10 +4,10 @@ import java.util.List;
 
 import javax.persistence.criteria.JoinType;
 
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
-import io.katharsis.queryspec.FilterSpec;
-import io.katharsis.queryspec.SortSpec;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.SortSpec;
 
 public interface JpaQuery<T> {
 

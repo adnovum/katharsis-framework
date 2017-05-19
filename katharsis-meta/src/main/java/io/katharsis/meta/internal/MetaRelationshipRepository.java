@@ -2,13 +2,13 @@ package io.katharsis.meta.internal;
 
 import java.util.Collection;
 
-import io.katharsis.core.internal.utils.PropertyUtils;
-import io.katharsis.errorhandling.exception.ResourceNotFoundException;
+import io.katharsis.core.engine.internal.utils.PropertyUtils;
+import io.katharsis.core.exception.ResourceNotFoundException;
 import io.katharsis.meta.MetaLookup;
 import io.katharsis.meta.model.MetaElement;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.resource.list.ResourceList;
 
 public class MetaRelationshipRepository implements RelationshipRepositoryV2<MetaElement, String, MetaElement, String> {
 

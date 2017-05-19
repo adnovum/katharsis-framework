@@ -2,13 +2,13 @@ package io.katharsis.jpa.internal;
 
 import java.lang.reflect.Type;
 
-import io.katharsis.core.internal.resource.ResourceFieldImpl;
+import io.katharsis.core.engine.internal.information.resource.ResourceFieldImpl;
 import io.katharsis.meta.information.MetaAwareInformation;
 import io.katharsis.meta.model.MetaAttribute;
-import io.katharsis.resource.annotations.LookupIncludeBehavior;
-import io.katharsis.resource.information.ResourceFieldAccess;
-import io.katharsis.resource.information.ResourceFieldType;
-import io.katharsis.utils.Optional;
+import io.katharsis.core.resource.annotations.LookupIncludeBehavior;
+import io.katharsis.core.engine.information.resource.ResourceFieldAccess;
+import io.katharsis.core.engine.information.resource.ResourceFieldType;
+import io.katharsis.core.utils.Optional;
 
 public class JpaResourceField extends ResourceFieldImpl implements MetaAwareInformation<MetaAttribute> {
 

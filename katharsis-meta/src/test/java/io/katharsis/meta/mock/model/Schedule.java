@@ -2,10 +2,10 @@ package io.katharsis.meta.mock.model;
 
 import java.util.List;
 
-import io.katharsis.resource.annotations.JsonApiId;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.JsonApiToMany;
-import io.katharsis.resource.annotations.JsonApiToOne;
+import io.katharsis.core.resource.annotations.JsonApiId;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiToMany;
+import io.katharsis.core.resource.annotations.JsonApiToOne;
 
 @JsonApiResource(type = "schedules")
 public class Schedule {

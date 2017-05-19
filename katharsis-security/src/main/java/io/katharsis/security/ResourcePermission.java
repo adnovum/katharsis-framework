@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.katharsis.repository.request.HttpMethod;
+import io.katharsis.core.engine.http.HttpMethod;
 
 public class ResourcePermission {
 

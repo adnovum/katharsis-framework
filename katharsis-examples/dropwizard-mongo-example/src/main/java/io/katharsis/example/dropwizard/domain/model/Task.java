@@ -1,8 +1,8 @@
 package io.katharsis.example.dropwizard.domain.model;
 
-import io.katharsis.resource.annotations.JsonApiId;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.JsonApiToOne;
+import io.katharsis.core.resource.annotations.JsonApiId;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiToOne;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;

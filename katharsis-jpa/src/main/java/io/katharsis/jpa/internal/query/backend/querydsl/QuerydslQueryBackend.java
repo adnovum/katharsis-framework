@@ -33,7 +33,7 @@ import com.querydsl.jpa.JPAQueryBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import io.katharsis.core.internal.utils.PreconditionUtil;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
 import io.katharsis.jpa.internal.query.ComputedAttributeRegistryImpl;
 import io.katharsis.jpa.internal.query.JoinRegistry;
 import io.katharsis.jpa.internal.query.MetaComputedAttribute;
@@ -45,8 +45,8 @@ import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaAttributePath;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaKey;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class QuerydslQueryBackend<T>

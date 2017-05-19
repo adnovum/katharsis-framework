@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * Class annotated with this annotation will be treated as a repository class for a
+ * Class annotated with this annotation will be treated as a document class for a
  * {@link JsonApiResourceRepository#value()} property.
  * </p>
  * <p>

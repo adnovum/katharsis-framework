@@ -8,10 +8,10 @@ import java.util.TreeSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.core.internal.resource.ResourceFieldImpl;
-import io.katharsis.core.internal.utils.FieldOrderedComparator;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceFieldType;
+import io.katharsis.core.engine.internal.information.resource.ResourceFieldImpl;
+import io.katharsis.core.engine.internal.utils.FieldOrderedComparator;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceFieldType;
 
 public class FieldOrderedComparatorTest {
 

@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.katharsis.jpa.meta.MetaEntity;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
 
 @Transactional
 public abstract class AbstractInheritanceTest<B, C> extends AbstractJpaTest {

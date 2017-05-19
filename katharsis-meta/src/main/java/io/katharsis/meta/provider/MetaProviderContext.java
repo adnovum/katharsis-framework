@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import io.katharsis.meta.MetaLookup;
 import io.katharsis.meta.model.MetaElement;
-import io.katharsis.module.Module;
+import io.katharsis.core.module.Module;
 
 public interface MetaProviderContext {
 

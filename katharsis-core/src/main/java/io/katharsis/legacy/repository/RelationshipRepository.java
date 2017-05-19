@@ -3,11 +3,11 @@ package io.katharsis.legacy.repository;
 import java.io.Serializable;
 
 import io.katharsis.legacy.queryParams.QueryParams;
-import io.katharsis.repository.Repository;
+import io.katharsis.core.repository.Repository;
 
 /**
  * <p>
- * Base unidirectional repository responsible for operations on relations. All of the methods in this interface have
+ * Base unidirectional document responsible for operations on relations. All of the methods in this interface have
  * fieldName field as last parameter. It solves a problem of many relationships between the same resources.
  * <p>
  * There are two methods that are used for To-One relationships:
@@ -45,7 +45,7 @@ public interface RelationshipRepository<T, T_ID extends Serializable, D, D_ID ex
      * which means that if there's a relation, it should be removed. It is used only for To-One relationship.
      *
      * @param source instance of a source class
-     * @param targetId id of a target resource
+     * @param targetId id of a target document
      * @param fieldName name of target's filed
      */
     void setRelation(T source, D_ID targetId, String fieldName);
@@ -55,7 +55,7 @@ public interface RelationshipRepository<T, T_ID extends Serializable, D, D_ID ex
      * which means that if there's a relation, it should be removed. It is used only for To-Many relationship.
      *
      * @param source instance of a source class
-     * @param targetIds ids of a target resource
+     * @param targetIds ids of a target document
      * @param fieldName name of target's filed
      */
     void setRelations(T source, Iterable<D_ID> targetIds, String fieldName);
@@ -65,7 +65,7 @@ public interface RelationshipRepository<T, T_ID extends Serializable, D, D_ID ex
      * relationship should be added to the set of the relationships.
      *
      * @param source    instance of source class
-     * @param targetIds  ids of the target resource
+     * @param targetIds  ids of the target document
      * @param fieldName name of target's field
      */
     void addRelations(T source, Iterable<D_ID> targetIds, String fieldName);
@@ -74,7 +74,7 @@ public interface RelationshipRepository<T, T_ID extends Serializable, D, D_ID ex
      * Removes a relationship from a set of relationships. It is used only for To-Many relationship.
      *
      * @param source    instance of source class
-     * @param targetIds  ids of the target resource
+     * @param targetIds  ids of the target document
      * @param fieldName name of target's field
      */
     void removeRelations(T source, Iterable<D_ID> targetIds, String fieldName);

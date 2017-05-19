@@ -1,10 +1,10 @@
 package io.katharsis.legacy.registry;
 
-import io.katharsis.errorhandling.exception.RepositoryInstanceNotFoundException;
+import io.katharsis.core.exception.RepositoryInstanceNotFoundException;
 import io.katharsis.legacy.locator.JsonServiceLocator;
 
 /**
- * This builder is responsible for creating a new instance of a repository
+ * This builder is responsible for creating a new instance of a document
  */
 public class RepositoryInstanceBuilder<T> {
 

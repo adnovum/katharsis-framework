@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 import io.katharsis.spring.boot.v3.KatharsisConfigV3;
 
 @Configuration

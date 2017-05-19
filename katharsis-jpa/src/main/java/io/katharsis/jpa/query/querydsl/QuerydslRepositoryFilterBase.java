@@ -1,7 +1,7 @@
 package io.katharsis.jpa.query.querydsl;
 
 import io.katharsis.jpa.JpaRepositoryFilterBase;
-import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.QuerySpec;
 
 public class QuerydslRepositoryFilterBase extends JpaRepositoryFilterBase implements QuerydslRepositoryFilter {
 

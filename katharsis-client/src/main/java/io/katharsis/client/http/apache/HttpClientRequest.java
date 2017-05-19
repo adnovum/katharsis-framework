@@ -15,7 +15,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import io.katharsis.client.http.HttpAdapterRequest;
 import io.katharsis.client.http.HttpAdapterResponse;
 import io.katharsis.client.internal.AbstractStub;
-import io.katharsis.repository.request.HttpMethod;
+import io.katharsis.core.engine.http.HttpMethod;
 
 public class HttpClientRequest implements HttpAdapterRequest {
 

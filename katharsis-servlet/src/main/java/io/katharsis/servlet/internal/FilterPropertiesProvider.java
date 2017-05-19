@@ -2,7 +2,7 @@ package io.katharsis.servlet.internal;
 
 import javax.servlet.FilterConfig;
 
-import io.katharsis.core.internal.boot.PropertiesProvider;
+import io.katharsis.core.engine.properties.PropertiesProvider;
 
 public class FilterPropertiesProvider implements PropertiesProvider {
 

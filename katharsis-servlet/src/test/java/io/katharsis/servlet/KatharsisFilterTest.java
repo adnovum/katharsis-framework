@@ -25,8 +25,8 @@ import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 
-import io.katharsis.core.internal.dispatcher.http.JsonApiRequestProcessor;
-import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.core.engine.internal.http.JsonApiRequestProcessor;
+import io.katharsis.core.boot.KatharsisProperties;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

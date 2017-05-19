@@ -2,9 +2,9 @@ package io.katharsis.servlet.resource.model;
 
 import java.util.Set;
 
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.JsonApiToMany;
-import io.katharsis.resource.annotations.JsonApiToOne;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiToMany;
+import io.katharsis.core.resource.annotations.JsonApiToOne;
 
 
 @JsonApiResource(type = "nodes")

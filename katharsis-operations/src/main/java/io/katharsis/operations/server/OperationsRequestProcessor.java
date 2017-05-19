@@ -9,27 +9,27 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.katharsis.core.internal.dispatcher.path.JsonPath;
-import io.katharsis.core.internal.dispatcher.path.PathBuilder;
+import io.katharsis.core.engine.internal.dispatcher.path.JsonPath;
+import io.katharsis.core.engine.internal.dispatcher.path.PathBuilder;
 import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
-import io.katharsis.module.Module;
-import io.katharsis.module.ServiceDiscovery;
-import io.katharsis.module.http.HttpRequestContext;
-import io.katharsis.module.http.HttpRequestDispatcher;
-import io.katharsis.module.http.HttpRequestProcessor;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.module.discovery.ServiceDiscovery;
+import io.katharsis.core.engine.http.HttpRequestContext;
+import io.katharsis.core.engine.dispatcher.RequestDispatcher;
+import io.katharsis.core.engine.http.HttpRequestProcessor;
 import io.katharsis.operations.Operation;
 import io.katharsis.operations.OperationResponse;
 import io.katharsis.operations.internal.OperationParameterUtils;
 import io.katharsis.operations.server.order.OperationOrderStrategy;
 import io.katharsis.operations.server.order.OrderedOperation;
-import io.katharsis.repository.request.HttpMethod;
-import io.katharsis.repository.response.Response;
-import io.katharsis.resource.Document;
-import io.katharsis.resource.Relationship;
-import io.katharsis.resource.Resource;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.resource.registry.ServiceUrlProvider;
-import io.katharsis.utils.Nullable;
+import io.katharsis.core.engine.http.HttpMethod;
+import io.katharsis.core.engine.dispatcher.Response;
+import io.katharsis.core.engine.document.Document;
+import io.katharsis.core.engine.document.Relationship;
+import io.katharsis.core.engine.document.Resource;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.engine.url.ServiceUrlProvider;
+import io.katharsis.core.utils.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +162,7 @@ public class OperationsRequestProcessor implements HttpRequestProcessor {
 	}
 
 	protected void fetchUpToDateResponses(List<OrderedOperation> orderedOperations, OperationResponse[] responses) {
-		HttpRequestDispatcher requestDispatcher = moduleContext.getRequestDispatcher();
+		RequestDispatcher requestDispatcher = moduleContext.getRequestDispatcher();
 
 		// get current set of resources after all the updates have been applied
 		for (OrderedOperation orderedOperation : orderedOperations) {
@@ -190,7 +190,7 @@ public class OperationsRequestProcessor implements HttpRequestProcessor {
 	}
 
 	protected OperationResponse executeOperation(Operation operation) {
-		HttpRequestDispatcher requestDispatcher = moduleContext.getRequestDispatcher();
+		RequestDispatcher requestDispatcher = moduleContext.getRequestDispatcher();
 
 		String path = OperationParameterUtils.parsePath(operation.getPath());
 		Map<String, Set<String>> parameters = OperationParameterUtils.parseParameters(operation.getPath());

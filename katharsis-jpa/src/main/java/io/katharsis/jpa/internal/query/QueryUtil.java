@@ -15,7 +15,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaKey;
-import io.katharsis.queryspec.SortSpec;
+import io.katharsis.core.queryspec.SortSpec;
 
 public class QueryUtil {
 

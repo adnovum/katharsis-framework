@@ -28,9 +28,9 @@ import io.katharsis.meta.MetaLookup;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.provider.resource.ResourceMetaProvider;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.parser.TypeParser;
 
 public class JpaResourceInformationBuilderTest {
 

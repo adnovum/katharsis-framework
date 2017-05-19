@@ -18,9 +18,9 @@ import io.katharsis.example.springboot.simple.domain.repository.ProjectRepositor
 import io.katharsis.example.springboot.simple.domain.repository.ProjectRepository.ProjectList;
 import io.katharsis.example.springboot.simple.domain.repository.ProjectRepository.ProjectListLinks;
 import io.katharsis.example.springboot.simple.domain.repository.ProjectRepository.ProjectListMeta;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.list.ResourceList;
 import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
 import org.junit.Assert;
 import org.junit.Before;

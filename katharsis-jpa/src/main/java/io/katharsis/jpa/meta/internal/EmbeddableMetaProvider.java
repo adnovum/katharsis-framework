@@ -6,7 +6,7 @@ import java.util.Set;
 
 import javax.persistence.Embeddable;
 
-import io.katharsis.core.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
 import io.katharsis.jpa.meta.MetaEmbeddable;
 import io.katharsis.jpa.meta.MetaEmbeddableAttribute;
 import io.katharsis.jpa.meta.MetaJpaDataObject;

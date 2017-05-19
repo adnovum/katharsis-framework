@@ -3,14 +3,14 @@ package io.katharsis.validation.meta;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.katharsis.core.internal.boot.KatharsisBoot;
-import io.katharsis.core.internal.boot.ReflectionsServiceDiscovery;
+import io.katharsis.core.boot.KatharsisBoot;
+import io.katharsis.core.module.discovery.ReflectionsServiceDiscovery;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
 import io.katharsis.meta.MetaLookup;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.resource.MetaResourceBase;
 import io.katharsis.meta.provider.resource.ResourceMetaProvider;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
+import io.katharsis.core.engine.url.ConstantServiceUrlProvider;
 import io.katharsis.rs.internal.JaxrsModule;
 import io.katharsis.validation.mock.models.Task;
 

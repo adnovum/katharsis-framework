@@ -5,24 +5,24 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.katharsis.core.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
 import io.katharsis.jpa.mapping.IdentityMapper;
 import io.katharsis.jpa.mapping.JpaMapper;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.repository.decorate.RelationshipRepositoryDecorator;
-import io.katharsis.repository.decorate.ResourceRepositoryDecorator;
-import io.katharsis.resource.links.DefaultPagedLinksInformation;
-import io.katharsis.resource.links.LinksInformation;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceListBase;
-import io.katharsis.resource.meta.DefaultPagedMetaInformation;
-import io.katharsis.resource.meta.MetaInformation;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.repository.decorate.RelationshipRepositoryDecorator;
+import io.katharsis.core.repository.decorate.ResourceRepositoryDecorator;
+import io.katharsis.core.resource.links.DefaultPagedLinksInformation;
+import io.katharsis.core.resource.links.LinksInformation;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.resource.list.ResourceListBase;
+import io.katharsis.core.resource.meta.DefaultPagedMetaInformation;
+import io.katharsis.core.resource.meta.MetaInformation;
 import net.jodah.typetools.TypeResolver;
 
 /**
  * 
- * @param <T> resource type (entity or mapped dto)
+ * @param <T> document type (entity or mapped dto)
  */
 public class JpaRepositoryConfig<T> {
 
@@ -78,10 +78,10 @@ public class JpaRepositoryConfig<T> {
 		}
 
 		/**
-		 * Extracts information about listClass, listMetaClass, listLinkClass from the provided repository
+		 * Extracts information about listClass, listMetaClass, listLinkClass from the provided document
 		 * interface.
 		 * 
-		 * @param interfaceClass of the repository
+		 * @param interfaceClass of the document
 		 * @return this builder
 		 */
 		@SuppressWarnings("unchecked")
@@ -133,9 +133,9 @@ public class JpaRepositoryConfig<T> {
 		}
 
 		/**
-		 * Sets a decorator that allows to intercept all requests to the actual repository.
+		 * Sets a decorator that allows to intercept all requests to the actual document.
 		 * 
-		 * @param decoratorResourceRepository that decorates the jpa repository.
+		 * @param decoratorResourceRepository that decorates the jpa document.
 		 * @return this builder
 		 */
 		public Builder<T> setRepositoryDecorator(ResourceRepositoryDecorator<T, ?> decoratorResourceRepository) {
@@ -144,7 +144,7 @@ public class JpaRepositoryConfig<T> {
 		}
 
 		/**
-		 * Sets a decorator that allows to intercept all requests to the actual repository.
+		 * Sets a decorator that allows to intercept all requests to the actual document.
 		 * 
 		 * @param targetClass
 		 * @param decoratorRelationshipRepository
@@ -168,7 +168,7 @@ public class JpaRepositoryConfig<T> {
 	}
 
 	/**
-	 * Prepares a builder to configure a jpa repository for the given entity.
+	 * Prepares a builder to configure a jpa document for the given entity.
 	 * 
 	 * @param <E> entity type
 	 * @param entityClass to directly expose
@@ -182,7 +182,7 @@ public class JpaRepositoryConfig<T> {
 	}
 
 	/**
-	 * Prepares a builder to configure a jpa repository for the given entity class which is 
+	 * Prepares a builder to configure a jpa document for the given entity class which is
 	 * mapped to a DTO with the provided mapper.
 	 * 
 	 * @param <E> entity type

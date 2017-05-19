@@ -17,7 +17,7 @@ public @interface JpaMergeRelations {
 
 	/**
 	 * Defines set of relationship attributes that should be merged
-	 * into this resource and treated as regular attribute of this resource.
+	 * into this document and treated as regular attribute of this document.
 	 */
 	String[] attributes();
 }

@@ -1,11 +1,11 @@
 package io.katharsis.example.springboot.simple.domain.repository;
 
 import io.katharsis.example.springboot.simple.domain.model.Project;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.links.PagedLinksInformation;
-import io.katharsis.resource.list.ResourceListBase;
-import io.katharsis.resource.meta.PagedMetaInformation;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.links.PagedLinksInformation;
+import io.katharsis.core.resource.list.ResourceListBase;
+import io.katharsis.core.resource.meta.PagedMetaInformation;
 
 public interface ProjectRepository extends ResourceRepositoryV2<Project, Long> {
 

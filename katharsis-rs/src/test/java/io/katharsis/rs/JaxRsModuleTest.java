@@ -16,20 +16,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.core.engine.internal.information.resource.AnnotationResourceInformationBuilder;
 import io.katharsis.legacy.registry.DefaultResourceInformationBuilderContext;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.repository.information.RepositoryAction;
-import io.katharsis.repository.information.RepositoryAction.RepositoryActionType;
-import io.katharsis.repository.information.RepositoryInformationBuilderContext;
-import io.katharsis.repository.information.ResourceRepositoryInformation;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
-import io.katharsis.resource.information.ResourceInformationBuilder;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.engine.information.repository.RepositoryAction;
+import io.katharsis.core.engine.information.repository.RepositoryAction.RepositoryActionType;
+import io.katharsis.core.engine.information.repository.RepositoryInformationBuilderContext;
+import io.katharsis.core.engine.information.repository.ResourceRepositoryInformation;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilder;
 import io.katharsis.rs.internal.JaxrsModule;
 import io.katharsis.rs.internal.JaxrsModule.JaxrsResourceRepositoryInformationBuilder;
 import io.katharsis.rs.resource.model.Task;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.engine.parser.TypeParser;
 
 public class JaxRsModuleTest {
 

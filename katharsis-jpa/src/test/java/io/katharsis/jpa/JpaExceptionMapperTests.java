@@ -7,19 +7,19 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.core.internal.boot.KatharsisBoot;
-import io.katharsis.core.internal.boot.ReflectionsServiceDiscovery;
-import io.katharsis.core.internal.exception.ExceptionMapperRegistry;
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.exception.BadRequestException;
+import io.katharsis.core.boot.KatharsisBoot;
+import io.katharsis.core.module.discovery.ReflectionsServiceDiscovery;
+import io.katharsis.core.engine.internal.exception.ExceptionMapperRegistry;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.exception.BadRequestException;
 import io.katharsis.jpa.internal.HibernateConstraintViolationExceptionMapper;
 import io.katharsis.jpa.internal.PersistenceExceptionMapper;
 import io.katharsis.jpa.internal.PersistenceRollbackExceptionMapper;
 import io.katharsis.jpa.internal.TransactionRollbackExceptionMapper;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
-import io.katharsis.repository.response.HttpStatus;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
+import io.katharsis.core.engine.http.HttpStatus;
+import io.katharsis.core.engine.url.ConstantServiceUrlProvider;
 
 public class JpaExceptionMapperTests {
 

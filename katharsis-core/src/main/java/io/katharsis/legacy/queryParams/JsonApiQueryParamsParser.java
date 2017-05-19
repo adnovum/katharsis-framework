@@ -5,7 +5,7 @@ import io.katharsis.legacy.queryParams.include.Inclusion;
 import io.katharsis.legacy.queryParams.params.IncludedRelationsParams;
 import io.katharsis.legacy.queryParams.params.SortingParams;
 import io.katharsis.legacy.queryParams.params.TypedParams;
-import io.katharsis.resource.RestrictedQueryParamsMembers;
+import io.katharsis.core.resource.RestrictedQueryParamsMembers;
 
 import java.util.*;
 

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import io.katharsis.core.internal.utils.PropertyUtils;
+import io.katharsis.core.engine.internal.utils.PropertyUtils;
 import io.katharsis.legacy.queryParams.QueryParams;
 import io.katharsis.legacy.queryParams.RestrictedPaginationKeys;
 import io.katharsis.legacy.queryParams.RestrictedSortingValues;
@@ -17,18 +17,18 @@ import io.katharsis.legacy.queryParams.params.IncludedFieldsParams;
 import io.katharsis.legacy.queryParams.params.IncludedRelationsParams;
 import io.katharsis.legacy.queryParams.params.SortingParams;
 import io.katharsis.legacy.queryParams.params.TypedParams;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.queryspec.DefaultQuerySpecDeserializer;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
-import io.katharsis.queryspec.FilterSpec;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.queryspec.QuerySpecConverter;
-import io.katharsis.queryspec.SortSpec;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.queryspec.DefaultQuerySpecDeserializer;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.QuerySpecConverter;
+import io.katharsis.core.queryspec.SortSpec;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.engine.parser.TypeParser;
 
 public class DefaultQuerySpecConverter implements QuerySpecConverter {
 

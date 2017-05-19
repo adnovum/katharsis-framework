@@ -5,37 +5,40 @@ import java.util.List;
 import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.katharsis.core.internal.dispatcher.RequestDispatcherImpl;
+import io.katharsis.core.boot.KatharsisBoot;
+import io.katharsis.core.engine.properties.PropertiesProvider;
+import io.katharsis.core.engine.internal.dispatcher.HttpRequestProcessorImpl;
+import io.katharsis.core.resource.registry.ResourceRegistryBuilderTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.katharsis.module.http.HttpRequestDispatcher;
-import io.katharsis.core.internal.query.QueryAdapterBuilder;
-import io.katharsis.core.internal.query.QuerySpecAdapterBuilder;
-import io.katharsis.core.internal.repository.adapter.ResourceRepositoryAdapter;
-import io.katharsis.core.properties.KatharsisProperties;
-import io.katharsis.errorhandling.mapper.JsonApiExceptionMapper;
+import io.katharsis.core.engine.dispatcher.RequestDispatcher;
+import io.katharsis.core.engine.query.QueryAdapterBuilder;
+import io.katharsis.core.queryspec.internal.QuerySpecAdapterBuilder;
+import io.katharsis.core.engine.internal.repository.ResourceRepositoryAdapter;
+import io.katharsis.core.boot.KatharsisProperties;
+import io.katharsis.core.engine.error.JsonApiExceptionMapper;
 import io.katharsis.legacy.internal.QueryParamsAdapter;
 import io.katharsis.legacy.internal.QueryParamsAdapterBuilder;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
 import io.katharsis.legacy.queryParams.QueryParams;
 import io.katharsis.legacy.queryParams.QueryParamsBuilder;
-import io.katharsis.module.Module;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.module.ServiceDiscovery;
-import io.katharsis.module.ServiceDiscoveryFactory;
-import io.katharsis.module.SimpleModule;
-import io.katharsis.queryspec.QuerySpecDeserializer;
-import io.katharsis.repository.filter.DocumentFilter;
-import io.katharsis.repository.response.JsonApiResponse;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
-import io.katharsis.resource.mock.models.Task;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.resource.registry.ServiceUrlProvider;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.module.discovery.ServiceDiscovery;
+import io.katharsis.core.module.discovery.ServiceDiscoveryFactory;
+import io.katharsis.core.module.SimpleModule;
+import io.katharsis.core.queryspec.QuerySpecDeserializer;
+import io.katharsis.core.engine.filter.DocumentFilter;
+import io.katharsis.core.repository.response.JsonApiResponse;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
+import io.katharsis.core.mock.models.Task;
+import io.katharsis.core.engine.url.ConstantServiceUrlProvider;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.engine.url.ServiceUrlProvider;
 
 public class KatharsisBootTest {
 
@@ -87,7 +90,7 @@ public class KatharsisBootTest {
 		Assert.assertSame(deserializer, boot.getQuerySpecDeserializer());
 		boot.boot();
 
-		RequestDispatcherImpl requestDispatcher = boot.getRequestDispatcher();
+		HttpRequestProcessorImpl requestDispatcher = boot.getRequestDispatcher();
 		QueryAdapterBuilder queryAdapterBuilder = requestDispatcher.getQueryAdapterBuilder();
 		Assert.assertTrue(queryAdapterBuilder instanceof QuerySpecAdapterBuilder);
 	}
@@ -102,7 +105,7 @@ public class KatharsisBootTest {
 		boot.setQueryParamsBuilds(deserializer);
 		boot.boot();
 
-		RequestDispatcherImpl requestDispatcher = boot.getRequestDispatcher();
+		HttpRequestProcessorImpl requestDispatcher = boot.getRequestDispatcher();
 		QueryAdapterBuilder queryAdapterBuilder = requestDispatcher.getQueryAdapterBuilder();
 		Assert.assertTrue(queryAdapterBuilder instanceof QueryParamsAdapterBuilder);
 	}
@@ -202,7 +205,7 @@ public class KatharsisBootTest {
 				objectMapper.getSerializationConfig());
 
 		final Properties properties = new Properties();
-		properties.put(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, "io.katharsis.resource.mock");
+		properties.put(KatharsisProperties.RESOURCE_SEARCH_PACKAGE, ResourceRegistryBuilderTest.TEST_MODELS_PACKAGE);
 		PropertiesProvider propertiesProvider = new PropertiesProvider() {
 
 			@Override
@@ -224,7 +227,7 @@ public class KatharsisBootTest {
 		boot.addModule(new SimpleModule("test"));
 		boot.boot();
 
-		HttpRequestDispatcher requestDispatcher = boot.getRequestDispatcher();
+		RequestDispatcher requestDispatcher = boot.getRequestDispatcher();
 
 		ResourceRegistry resourceRegistry = boot.getResourceRegistry();
 		RegistryEntry taskEntry = resourceRegistry.findEntry(Task.class);

@@ -6,7 +6,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 /**
  * Allows to specify a resource type for an exposed entity. This annotation is

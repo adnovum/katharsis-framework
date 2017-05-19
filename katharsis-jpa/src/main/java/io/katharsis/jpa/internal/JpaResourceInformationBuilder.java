@@ -22,11 +22,11 @@ import javax.persistence.OptimisticLockException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
-import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder.AnnotatedResourceField;
-import io.katharsis.core.internal.resource.DefaultResourceInstanceBuilder;
-import io.katharsis.core.internal.utils.ClassUtils;
-import io.katharsis.core.internal.utils.StringUtils;
+import io.katharsis.core.engine.internal.information.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.core.engine.internal.information.resource.AnnotationResourceInformationBuilder.AnnotatedResourceField;
+import io.katharsis.core.engine.internal.information.resource.DefaultResourceInstanceBuilder;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.StringUtils;
 import io.katharsis.jpa.annotations.JpaMergeRelations;
 import io.katharsis.jpa.annotations.JpaResource;
 import io.katharsis.jpa.meta.MetaEntity;
@@ -38,22 +38,21 @@ import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaElement;
 import io.katharsis.meta.model.MetaKey;
 import io.katharsis.meta.model.MetaType;
-import io.katharsis.meta.model.resource.MetaJsonObject;
-import io.katharsis.resource.Document;
-import io.katharsis.resource.Resource;
-import io.katharsis.resource.annotations.JsonApiField;
-import io.katharsis.resource.annotations.JsonApiLinksInformation;
-import io.katharsis.resource.annotations.JsonApiMetaInformation;
-import io.katharsis.resource.annotations.LookupIncludeBehavior;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceFieldAccess;
-import io.katharsis.resource.information.ResourceFieldType;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.information.ResourceInformationBuilder;
-import io.katharsis.resource.information.ResourceInformationBuilderContext;
-import io.katharsis.resource.information.ResourceInstanceBuilder;
-import io.katharsis.utils.Optional;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.engine.document.Document;
+import io.katharsis.core.engine.document.Resource;
+import io.katharsis.core.resource.annotations.JsonApiField;
+import io.katharsis.core.resource.annotations.JsonApiLinksInformation;
+import io.katharsis.core.resource.annotations.JsonApiMetaInformation;
+import io.katharsis.core.resource.annotations.LookupIncludeBehavior;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceFieldAccess;
+import io.katharsis.core.engine.information.resource.ResourceFieldType;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilder;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilderContext;
+import io.katharsis.core.engine.information.resource.ResourceInstanceBuilder;
+import io.katharsis.core.utils.Optional;
+import io.katharsis.core.engine.parser.TypeParser;
 
 /**
  * Extracts resource information from JPA and Katharsis annotations. Katharsis
@@ -256,7 +255,7 @@ public class JpaResourceInformationBuilder implements ResourceInformationBuilder
 			return annotation.type();
 		}
 		if (entityClass.getAnnotation(MappedSuperclass.class) != null) {
-			return null; // super classes do not have a resource type
+			return null; // super classes do not have a document type
 		}
 
 		String name = entityClass.getSimpleName();

@@ -9,7 +9,7 @@ import org.glassfish.jersey.test.spi.TestContainerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.core.boot.KatharsisProperties;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
 import io.katharsis.legacy.queryParams.DefaultQueryParamsParser;
 import io.katharsis.legacy.queryParams.QueryParamsBuilder;

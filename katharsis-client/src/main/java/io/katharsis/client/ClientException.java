@@ -1,7 +1,7 @@
 package io.katharsis.client;
 
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.exception.KatharsisMappableException;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.exception.KatharsisMappableException;
 
 /**
  * General client exception if no custom mapper is found.

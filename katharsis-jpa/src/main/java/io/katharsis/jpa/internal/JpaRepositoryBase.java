@@ -2,7 +2,7 @@ package io.katharsis.jpa.internal;
 
 import java.util.List;
 
-import io.katharsis.errorhandling.exception.ResourceNotFoundException;
+import io.katharsis.core.exception.ResourceNotFoundException;
 import io.katharsis.jpa.JpaModule;
 import io.katharsis.jpa.JpaRepositoryConfig;
 import io.katharsis.jpa.JpaRepositoryFilter;
@@ -10,8 +10,8 @@ import io.katharsis.jpa.mapping.JpaMapper;
 import io.katharsis.jpa.query.JpaQuery;
 import io.katharsis.jpa.query.JpaQueryExecutor;
 import io.katharsis.jpa.query.Tuple;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.resource.list.ResourceList;
 
 public abstract class JpaRepositoryBase<T> {
 

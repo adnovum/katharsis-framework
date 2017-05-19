@@ -17,9 +17,9 @@ import javax.persistence.metamodel.ManagedType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.core.internal.boot.TransactionRunner;
-import io.katharsis.core.internal.utils.PreconditionUtil;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
+import io.katharsis.core.engine.transaction.TransactionRunner;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
+import io.katharsis.core.engine.error.ExceptionMapper;
 import io.katharsis.jpa.internal.JpaRequestContext;
 import io.katharsis.jpa.internal.JpaResourceInformationBuilder;
 import io.katharsis.jpa.internal.OptimisticLockExceptionMapper;
@@ -45,18 +45,18 @@ import io.katharsis.meta.model.MetaType;
 import io.katharsis.meta.model.resource.MetaResource;
 import io.katharsis.meta.model.resource.MetaResourceBase;
 import io.katharsis.meta.provider.resource.ResourceMetaProvider;
-import io.katharsis.module.Module;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.repository.decorate.RelationshipRepositoryDecorator;
-import io.katharsis.repository.decorate.RepositoryDecoratorFactory;
-import io.katharsis.repository.decorate.ResourceRepositoryDecorator;
-import io.katharsis.repository.filter.AbstractDocumentFilter;
-import io.katharsis.repository.filter.DocumentFilterChain;
-import io.katharsis.repository.filter.DocumentFilterContext;
-import io.katharsis.repository.response.Response;
-import io.katharsis.resource.information.ResourceInformationBuilder;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.repository.decorate.RelationshipRepositoryDecorator;
+import io.katharsis.core.repository.decorate.RepositoryDecoratorFactory;
+import io.katharsis.core.repository.decorate.ResourceRepositoryDecorator;
+import io.katharsis.core.engine.filter.AbstractDocumentFilter;
+import io.katharsis.core.engine.filter.DocumentFilterChain;
+import io.katharsis.core.engine.filter.DocumentFilterContext;
+import io.katharsis.core.engine.dispatcher.Response;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilder;
 
 /**
  * Katharsis module that adds support to expose JPA entities as repositories. It
@@ -242,7 +242,7 @@ public class JpaModule implements Module {
 	}
 
 	/**
-	 * @return set of resource classes made available as repository (entity or
+	 * @return set of resource classes made available as resource (entity or
 	 *         dto).
 	 * @Deprecated use getResourceClasses
 	 */
@@ -251,7 +251,7 @@ public class JpaModule implements Module {
 	}
 
 	/**
-	 * Adds the repository to this module.
+	 * Adds the resource to this module.
 	 * 
 	 * @param configuration
 	 *            to use
@@ -266,7 +266,7 @@ public class JpaModule implements Module {
 	}
 
 	/**
-	 * Removes the repository with the given type from this module.
+	 * Removes the resource with the given type from this module.
 	 * 
 	 * @param <D>
 	 *            resourse class (entity or mapped dto)
@@ -457,7 +457,7 @@ public class JpaModule implements Module {
 	}
 
 	/**
-	 * Sets up relationship repositories for the given resource class. In case
+	 * Sets up relationship repositories for the given document class. In case
 	 * of a mapper the resource class might not correspond to the entity class.
 	 */
 	private void setupRelationshipRepositories(Class<?> resourceClass, boolean mapped) {
@@ -597,7 +597,7 @@ public class JpaModule implements Module {
 
 	/**
 	 * @param resourceClass
-	 * @return true if a repository for the given resourceClass is managed by
+	 * @return true if a resource for the given resourceClass is managed by
 	 *         this module.
 	 */
 	public boolean hasRepository(Class<?> resourceClass) {

@@ -9,16 +9,15 @@ import javax.ws.rs.ext.ExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.core.internal.boot.KatharsisBoot;
-import io.katharsis.core.internal.exception.ExceptionMapperRegistry;
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.exception.InternalServerErrorException;
-import io.katharsis.errorhandling.mapper.JsonApiExceptionMapper;
-import io.katharsis.repository.response.JsonApiResponse;
-import io.katharsis.resource.Document;
+import io.katharsis.core.boot.KatharsisBoot;
+import io.katharsis.core.engine.internal.exception.ExceptionMapperRegistry;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.exception.InternalServerErrorException;
+import io.katharsis.core.engine.error.JsonApiExceptionMapper;
+import io.katharsis.core.engine.document.Document;
 import io.katharsis.rs.type.JsonApiMediaType;
-import io.katharsis.utils.Optional;
+import io.katharsis.core.utils.Optional;
 
 /**
  * Allows to return JAXRS exceptions in the JSON API format.

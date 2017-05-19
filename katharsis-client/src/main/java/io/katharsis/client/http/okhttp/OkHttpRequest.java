@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import io.katharsis.client.http.HttpAdapterRequest;
 import io.katharsis.client.http.HttpAdapterResponse;
-import io.katharsis.repository.request.HttpMethod;
+import io.katharsis.core.engine.http.HttpMethod;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Request.Builder;

@@ -6,10 +6,10 @@ import java.util.concurrent.ConcurrentMap;
 
 import io.katharsis.test.mock.models.Project;
 import io.katharsis.test.mock.models.Task;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.resource.list.ResourceList;
 import junit.framework.Assert;
 
 public class ProjectToTaskRepository implements RelationshipRepositoryV2<Project, Long, Task, Long> {

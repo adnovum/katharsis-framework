@@ -12,7 +12,7 @@ import io.katharsis.legacy.queryParams.params.IncludedFieldsParams;
 import io.katharsis.legacy.queryParams.params.IncludedRelationsParams;
 import io.katharsis.legacy.queryParams.params.SortingParams;
 import io.katharsis.legacy.queryParams.params.TypedParams;
-import io.katharsis.resource.RestrictedQueryParamsMembers;
+import io.katharsis.core.resource.RestrictedQueryParamsMembers;
 
 /**
  * @deprecated make use of QuerySpec

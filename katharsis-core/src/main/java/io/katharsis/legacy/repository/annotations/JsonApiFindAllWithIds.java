@@ -16,7 +16,7 @@ import io.katharsis.legacy.queryParams.QueryParams;
  * The requirements for the method parameters are as follows:
  * </p>
  * <ol>
- * <li>An {@link Iterable} of resource identifiers</li>
+ * <li>An {@link Iterable} of document identifiers</li>
  * </ol>
  * <p>
  * The return value must be an {@link Iterable} of resources of

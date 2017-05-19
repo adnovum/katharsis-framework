@@ -27,8 +27,8 @@ import io.katharsis.meta.model.resource.MetaResourceBase;
 import io.katharsis.meta.model.resource.MetaResourceField;
 import io.katharsis.meta.model.resource.MetaResourceRepository;
 import io.katharsis.meta.provider.resource.ResourceMetaProvider;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceInformation;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
 
 public class ResourceMetaProviderTest extends AbstractMetaTest {
 

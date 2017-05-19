@@ -4,19 +4,19 @@ import java.util.*;
 
 import org.junit.Before;
 
-import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.core.engine.internal.information.resource.AnnotationResourceInformationBuilder;
 import io.katharsis.legacy.internal.DefaultQuerySpecConverter;
 import io.katharsis.legacy.locator.JsonServiceLocator;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
 import io.katharsis.legacy.registry.ResourceRegistryBuilder;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
-import io.katharsis.resource.information.ResourceInformationBuilder;
-import io.katharsis.resource.mock.models.Task;
-import io.katharsis.resource.mock.repository.ScheduleRepositoryImpl;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
-import io.katharsis.resource.registry.DefaultResourceLookup;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilder;
+import io.katharsis.core.mock.models.Task;
+import io.katharsis.core.mock.repository.ScheduleRepositoryImpl;
+import io.katharsis.core.engine.url.ConstantServiceUrlProvider;
+import io.katharsis.core.module.discovery.DefaultResourceLookup;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 
 public abstract class AbstractQueryParamsTest {
 

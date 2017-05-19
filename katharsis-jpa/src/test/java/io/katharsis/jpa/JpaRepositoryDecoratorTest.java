@@ -7,10 +7,10 @@ import org.mockito.Mockito;
 import io.katharsis.jpa.JpaRepositoryConfig.Builder;
 import io.katharsis.jpa.model.RelatedEntity;
 import io.katharsis.jpa.model.TestEntity;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.repository.decorate.RelationshipRepositoryDecoratorBase;
-import io.katharsis.repository.decorate.ResourceRepositoryDecoratorBase;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.repository.decorate.RelationshipRepositoryDecoratorBase;
+import io.katharsis.core.repository.decorate.ResourceRepositoryDecoratorBase;
 
 public class JpaRepositoryDecoratorTest extends AbstractJpaJerseyTest {
 

@@ -9,7 +9,7 @@ import io.katharsis.legacy.repository.annotations.JsonApiFindAllWithIds;
 import io.katharsis.legacy.repository.annotations.JsonApiFindOne;
 import io.katharsis.legacy.repository.annotations.JsonApiResourceRepository;
 import io.katharsis.legacy.repository.annotations.JsonApiSave;
-import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.QuerySpec;
 
 @JsonApiResourceRepository(TaskSubType.class)
 public class TaskSubtypeRepository {

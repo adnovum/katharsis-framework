@@ -3,10 +3,10 @@ package io.katharsis.security.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryBase;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryBase;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.resource.list.ResourceList;
 import io.katharsis.security.ResourcePermissionInformationImpl;
 
 

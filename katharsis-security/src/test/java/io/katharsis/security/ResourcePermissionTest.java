@@ -1,10 +1,10 @@
 package io.katharsis.security;
 
+import io.katharsis.security.ResourcePermission;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.katharsis.repository.request.HttpMethod;
-import io.katharsis.security.ResourcePermission;
+import io.katharsis.core.engine.http.HttpMethod;
 
 
 public class ResourcePermissionTest {

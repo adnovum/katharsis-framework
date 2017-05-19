@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.katharsis.errorhandling.exception.ForbiddenException;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryBase;
+import io.katharsis.core.exception.ForbiddenException;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryBase;
 import io.katharsis.test.mock.TestException;
 import io.katharsis.test.mock.models.Schedule;
 import io.katharsis.test.mock.models.Task;

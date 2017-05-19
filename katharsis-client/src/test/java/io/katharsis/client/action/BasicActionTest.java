@@ -11,13 +11,13 @@ import io.katharsis.client.AbstractClientTest;
 import io.katharsis.client.KatharsisTestFeature;
 import io.katharsis.test.mock.models.Schedule;
 import io.katharsis.test.mock.repository.ScheduleRepository;
-import io.katharsis.core.internal.dispatcher.path.ActionPath;
-import io.katharsis.module.SimpleModule;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.filter.DocumentFilter;
-import io.katharsis.repository.filter.DocumentFilterChain;
-import io.katharsis.repository.filter.DocumentFilterContext;
-import io.katharsis.repository.response.Response;
+import io.katharsis.core.engine.internal.dispatcher.path.ActionPath;
+import io.katharsis.core.module.SimpleModule;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.engine.filter.DocumentFilter;
+import io.katharsis.core.engine.filter.DocumentFilterChain;
+import io.katharsis.core.engine.filter.DocumentFilterContext;
+import io.katharsis.core.engine.dispatcher.Response;
 
 public class BasicActionTest extends AbstractClientTest {
 

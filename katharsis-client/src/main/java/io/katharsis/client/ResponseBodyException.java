@@ -1,6 +1,6 @@
 package io.katharsis.client;
 
-import io.katharsis.errorhandling.exception.KatharsisException;
+import io.katharsis.core.exception.KatharsisException;
 
 public class ResponseBodyException extends KatharsisException {
 

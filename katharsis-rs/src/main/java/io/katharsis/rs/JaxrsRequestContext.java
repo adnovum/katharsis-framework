@@ -16,9 +16,9 @@ import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
-import io.katharsis.module.http.HttpRequestContextBase;
+import io.katharsis.core.engine.http.HttpRequestContextBase;
 import io.katharsis.rs.internal.parameterProvider.JaxRsParameterProvider;
-import io.katharsis.utils.Nullable;
+import io.katharsis.core.utils.Nullable;
 
 public class JaxrsRequestContext implements HttpRequestContextBase {
 

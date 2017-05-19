@@ -7,21 +7,20 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.core.internal.registry.ResourceRegistryImpl;
-import io.katharsis.core.internal.repository.information.ResourceRepositoryInformationImpl;
+import io.katharsis.core.engine.internal.registry.ResourceRegistryImpl;
+import io.katharsis.core.engine.internal.information.repository.ResourceRepositoryInformationImpl;
 import io.katharsis.legacy.locator.JsonServiceLocator;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.repository.information.ResourceRepositoryInformation;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.information.ResourceInformationBuilder;
-import io.katharsis.resource.registry.DefaultResourceLookup;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceEntry;
-import io.katharsis.resource.registry.ResourceLookup;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.resource.registry.ResponseRelationshipEntry;
-import io.katharsis.resource.registry.ServiceUrlProvider;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.engine.information.repository.ResourceRepositoryInformation;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilder;
+import io.katharsis.core.module.discovery.DefaultResourceLookup;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceEntry;
+import io.katharsis.core.module.discovery.ResourceLookup;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.engine.registry.ResponseRelationshipEntry;
+import io.katharsis.core.engine.url.ServiceUrlProvider;
 
 /**
  * Builder responsible for building an instance of ResourceRegistry.
@@ -44,12 +43,12 @@ public class ResourceRegistryBuilder {
 	/**
 	 * Uses a {@link DefaultResourceLookup} to get all classes in provided
 	 * package and finds all resources and repositories associated with found
-	 * resource.
+	 * document.
 	 *
 	 * @param packageName
 	 *            Package containing resources (models) and repositories.
 	 * @param serviceUrlProvider
-	 *            Compute the resource to this service
+	 *            Compute the document to this service
 	 * @return an instance of ResourceRegistry
 	 */
 	public ResourceRegistry build(String packageName, ModuleRegistry moduleRegistry, ServiceUrlProvider serviceUrlProvider) {
@@ -58,10 +57,10 @@ public class ResourceRegistryBuilder {
 
 	/**
 	 * Uses a {@link ResourceLookup} to get all resources and repositories
-	 * associated with found resource.
+	 * associated with found document.
 	 *
 	 * @param resourceLookup
-	 *            Lookup for getting all resource classes.
+	 *            Lookup for getting all document classes.
 	 * @param serviceUrl
 	 *            URL to the service
 	 * @return an instance of ResourceRegistry
@@ -102,14 +101,14 @@ public class ResourceRegistryBuilder {
 	}
 
 	/**
-	 * Finds the closest resource in the class inheritance hierarchy. If no
-	 * resource parent is found, <i>null</i> is returned.
+	 * Finds the closest document in the class inheritance hierarchy. If no
+	 * document parent is found, <i>null</i> is returned.
 	 *
 	 * @param resourceClass
-	 *            information about the searched resource
+	 *            information about the searched document
 	 * @param registryEntries
 	 *            a set of available resources
-	 * @return resource's parent resource
+	 * @return document's parent document
 	 */
 	private RegistryEntry findParent(Class<?> resourceClass, Set<RegistryEntry> registryEntries) {
 		RegistryEntry foundRegistryEntry = null;

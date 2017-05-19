@@ -9,11 +9,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.katharsis.core.internal.utils.ClassUtils;
-import io.katharsis.core.internal.utils.PreconditionUtil;
-import io.katharsis.resource.annotations.JsonApiRelation;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.SerializeType;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
+import io.katharsis.core.resource.annotations.JsonApiRelation;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.SerializeType;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 

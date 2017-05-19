@@ -8,17 +8,17 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * Method annotated with this annotation will be used to perform save operation on a particular resource. The method
+ * Method annotated with this annotation will be used to perform save operation on a particular document. The method
  * must be defined in a class annotated with {@link JsonApiResourceRepository}.
  * </p>
  * <p>
  * The requirements for the method parameters are as follows:
  * </p>
  * <ol>
- *     <li>An instance of a resource to be saved</li>
+ *     <li>An instance of a document to be saved</li>
  * </ol>
  * <p>
- * The return value should be a resource of {@link JsonApiResourceRepository#value()} type.
+ * The return value should be a document of {@link JsonApiResourceRepository#value()} type.
  * </p>
  *
  * @see io.katharsis.legacy.repository.ResourceRepository#save(Object)

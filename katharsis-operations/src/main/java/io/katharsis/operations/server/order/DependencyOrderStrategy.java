@@ -8,10 +8,10 @@ import java.util.Map;
 
 import io.katharsis.operations.Operation;
 import io.katharsis.operations.internal.Graph;
-import io.katharsis.repository.request.HttpMethod;
-import io.katharsis.resource.Relationship;
-import io.katharsis.resource.Resource;
-import io.katharsis.resource.ResourceIdentifier;
+import io.katharsis.core.engine.http.HttpMethod;
+import io.katharsis.core.engine.document.Relationship;
+import io.katharsis.core.engine.document.Resource;
+import io.katharsis.core.engine.document.ResourceIdentifier;
 
 public class DependencyOrderStrategy implements OperationOrderStrategy {
 

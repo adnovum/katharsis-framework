@@ -17,7 +17,7 @@ import io.katharsis.jpa.JpaRepositoryConfig;
 import io.katharsis.jpa.model.RelatedEntity;
 import io.katharsis.jpa.model.TestEntity;
 import io.katharsis.jpa.util.SpringTransactionRunner;
-import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.core.repository.ResourceRepositoryV2;
 
 /**
  * Example of how to merge an entity with several related entities into a single

@@ -9,11 +9,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.katharsis.core.engine.internal.information.resource.ReflectionFieldAccessor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import io.katharsis.core.internal.utils.PropertyException;
+import io.katharsis.core.engine.internal.utils.PropertyException;
 
 public class ReflectionFieldAccessorTest {
 

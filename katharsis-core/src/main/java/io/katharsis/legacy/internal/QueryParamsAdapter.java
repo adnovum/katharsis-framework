@@ -4,11 +4,11 @@ import io.katharsis.legacy.queryParams.QueryParams;
 import io.katharsis.legacy.queryParams.params.IncludedFieldsParams;
 import io.katharsis.legacy.queryParams.params.IncludedRelationsParams;
 import io.katharsis.legacy.queryParams.params.TypedParams;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.request.QueryAdapter;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.engine.query.QueryAdapter;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 
 public class QueryParamsAdapter implements QueryAdapter {
 

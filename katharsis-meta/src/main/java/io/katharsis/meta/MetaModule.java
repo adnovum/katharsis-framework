@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
-import io.katharsis.core.internal.utils.PreconditionUtil;
+import io.katharsis.core.engine.internal.information.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
 import io.katharsis.legacy.registry.DefaultResourceInformationBuilderContext;
 import io.katharsis.meta.internal.MetaRelationshipRepository;
 import io.katharsis.meta.internal.MetaResourceRepositoryImpl;
@@ -22,12 +22,12 @@ import io.katharsis.meta.model.MetaPrimitiveType;
 import io.katharsis.meta.model.MetaSetType;
 import io.katharsis.meta.model.MetaType;
 import io.katharsis.meta.provider.MetaProvider;
-import io.katharsis.module.InitializingModule;
-import io.katharsis.module.Module;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.ResourceLookup;
+import io.katharsis.core.module.InitializingModule;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.module.discovery.ResourceLookup;
 
 public class MetaModule implements Module, InitializingModule {
 

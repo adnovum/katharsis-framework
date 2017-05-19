@@ -3,7 +3,7 @@ package io.katharsis.meta.model;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.engine.parser.TypeParser;
 
 @Deprecated
 public class MetaMapAttribute extends MetaAttribute {

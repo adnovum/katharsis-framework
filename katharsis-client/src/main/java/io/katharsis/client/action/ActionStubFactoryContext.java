@@ -1,7 +1,7 @@
 package io.katharsis.client.action;
 
 import io.katharsis.client.http.HttpAdapter;
-import io.katharsis.resource.registry.ServiceUrlProvider;
+import io.katharsis.core.engine.url.ServiceUrlProvider;
 
 public interface ActionStubFactoryContext {
 

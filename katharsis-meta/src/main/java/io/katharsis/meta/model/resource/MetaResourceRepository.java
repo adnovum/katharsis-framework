@@ -2,7 +2,7 @@ package io.katharsis.meta.model.resource;
 
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaElement;
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 @JsonApiResource(type = "meta/resourceRepository")
 public class MetaResourceRepository extends MetaElement {

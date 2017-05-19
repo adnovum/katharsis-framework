@@ -5,10 +5,10 @@ import javax.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.ExceptionMapperHelper;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
-import io.katharsis.repository.response.HttpStatus;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.engine.error.ExceptionMapperHelper;
+import io.katharsis.core.engine.error.ExceptionMapper;
+import io.katharsis.core.engine.http.HttpStatus;
 
 public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
 	

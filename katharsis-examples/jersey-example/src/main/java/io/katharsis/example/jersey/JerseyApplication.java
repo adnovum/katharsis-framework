@@ -9,7 +9,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.core.boot.KatharsisProperties;
 import io.katharsis.example.jersey.domain.repository.ProjectRepository;
 import io.katharsis.example.jersey.domain.repository.TaskRepository;
 import io.katharsis.example.jersey.domain.repository.TaskToProjectRepository;

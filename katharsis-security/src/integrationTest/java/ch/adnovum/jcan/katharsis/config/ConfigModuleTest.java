@@ -15,12 +15,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.adnovum.jcan.katharsis.config.internal.ConfigRepository;
 import io.katharsis.internal.boot.KatharsisBoot;
-import io.katharsis.module.ServiceDiscovery;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.resource.exception.ResourceNotFoundException;
-import io.katharsis.resource.field.ResourceFieldNameTransformer;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
-import io.katharsis.resource.registry.RegistryEntry;
+import io.katharsis.core.module.ServiceDiscovery;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.resource.exception.ResourceNotFoundException;
+import io.katharsis.core.resource.field.ResourceFieldNameTransformer;
+import io.katharsis.core.resource.registry.ConstantServiceUrlProvider;
+import io.katharsis.core.resource.registry.RegistryEntry;
 
 public class ConfigModuleTest {
 

@@ -8,14 +8,14 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * Method annotated with this annotation will be used to remove relationship resources from a particular resource. The
+ * Method annotated with this annotation will be used to remove relationship resources from a particular document. The
  * method must be defined in a class annotated with {@link JsonApiRelationshipRepository}.
  * </p>
  * <p>
  * The requirements for the method parameters are as follows:
  * </p>
  * <ol>
- *     <li>Instance of a source resource</li>
+ *     <li>Instance of a source document</li>
  *     <li>{@link Iterable} of relationships to be removed</li>
  *     <li>Relationship's filed name</li>
  * </ol>

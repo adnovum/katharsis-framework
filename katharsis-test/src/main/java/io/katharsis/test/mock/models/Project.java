@@ -3,13 +3,13 @@ package io.katharsis.test.mock.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.katharsis.resource.annotations.JsonApiId;
-import io.katharsis.resource.annotations.JsonApiLinksInformation;
-import io.katharsis.resource.annotations.JsonApiMetaInformation;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.JsonApiToMany;
-import io.katharsis.resource.links.LinksInformation;
-import io.katharsis.resource.meta.MetaInformation;
+import io.katharsis.core.resource.annotations.JsonApiId;
+import io.katharsis.core.resource.annotations.JsonApiLinksInformation;
+import io.katharsis.core.resource.annotations.JsonApiMetaInformation;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiToMany;
+import io.katharsis.core.resource.links.LinksInformation;
+import io.katharsis.core.resource.meta.MetaInformation;
 
 @JsonApiResource(type = "projects")
 public class Project {

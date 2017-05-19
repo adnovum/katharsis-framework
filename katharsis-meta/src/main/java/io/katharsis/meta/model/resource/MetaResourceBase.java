@@ -2,7 +2,7 @@ package io.katharsis.meta.model.resource;
 
 import java.util.List;
 
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 /**
  * Base class for resource classes. Such objects have the same

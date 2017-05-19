@@ -1,8 +1,8 @@
 package io.katharsis.servlet.resource.model;
 
-import io.katharsis.resource.annotations.JsonApiIncludeByDefault;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.JsonApiToOne;
+import io.katharsis.core.resource.annotations.JsonApiIncludeByDefault;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiToOne;
 
 @JsonApiResource(type = "node-comments")
 public class NodeComment extends AbstractResource {

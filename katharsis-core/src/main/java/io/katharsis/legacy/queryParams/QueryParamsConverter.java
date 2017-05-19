@@ -1,6 +1,6 @@
 package io.katharsis.legacy.queryParams;
 
-import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.QuerySpec;
 
 /**
  * Converts QuerySpec to QueryParams to ease parameter handling.

@@ -14,7 +14,7 @@ import io.katharsis.jpa.query.JpaQueryFactory;
 import io.katharsis.jpa.query.querydsl.QuerydslQueryFactory;
 import io.katharsis.jpa.query.querydsl.QuerydslRepositoryFilterBase;
 import io.katharsis.jpa.query.querydsl.QuerydslTranslationContext;
-import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.QuerySpec;
 
 @Transactional
 public class QuerydslRepositoryFilterTest extends AbstractJpaTest {

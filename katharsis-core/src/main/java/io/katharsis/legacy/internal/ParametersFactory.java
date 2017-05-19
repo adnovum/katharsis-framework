@@ -3,11 +3,11 @@ package io.katharsis.legacy.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import io.katharsis.errorhandling.exception.RepositoryMethodException;
+import io.katharsis.core.exception.RepositoryMethodException;
 import io.katharsis.legacy.queryParams.QueryParams;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.request.QueryAdapter;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.engine.query.QueryAdapter;
 
 public class ParametersFactory {
 
@@ -24,7 +24,7 @@ public class ParametersFactory {
 	 * Build a list of parameters that can be provided to a method.
 	 *
 	 * @param firstParameters parameters to be returned as the firsts element in the return array
-	 * @param method repository method
+	 * @param method document method
 	 * @param annotationType method annotation
 	 * @param queryAdapter Ask remmo
 	 * @return array of resolved parameters
@@ -69,7 +69,7 @@ public class ParametersFactory {
 	 * Build a list of parameters that can be provided to a method.
 	 *
 	 * @param firstParameters parameters to be returned as the first elements in the return array
-	 * @param method repository method
+	 * @param method document method
 	 * @param annotationType method annotation
 	 * @return array of resolved parameters
 	 */

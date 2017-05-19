@@ -1,10 +1,10 @@
 package io.katharsis.client.module;
 
-import io.katharsis.core.internal.repository.information.DefaultRelationshipRepositoryInformationBuilder;
-import io.katharsis.core.internal.repository.information.DefaultResourceRepositoryInformationBuilder;
-import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
-import io.katharsis.module.Module;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
+import io.katharsis.legacy.repository.information.DefaultRelationshipRepositoryInformationBuilder;
+import io.katharsis.legacy.repository.information.DefaultResourceRepositoryInformationBuilder;
+import io.katharsis.core.engine.internal.information.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
 
 public class ClientModule implements Module {
 

@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import javax.ws.rs.core.Response;
 
-import io.katharsis.core.internal.dispatcher.path.PathBuilder;
-import io.katharsis.repository.response.HttpStatus;
+import io.katharsis.core.engine.internal.dispatcher.path.PathBuilder;
+import io.katharsis.core.engine.http.HttpStatus;
 import io.katharsis.rs.resource.exception.ExampleException;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Assert;

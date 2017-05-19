@@ -10,9 +10,9 @@ import io.katharsis.test.mock.models.Project.ProjectMeta;
 import io.katharsis.test.mock.models.Task;
 import io.katharsis.test.mock.repository.ProjectRepository.ProjectsLinksInformation;
 import io.katharsis.test.mock.repository.ProjectRepository.ProjectsMetaInformation;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.list.ResourceList;
 
 public class InformationClientTest extends AbstractClientTest {
 

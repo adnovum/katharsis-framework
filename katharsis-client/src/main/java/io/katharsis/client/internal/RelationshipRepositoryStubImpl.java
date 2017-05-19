@@ -8,19 +8,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.katharsis.client.KatharsisClient;
 import io.katharsis.client.RelationshipRepositoryStub;
-import io.katharsis.core.internal.utils.JsonApiUrlBuilder;
-import io.katharsis.core.internal.utils.PropertyUtils;
+import io.katharsis.core.engine.internal.utils.JsonApiUrlBuilder;
 import io.katharsis.legacy.queryParams.QueryParams;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.repository.request.HttpMethod;
-import io.katharsis.resource.Document;
-import io.katharsis.resource.ResourceIdentifier;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.utils.Nullable;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.engine.http.HttpMethod;
+import io.katharsis.core.engine.document.Document;
+import io.katharsis.core.engine.document.ResourceIdentifier;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.utils.Nullable;
 
 public class RelationshipRepositoryStubImpl<T, I extends Serializable, D, J extends Serializable> extends AbstractStub implements RelationshipRepositoryStub<T, I, D, J>, RelationshipRepositoryV2<T, I, D, J> {
 

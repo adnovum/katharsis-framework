@@ -11,17 +11,17 @@ import io.katharsis.client.http.HttpAdapter;
 import io.katharsis.client.http.HttpAdapterRequest;
 import io.katharsis.client.http.HttpAdapterResponse;
 import io.katharsis.client.internal.ClientDocumentMapper;
-import io.katharsis.core.internal.query.QuerySpecAdapter;
-import io.katharsis.core.internal.resource.DocumentMapper;
-import io.katharsis.errorhandling.exception.InternalServerErrorException;
+import io.katharsis.core.queryspec.internal.QuerySpecAdapter;
+import io.katharsis.core.engine.internal.document.mapper.DocumentMapper;
+import io.katharsis.core.exception.InternalServerErrorException;
 import io.katharsis.operations.Operation;
 import io.katharsis.operations.OperationResponse;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.request.HttpMethod;
-import io.katharsis.repository.request.QueryAdapter;
-import io.katharsis.repository.response.JsonApiResponse;
-import io.katharsis.resource.Document;
-import io.katharsis.resource.Resource;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.engine.http.HttpMethod;
+import io.katharsis.core.engine.query.QueryAdapter;
+import io.katharsis.core.repository.response.JsonApiResponse;
+import io.katharsis.core.engine.document.Document;
+import io.katharsis.core.engine.document.Resource;
 
 public class OperationsCall {
 

@@ -24,41 +24,41 @@ import io.katharsis.client.internal.proxy.ClientProxyFactory;
 import io.katharsis.client.internal.proxy.ClientProxyFactoryContext;
 import io.katharsis.client.module.ClientModule;
 import io.katharsis.client.module.HttpAdapterAware;
-import io.katharsis.core.internal.exception.ExceptionMapperLookup;
-import io.katharsis.core.internal.exception.ExceptionMapperRegistry;
-import io.katharsis.core.internal.exception.ExceptionMapperRegistryBuilder;
-import io.katharsis.core.internal.jackson.JsonApiModuleBuilder;
-import io.katharsis.core.internal.registry.DirectResponseRelationshipEntry;
-import io.katharsis.core.internal.registry.DirectResponseResourceEntry;
-import io.katharsis.core.internal.registry.ResourceRegistryImpl;
-import io.katharsis.core.internal.repository.adapter.RelationshipRepositoryAdapter;
-import io.katharsis.core.internal.repository.adapter.ResourceRepositoryAdapter;
-import io.katharsis.core.internal.repository.information.ResourceRepositoryInformationImpl;
-import io.katharsis.core.internal.utils.JsonApiUrlBuilder;
-import io.katharsis.core.internal.utils.PreconditionUtil;
-import io.katharsis.errorhandling.exception.RepositoryNotFoundException;
+import io.katharsis.core.engine.internal.exception.ExceptionMapperLookup;
+import io.katharsis.core.engine.internal.exception.ExceptionMapperRegistry;
+import io.katharsis.core.engine.internal.exception.ExceptionMapperRegistryBuilder;
+import io.katharsis.core.engine.internal.jackson.JsonApiModuleBuilder;
+import io.katharsis.core.engine.internal.registry.DirectResponseRelationshipEntry;
+import io.katharsis.core.engine.internal.registry.DirectResponseResourceEntry;
+import io.katharsis.core.engine.internal.registry.ResourceRegistryImpl;
+import io.katharsis.core.engine.internal.repository.RelationshipRepositoryAdapter;
+import io.katharsis.core.engine.internal.repository.ResourceRepositoryAdapter;
+import io.katharsis.core.engine.internal.information.repository.ResourceRepositoryInformationImpl;
+import io.katharsis.core.engine.internal.utils.JsonApiUrlBuilder;
+import io.katharsis.core.engine.internal.utils.PreconditionUtil;
+import io.katharsis.core.exception.RepositoryNotFoundException;
 import io.katharsis.legacy.registry.DefaultResourceInformationBuilderContext;
 import io.katharsis.legacy.registry.RepositoryInstanceBuilder;
 import io.katharsis.legacy.repository.RelationshipRepository;
-import io.katharsis.module.Module;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.repository.information.RepositoryInformationBuilder;
-import io.katharsis.repository.information.RepositoryInformationBuilderContext;
-import io.katharsis.repository.information.ResourceRepositoryInformation;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.information.ResourceInformationBuilder;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceEntry;
-import io.katharsis.resource.registry.ResourceLookup;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.resource.registry.ResponseRelationshipEntry;
-import io.katharsis.resource.registry.ServiceUrlProvider;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.engine.information.repository.RepositoryInformationBuilder;
+import io.katharsis.core.engine.information.repository.RepositoryInformationBuilderContext;
+import io.katharsis.core.engine.information.repository.ResourceRepositoryInformation;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilder;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.engine.url.ConstantServiceUrlProvider;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceEntry;
+import io.katharsis.core.module.discovery.ResourceLookup;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.engine.registry.ResponseRelationshipEntry;
+import io.katharsis.core.engine.url.ServiceUrlProvider;
+import io.katharsis.core.engine.parser.TypeParser;
 
 /**
  * Client implementation giving access to JSON API repositories using stubs.
@@ -166,7 +166,8 @@ public class KatharsisClient {
 			if (entry == null) {
 				ResourceInformationBuilder informationBuilder = moduleRegistry.getResourceInformationBuilder();
 				if (!informationBuilder.accept(clazz)) {
-					throw new RepositoryNotFoundException(clazz.getName() + " not recognized as resource class, consider adding @JsonApiResource annotation");
+					throw new RepositoryNotFoundException(clazz.getName() + " not recognized as resource class, consider adding "
+							+ "@JsonApiResource annotation");
 				}
 				entry = allocateRepository(clazz, true);
 			}
@@ -354,14 +355,14 @@ public class KatharsisClient {
 
 		RegistryEntry entry = resourceRegistry.findEntry(resourceClass);
 
-		// TODO fix this in katharsis, should be able to get original resource
+		// TODO fix this in katharsis, should be able to get original document
 		ResourceRepositoryAdapter repositoryAdapter = entry.getResourceRepository(null);
 		return (ResourceRepositoryStub<T, I>) repositoryAdapter.getResourceRepository();
 	}
 
 	/**
 	 * @param resourceClass
-	 *            resource class
+	 *            repository class
 	 * @return stub for the given resourceClass
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -447,7 +448,7 @@ public class KatharsisClient {
 	}
 
 	/**
-	 * @return resource repository use.
+	 * @return resource registry use.
 	 */
 	public ResourceRegistry getRegistry() {
 		return resourceRegistry;

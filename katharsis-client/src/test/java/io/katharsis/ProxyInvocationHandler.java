@@ -4,7 +4,7 @@
 //import java.lang.reflect.Method;
 //
 //import io.katharsis.ResourceProxyFactory.ResourceProxy;
-//import io.katharsis.resource.field.ResourceField;
+//import io.katharsis.core.document.field.ResourceField;
 //
 //public class ProxyInvocationHandler implements InvocationHandler {
 //	

@@ -17,12 +17,12 @@
 
 package io.katharsis.legacy.queryParams;
 
-import io.katharsis.core.internal.utils.StringUtils;
-import io.katharsis.errorhandling.exception.ParametersDeserializationException;
+import io.katharsis.core.engine.internal.utils.StringUtils;
+import io.katharsis.core.exception.ParametersDeserializationException;
 import io.katharsis.legacy.queryParams.context.QueryParamsParserContext;
 import io.katharsis.legacy.queryParams.include.Inclusion;
 import io.katharsis.legacy.queryParams.params.*;
-import io.katharsis.resource.RestrictedQueryParamsMembers;
+import io.katharsis.core.resource.RestrictedQueryParamsMembers;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -55,7 +55,7 @@ public class DefaultQueryParamsParser implements QueryParamsParser {
      * </ul>
      *
      * @param context No idea. I didn't write this code.
-     * @return {@link TypedParams} Map of filtering params passed to a request grouped by type of resource
+     * @return {@link TypedParams} Map of filtering params passed to a request grouped by type of document
      */
     protected TypedParams<FilterParams> parseFiltersParameters(final QueryParamsParserContext context) {
         String filterKey = RestrictedQueryParamsMembers.filter.name();
@@ -104,7 +104,7 @@ public class DefaultQueryParamsParser implements QueryParamsParser {
      * <li>{@code GET /project/?sort[projects][shortName]=desc&sort[users][name][firstName]=asc}</li>
      * </ul>
      *
-     * @return {@link TypedParams} Map of sorting params passed to request grouped by type of resource
+     * @return {@link TypedParams} Map of sorting params passed to request grouped by type of document
      * @param context Don't know, didn't write the code
      */
     protected TypedParams<SortingParams> parseSortingParameters(final QueryParamsParserContext context) {
@@ -159,7 +159,7 @@ public class DefaultQueryParamsParser implements QueryParamsParser {
      * </ul>
      *
      * @param context I don't know, I didn't write the code
-     * @return {@link Map} Map of grouping params passed to request grouped by type of resource
+     * @return {@link Map} Map of grouping params passed to request grouped by type of document
      */
     protected TypedParams<GroupingParams> parseGroupingParameters(final QueryParamsParserContext context) {
         String groupingKey = RestrictedQueryParamsMembers.group.name();
@@ -214,7 +214,7 @@ public class DefaultQueryParamsParser implements QueryParamsParser {
      * <li>{@code GET /tasks/?fields[users]=name.surname&include[tasks]=author}</li>
      * </ul>
      * @param context Don't know, didn't write the code
-     * @return {@link TypedParams} Map of sparse field set params passed to a request grouped by type of resource
+     * @return {@link TypedParams} Map of sparse field set params passed to a request grouped by type of document
      */
     protected TypedParams<IncludedFieldsParams> parseIncludedFieldsParameters(final QueryParamsParserContext context) {
         String sparseKey = RestrictedQueryParamsMembers.fields.name();
@@ -269,7 +269,7 @@ public class DefaultQueryParamsParser implements QueryParamsParser {
      * </ul>
      *
      * @param context Don't know, didn't write the code
-     * @return {@link TypedParams} Map of sparse field set params passed to a request grouped by type of resource
+     * @return {@link TypedParams} Map of sparse field set params passed to a request grouped by type of document
      */
     protected TypedParams<IncludedRelationsParams> parseIncludedRelationsParameters(QueryParamsParserContext context) {
         String includeKey = RestrictedQueryParamsMembers.include.name();

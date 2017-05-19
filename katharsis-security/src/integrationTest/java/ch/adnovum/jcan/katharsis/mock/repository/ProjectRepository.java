@@ -7,10 +7,10 @@ import javax.enterprise.context.ApplicationScoped;
 
 import ch.adnovum.jcan.katharsis.mock.models.Project;
 import ch.adnovum.jcan.katharsis.security.ResourcePermissionInformationImpl;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryBase;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryBase;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.resource.list.ResourceList;
 
 @ApplicationScoped
 public class ProjectRepository extends ResourceRepositoryBase<Project, Long> {

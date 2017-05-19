@@ -1,7 +1,7 @@
 package io.katharsis.legacy.queryParams;
 
-import io.katharsis.errorhandling.exception.KatharsisException;
-import io.katharsis.errorhandling.exception.ParametersDeserializationException;
+import io.katharsis.core.exception.KatharsisException;
+import io.katharsis.core.exception.ParametersDeserializationException;
 import io.katharsis.legacy.queryParams.context.QueryParamsParserContext;
 import io.katharsis.legacy.queryParams.context.SimpleQueryParamsParserContext;
 

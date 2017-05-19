@@ -30,9 +30,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.katharsis.core.internal.boot.ReflectionsServiceDiscovery;
+import io.katharsis.core.module.discovery.ReflectionsServiceDiscovery;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
-import io.katharsis.module.ServiceDiscovery;
+import io.katharsis.core.module.discovery.ServiceDiscovery;
 import io.katharsis.rs.internal.parameterProvider.JaxRsParameterProvider;
 import io.katharsis.rs.internal.parameterProvider.RequestContextParameterProviderRegistry;
 import io.katharsis.rs.internal.parameterProvider.RequestContextParameterProviderRegistryBuilder;

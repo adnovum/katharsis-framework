@@ -1,7 +1,7 @@
 package io.katharsis.jpa.model.dto;
 
-import io.katharsis.resource.annotations.JsonApiId;
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiId;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 @JsonApiResource(type = "relatedDTO")
 public class RelatedDTO {

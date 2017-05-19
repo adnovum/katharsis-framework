@@ -1,6 +1,6 @@
 package io.katharsis.validation;
 
-import io.katharsis.module.Module;
+import io.katharsis.core.module.Module;
 import io.katharsis.validation.internal.ConstraintViolationExceptionMapper;
 import io.katharsis.validation.internal.ValidationExceptionMapper;
 

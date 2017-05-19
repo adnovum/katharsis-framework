@@ -1,19 +1,18 @@
 package io.katharsis.rs.internal.parameterProvider;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
-import io.katharsis.rs.internal.parameterProvider.provider.Parameter;
-import io.katharsis.rs.internal.parameterProvider.provider.RequestContextParameterProvider;
-import io.katharsis.utils.Optional;
-
+import java.lang.reflect.Method;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.SecurityContext;
-import java.lang.reflect.Method;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.katharsis.core.utils.Optional;
+import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
+import io.katharsis.rs.internal.parameterProvider.provider.Parameter;
+import io.katharsis.rs.internal.parameterProvider.provider.RequestContextParameterProvider;
 
 /**
  * <p>

@@ -17,7 +17,7 @@ import javax.validation.ValidatorFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.katharsis.core.internal.utils.StringUtils;
+import io.katharsis.core.engine.internal.utils.StringUtils;
 import io.katharsis.legacy.queryParams.QueryParams;
 import io.katharsis.validation.internal.ConstraintViolationImpl;
 import io.katharsis.validation.mock.ComplexValidator;

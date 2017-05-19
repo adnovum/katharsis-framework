@@ -21,7 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Version;
 
-import io.katharsis.core.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
 import io.katharsis.jpa.internal.JpaResourceInformationBuilder;
 import io.katharsis.jpa.meta.MetaEntityAttribute;
 import io.katharsis.jpa.meta.MetaJpaDataObject;

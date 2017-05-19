@@ -14,24 +14,23 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.katharsis.client.ResponseBodyException;
 import io.katharsis.client.internal.proxy.ClientProxyFactory;
-import io.katharsis.core.internal.boot.PropertiesProvider;
-import io.katharsis.core.internal.dispatcher.controller.ResourceUpsert;
-import io.katharsis.core.internal.dispatcher.path.JsonPath;
-import io.katharsis.core.internal.resource.DocumentMapper;
-import io.katharsis.core.internal.utils.PropertyUtils;
-import io.katharsis.errorhandling.exception.RepositoryNotFoundException;
+import io.katharsis.core.engine.properties.PropertiesProvider;
+import io.katharsis.core.engine.internal.dispatcher.controller.ResourceUpsert;
+import io.katharsis.core.engine.internal.dispatcher.path.JsonPath;
+import io.katharsis.core.engine.internal.document.mapper.DocumentMapper;
+import io.katharsis.core.exception.RepositoryNotFoundException;
 import io.katharsis.legacy.internal.RepositoryMethodParameterProvider;
-import io.katharsis.repository.request.QueryAdapter;
-import io.katharsis.repository.response.Response;
-import io.katharsis.resource.Document;
-import io.katharsis.resource.Relationship;
-import io.katharsis.resource.Resource;
-import io.katharsis.resource.ResourceIdentifier;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.engine.query.QueryAdapter;
+import io.katharsis.core.engine.dispatcher.Response;
+import io.katharsis.core.engine.document.Document;
+import io.katharsis.core.engine.document.Relationship;
+import io.katharsis.core.engine.document.Resource;
+import io.katharsis.core.engine.document.ResourceIdentifier;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
+import io.katharsis.core.engine.parser.TypeParser;
 
 class ClientResourceUpsert extends ResourceUpsert {
 

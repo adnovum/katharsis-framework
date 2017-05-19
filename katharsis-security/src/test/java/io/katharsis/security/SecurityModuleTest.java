@@ -1,22 +1,20 @@
 package io.katharsis.security;
 
+import io.katharsis.core.engine.security.SecurityProvider;
+import io.katharsis.security.model.Project;
+import io.katharsis.security.model.ProjectRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.katharsis.core.internal.registry.ResourceRegistryImpl;
-import io.katharsis.module.CoreModule;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.module.SimpleModule;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
-import io.katharsis.security.ResourcePermission;
-import io.katharsis.security.SecurityConfig;
-import io.katharsis.security.SecurityModule;
+import io.katharsis.core.engine.internal.registry.ResourceRegistryImpl;
+import io.katharsis.core.module.CoreModule;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.module.SimpleModule;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
 import io.katharsis.security.SecurityConfig.Builder;
-import io.katharsis.security.model.Project;
-import io.katharsis.security.model.ProjectRepository;
 import io.katharsis.security.model.Task;
 import io.katharsis.security.model.TaskRepository;
 

@@ -12,8 +12,8 @@ import io.katharsis.jpa.model.MethodAnnotatedEntity;
 import io.katharsis.meta.MetaLookup;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaKey;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
 
 public class MethodAnnotatedEntityTest extends AbstractJpaJerseyTest {
 

@@ -2,7 +2,7 @@ package io.katharsis.rs.internal;
 
 import javax.ws.rs.core.SecurityContext;
 
-import io.katharsis.security.SecurityProvider;
+import io.katharsis.core.engine.security.SecurityProvider;
 
 public class JaxrsSecurityProvider implements SecurityProvider {
 

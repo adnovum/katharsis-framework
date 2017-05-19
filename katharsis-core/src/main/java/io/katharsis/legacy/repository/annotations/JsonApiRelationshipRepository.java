@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * Class annotated with this annotation will be treated as a relationship repository class for a
+ * Class annotated with this annotation will be treated as a relationship document class for a
  * {@link JsonApiResourceRepository#value()} property.
  * </p>
  * <p>
@@ -24,13 +24,13 @@ import java.lang.annotation.Target;
 public @interface JsonApiRelationshipRepository {
 
     /**
-     * source resource model class type
+     * source document model class type
      * @return class
      */
     Class<?> source();
 
     /**
-     * target resource model class type
+     * target document model class type
      * @return class
      */
     Class<?> target();

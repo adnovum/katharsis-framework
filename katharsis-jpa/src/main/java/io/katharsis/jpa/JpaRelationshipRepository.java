@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import io.katharsis.core.internal.utils.MultivaluedMap;
+import io.katharsis.core.engine.internal.utils.MultivaluedMap;
 import io.katharsis.jpa.internal.JpaRepositoryBase;
 import io.katharsis.jpa.internal.JpaRepositoryUtils;
 import io.katharsis.jpa.internal.JpaRequestContext;
@@ -24,13 +24,13 @@ import io.katharsis.jpa.query.JpaQueryFactory;
 import io.katharsis.jpa.query.Tuple;
 import io.katharsis.meta.model.MetaAttribute;
 import io.katharsis.meta.model.MetaType;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.BulkRelationshipRepositoryV2;
-import io.katharsis.repository.RelationshipRepositoryV2;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceList;
-import io.katharsis.resource.meta.MetaInformation;
-import io.katharsis.resource.meta.PagedMetaInformation;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.BulkRelationshipRepositoryV2;
+import io.katharsis.core.repository.RelationshipRepositoryV2;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.resource.list.ResourceList;
+import io.katharsis.core.resource.meta.MetaInformation;
+import io.katharsis.core.resource.meta.PagedMetaInformation;
 
 public class JpaRelationshipRepository<S, I extends Serializable, T, J extends Serializable> extends JpaRepositoryBase<T> implements RelationshipRepositoryV2<S, I, T, J>, BulkRelationshipRepositoryV2<S, I, T, J> {
 

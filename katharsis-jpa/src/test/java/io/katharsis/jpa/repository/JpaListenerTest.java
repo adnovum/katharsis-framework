@@ -17,8 +17,8 @@ import io.katharsis.jpa.query.JpaQuery;
 import io.katharsis.jpa.query.JpaQueryExecutor;
 import io.katharsis.jpa.query.JpaQueryFactory;
 import io.katharsis.jpa.query.querydsl.QuerydslQueryFactory;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.resource.list.ResourceList;
 
 @Transactional
 public class JpaListenerTest extends AbstractJpaTest {

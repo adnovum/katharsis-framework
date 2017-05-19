@@ -1,8 +1,8 @@
 package io.katharsis.meta.model;
 
-import io.katharsis.resource.annotations.JsonApiRelation;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.SerializeType;
+import io.katharsis.core.resource.annotations.JsonApiRelation;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.SerializeType;
 
 @JsonApiResource(type = "meta/mapType")
 public class MetaMapType extends MetaType {

@@ -1,6 +1,6 @@
 package io.katharsis.spring.security;
 
-import io.katharsis.module.Module;
+import io.katharsis.core.module.Module;
 import io.katharsis.spring.internal.AccessDeniedExceptionMapper;
 
 /**

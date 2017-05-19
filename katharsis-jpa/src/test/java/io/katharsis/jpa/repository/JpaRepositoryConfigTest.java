@@ -6,15 +6,15 @@ import org.junit.Test;
 import io.katharsis.jpa.JpaRepositoryConfig;
 import io.katharsis.jpa.JpaRepositoryConfig.Builder;
 import io.katharsis.jpa.model.TestEntity;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.links.DefaultPagedLinksInformation;
-import io.katharsis.resource.links.LinksInformation;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceList;
-import io.katharsis.resource.list.ResourceListBase;
-import io.katharsis.resource.meta.DefaultPagedMetaInformation;
-import io.katharsis.resource.meta.MetaInformation;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.links.DefaultPagedLinksInformation;
+import io.katharsis.core.resource.links.LinksInformation;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.resource.list.ResourceList;
+import io.katharsis.core.resource.list.ResourceListBase;
+import io.katharsis.core.resource.meta.DefaultPagedMetaInformation;
+import io.katharsis.core.resource.meta.MetaInformation;
 
 public class JpaRepositoryConfigTest {
 

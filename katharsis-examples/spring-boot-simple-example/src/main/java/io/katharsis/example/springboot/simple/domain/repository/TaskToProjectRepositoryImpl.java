@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 import io.katharsis.example.springboot.simple.domain.model.Project;
 import io.katharsis.example.springboot.simple.domain.model.Task;
-import io.katharsis.repository.RelationshipRepositoryBase;
+import io.katharsis.core.repository.RelationshipRepositoryBase;
 
 /**
  * Example based on RelationshipRepositoryBase which by default accesses the repositories on both sides.

@@ -1,9 +1,9 @@
 package io.katharsis.spring.internal;
 
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.ExceptionMapperHelper;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
-import io.katharsis.repository.response.HttpStatus;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.engine.error.ExceptionMapperHelper;
+import io.katharsis.core.engine.error.ExceptionMapper;
+import io.katharsis.core.engine.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 
 /**

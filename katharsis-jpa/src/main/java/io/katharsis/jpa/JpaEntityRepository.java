@@ -17,13 +17,13 @@ import io.katharsis.jpa.query.JpaQueryExecutor;
 import io.katharsis.jpa.query.JpaQueryFactory;
 import io.katharsis.jpa.query.Tuple;
 import io.katharsis.meta.model.MetaAttribute;
-import io.katharsis.queryspec.FilterOperator;
-import io.katharsis.queryspec.FilterSpec;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.list.ResourceList;
-import io.katharsis.resource.meta.MetaInformation;
-import io.katharsis.resource.meta.PagedMetaInformation;
+import io.katharsis.core.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.list.ResourceList;
+import io.katharsis.core.resource.meta.MetaInformation;
+import io.katharsis.core.resource.meta.PagedMetaInformation;
 
 /**
  * Exposes a JPA entity as ResourceRepository.

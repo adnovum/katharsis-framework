@@ -1,8 +1,8 @@
 package io.katharsis.legacy.registry;
 
-import io.katharsis.resource.information.ResourceInformationBuilder;
-import io.katharsis.resource.information.ResourceInformationBuilderContext;
-import io.katharsis.utils.parser.TypeParser;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilder;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilderContext;
+import io.katharsis.core.engine.parser.TypeParser;
 
 public class DefaultResourceInformationBuilderContext implements ResourceInformationBuilderContext {
 

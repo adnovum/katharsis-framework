@@ -1,7 +1,7 @@
 package io.katharsis.client.internal.proxy;
 
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.resource.list.DefaultResourceList;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.resource.list.DefaultResourceList;
 
 public interface ClientProxyFactoryContext {
 

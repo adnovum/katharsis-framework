@@ -10,7 +10,7 @@ import java.util.Set;
 import javax.persistence.OptimisticLockException;
 
 import io.katharsis.client.ResourceRepositoryStub;
-import io.katharsis.errorhandling.exception.ResourceNotFoundException;
+import io.katharsis.core.exception.ResourceNotFoundException;
 import io.katharsis.jpa.model.RelatedEntity;
 import io.katharsis.jpa.model.TestEmbeddedIdEntity;
 import io.katharsis.jpa.model.TestEntity;

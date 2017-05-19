@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 
-import io.katharsis.core.internal.utils.PropertyUtils;
+import io.katharsis.core.engine.internal.utils.PropertyUtils;
 import io.katharsis.jpa.meta.MetaJpaDataObject;
 import io.katharsis.meta.internal.MetaDataObjectProviderBase;
 import io.katharsis.meta.model.MetaAttribute;

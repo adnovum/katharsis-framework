@@ -21,9 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import io.katharsis.jpa.model.RelatedEntity;
 import io.katharsis.jpa.model.TestEntity;
 import io.katharsis.jpa.model.UuidTestEntity;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.FilterOperator;
-import io.katharsis.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.FilterSpec;
 
 @Transactional
 public abstract class BasicQueryTestBase extends AbstractJpaTest {

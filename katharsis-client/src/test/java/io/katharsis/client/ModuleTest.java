@@ -13,10 +13,10 @@ import io.katharsis.client.http.okhttp.OkHttpAdapter;
 import io.katharsis.client.http.okhttp.OkHttpAdapterListener;
 import io.katharsis.test.mock.models.Task;
 import io.katharsis.client.module.HttpAdapterAware;
-import io.katharsis.module.Module;
-import io.katharsis.module.Module.ModuleContext;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.module.Module.ModuleContext;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
 import okhttp3.OkHttpClient.Builder;
 
 public class ModuleTest extends AbstractClientTest {

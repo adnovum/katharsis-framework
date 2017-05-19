@@ -4,13 +4,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import io.katharsis.core.internal.utils.ClassUtils;
-import io.katharsis.errorhandling.exception.RepositoryAnnotationNotFoundException;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
+import io.katharsis.core.exception.RepositoryAnnotationNotFoundException;
 import io.katharsis.legacy.repository.annotations.JsonApiLinks;
 import io.katharsis.legacy.repository.annotations.JsonApiMeta;
-import io.katharsis.repository.request.QueryAdapter;
-import io.katharsis.resource.links.LinksInformation;
-import io.katharsis.resource.meta.MetaInformation;
+import io.katharsis.core.engine.query.QueryAdapter;
+import io.katharsis.core.resource.links.LinksInformation;
+import io.katharsis.core.resource.meta.MetaInformation;
 
 public abstract class AnnotatedRepositoryAdapter<T> {
 

@@ -139,7 +139,7 @@
 2016-10-20    Removed a TON of logging added abstract implemetations for relationship and simple repositories (Christian Bongiorno)  
 2016-10-18    Add markdown to keep track of discussion (Christian Bongiorno)  
 2016-10-18    Another baby step toward a UI (Christian Bongiorno)  
-2016-10-18    [#167](https://github.com/katharsis-project/katharsis-framework/issues/167) Moved the class UriInfoServiceUrlProvider to io.katharsis.rs.resource.registry package and Exported 'io.katharsis.queryspec.*' in katharsis-core ([#168](https://github.com/katharsis-project/katharsis-framework/issues/168)) (Christian Bongiorno)  
+2016-10-18    [#167](https://github.com/katharsis-project/katharsis-framework/issues/167) Moved the class UriInfoServiceUrlProvider to io.katharsis.rs.resource.registry package and Exported 'io.katharsis.core.queryspec.*' in katharsis-core ([#168](https://github.com/katharsis-project/katharsis-framework/issues/168)) (Christian Bongiorno)  
 2016-10-17    [#163](https://github.com/katharsis-project/katharsis-framework/issues/163) JSR 303 bean validation support (remmeier)  
 2016-10-17    pom fix (remmeier)  
 2016-10-17    Add markdown to keep track of discussion (Christian Bongiorno)  

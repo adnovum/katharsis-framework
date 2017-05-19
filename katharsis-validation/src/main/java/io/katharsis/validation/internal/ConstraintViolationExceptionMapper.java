@@ -18,18 +18,18 @@ import javax.validation.Path.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.katharsis.core.internal.utils.PropertyUtils;
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.ErrorDataBuilder;
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.ExceptionMapperHelper;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
-import io.katharsis.module.Module.ModuleContext;
-import io.katharsis.repository.response.HttpStatus;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.engine.internal.utils.PropertyUtils;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.engine.document.ErrorDataBuilder;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.engine.error.ExceptionMapperHelper;
+import io.katharsis.core.engine.error.ExceptionMapper;
+import io.katharsis.core.module.Module.ModuleContext;
+import io.katharsis.core.engine.http.HttpStatus;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
@@ -132,7 +132,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
 	/**
 	 * Translate validated bean and root path into validated resource and
-	 * resource path. For example, embeddables belonging to an entity resource
+	 * resource path. For example, embeddables belonging to an entity document
 	 * are mapped back to an entity violation and a proper path to the
 	 * embeddable attribute.
 	 * 
@@ -313,7 +313,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 		private void appendSourcePointer(Object object) {
 			leafSourcePointer.append(object);
 			if (!withinRelation()) {
-				// bulk update of resource not support by json api spec,
+				// bulk update of resources not support by json api spec,
 				//so we stop for sourcePointer computation when a relation
 				// could not be validated. How to continue depends on future implementations
 				rootSourcePointer.append(object);

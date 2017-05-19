@@ -2,11 +2,11 @@ package io.katharsis.jpa.model.dto;
 
 import java.util.List;
 
-import io.katharsis.resource.annotations.JsonApiId;
-import io.katharsis.resource.annotations.JsonApiLookupIncludeAutomatically;
-import io.katharsis.resource.annotations.JsonApiResource;
-import io.katharsis.resource.annotations.JsonApiToMany;
-import io.katharsis.resource.annotations.JsonApiToOne;
+import io.katharsis.core.resource.annotations.JsonApiId;
+import io.katharsis.core.resource.annotations.JsonApiLookupIncludeAutomatically;
+import io.katharsis.core.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiToMany;
+import io.katharsis.core.resource.annotations.JsonApiToOne;
 
 @JsonApiResource(type = "testDTO")
 public class TestDTO {

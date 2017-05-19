@@ -2,7 +2,7 @@ package io.katharsis.client.http;
 
 import java.util.concurrent.TimeUnit;
 
-import io.katharsis.repository.request.HttpMethod;
+import io.katharsis.core.engine.http.HttpMethod;
 
 public interface HttpAdapter {
 

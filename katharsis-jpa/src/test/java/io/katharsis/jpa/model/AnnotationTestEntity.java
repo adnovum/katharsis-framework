@@ -4,11 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
-import io.katharsis.resource.annotations.JsonApiField;
+import io.katharsis.core.resource.annotations.JsonApiField;
 
 @Entity
 public class AnnotationTestEntity {

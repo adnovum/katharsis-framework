@@ -6,14 +6,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.core.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
 import io.katharsis.meta.mock.model.Schedule;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaElement;
 import io.katharsis.meta.model.resource.MetaResource;
-import io.katharsis.meta.provider.MetaProvider;
 import io.katharsis.meta.provider.MetaProviderBase;
-import io.katharsis.meta.provider.MetaProviderContext;
 import io.katharsis.meta.provider.resource.ResourceMetaProvider;
 
 /**

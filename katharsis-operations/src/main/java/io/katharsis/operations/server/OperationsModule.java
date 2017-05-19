@@ -8,7 +8,7 @@ package io.katharsis.operations.server;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import io.katharsis.module.Module;
+import io.katharsis.core.module.Module;
 import io.katharsis.operations.server.order.DependencyOrderStrategy;
 import io.katharsis.operations.server.order.OperationOrderStrategy;
 

@@ -1,6 +1,6 @@
 package io.katharsis.test.mock.models;
 
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 @JsonApiResource(type = "tasksSubType")
 public class TaskSubType extends Task {

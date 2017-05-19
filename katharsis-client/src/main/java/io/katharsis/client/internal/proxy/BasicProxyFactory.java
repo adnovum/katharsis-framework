@@ -2,24 +2,23 @@ package io.katharsis.client.internal.proxy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import io.katharsis.core.internal.utils.ClassUtils;
-import io.katharsis.core.internal.utils.WrappedList;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceList;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.engine.internal.utils.ClassUtils;
+import io.katharsis.core.engine.internal.utils.WrappedList;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.resource.list.ResourceList;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 
 /**
  * Basic implementation of {@link ClientProxyFactory}.
  * 
- * Note that resources are not really proxied with this implementation. No lazy-loading is happending. Instead, just the ID is set on an empty resource.
+ * Note that resources are not really proxied with this implementation. No lazy-loading is happending. Instead, just the ID is
+ * set on an empty resource.
  * Collections are fully proxied and get loaded when accessed.
  *
  */

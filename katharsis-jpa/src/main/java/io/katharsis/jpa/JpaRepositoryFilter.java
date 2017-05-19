@@ -6,35 +6,35 @@ import java.util.List;
 import io.katharsis.jpa.query.JpaQuery;
 import io.katharsis.jpa.query.JpaQueryExecutor;
 import io.katharsis.jpa.query.Tuple;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.resource.list.ResourceList;
 
 /**
- * Can be registered with the JpaModule and gets notified about all kinds of repository events.
+ * Can be registered with the JpaModule and gets notified about all kinds of document events.
  * The filter then has to possiblity to do all kinds of changes.
  */
 public interface JpaRepositoryFilter {
 
 	/**
-	 * Called when repository is created. Allows customizations and replacement.
+	 * Called when document is created. Allows customizations and replacement.
 	 * 
-	 * @param <T> repository class
+	 * @param <T> document class
 	 * @param <I> identifier class
 	 * @param repository to filter
-	 * @return filtered repository 
+	 * @return filtered document
 	 *  
 	 */
 	<T, I extends Serializable> JpaEntityRepository<T, I> filterCreation(JpaEntityRepository<T, I> repository);
 
 	/**
-	 * Called when repository is created. Allows customizations and replacement.
+	 * Called when document is created. Allows customizations and replacement.
 	 *
-	 * @param <S> source repository class
+	 * @param <S> source document class
 	 * @param <I> source identifier class
-	 * @param <T> target repository class
+	 * @param <T> target document class
 	 * @param <J> target identifier class
 	 * @param repository to filter
-	 * @return filtered repository 
+	 * @return filtered document
 	 */
 	<S, I extends Serializable, T, J extends Serializable> JpaRelationshipRepository<S, I, T, J> filterCreation(
 			JpaRelationshipRepository<S, I, T, J> repository);
@@ -59,7 +59,7 @@ public interface JpaRepositoryFilter {
 	/**
 	 * Allows to customize the query.
 	 * 
-	 * @param <T> repository class
+	 * @param <T> document class
 	 * @param repository where the query is executed
 	 * @param querySpec that is used to query
 	 * @param query to filter
@@ -70,7 +70,7 @@ public interface JpaRepositoryFilter {
 	/**
 	 * Allows to customize the query executor.
 	 * 
-	 * @param <T> repository class
+	 * @param <T> document class
 	 * @param repository where the query is executed
 	 * @param querySpec that is used to query
 	 * @param executor to filter
@@ -91,7 +91,7 @@ public interface JpaRepositoryFilter {
 	/**
 	 *  Allows to filter resources and return the filtered list.
 	 *  
-	 * @param <T> repository class
+	 * @param <T> document class
 	 * @param repository where the query is executed
 	 * @param querySpec that is used to query
 	 * @param resources to filter

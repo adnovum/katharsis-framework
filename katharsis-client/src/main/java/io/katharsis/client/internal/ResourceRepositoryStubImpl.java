@@ -8,17 +8,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.katharsis.client.KatharsisClient;
 import io.katharsis.client.ResourceRepositoryStub;
-import io.katharsis.core.internal.utils.JsonApiUrlBuilder;
-import io.katharsis.core.internal.utils.PropertyUtils;
+import io.katharsis.core.engine.internal.utils.JsonApiUrlBuilder;
 import io.katharsis.legacy.queryParams.QueryParams;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.repository.request.HttpMethod;
-import io.katharsis.repository.response.JsonApiResponse;
-import io.katharsis.resource.Document;
-import io.katharsis.resource.information.ResourceField;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.list.DefaultResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.engine.http.HttpMethod;
+import io.katharsis.core.repository.response.JsonApiResponse;
+import io.katharsis.core.engine.document.Document;
+import io.katharsis.core.engine.information.resource.ResourceField;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.resource.list.DefaultResourceList;
 
 public class ResourceRepositoryStubImpl<T, I extends Serializable> extends AbstractStub implements ResourceRepositoryV2<T, I>, ResourceRepositoryStub<T, I> {
 

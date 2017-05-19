@@ -6,7 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.TransactionalException;
 
-import io.katharsis.core.internal.boot.TransactionRunner;
+import io.katharsis.core.engine.transaction.TransactionRunner;
 
 /**
  * Runs within CDI/JEE container.

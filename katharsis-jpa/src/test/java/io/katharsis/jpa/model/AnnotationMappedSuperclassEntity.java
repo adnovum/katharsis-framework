@@ -5,7 +5,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 
-import io.katharsis.resource.annotations.JsonApiField;
+import io.katharsis.core.resource.annotations.JsonApiField;
 
 @MappedSuperclass
 public class AnnotationMappedSuperclassEntity {

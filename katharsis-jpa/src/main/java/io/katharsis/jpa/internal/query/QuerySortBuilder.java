@@ -12,8 +12,8 @@ import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaKey;
 import io.katharsis.meta.model.MetaMapType;
 import io.katharsis.meta.model.MetaType;
-import io.katharsis.queryspec.Direction;
-import io.katharsis.queryspec.SortSpec;
+import io.katharsis.core.queryspec.Direction;
+import io.katharsis.core.queryspec.SortSpec;
 
 public class QuerySortBuilder<T, E, O> {
 

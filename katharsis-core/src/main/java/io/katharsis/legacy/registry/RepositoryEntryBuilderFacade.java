@@ -3,13 +3,13 @@ package io.katharsis.legacy.registry;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.katharsis.core.internal.registry.DirectResponseResourceEntry;
-import io.katharsis.core.internal.repository.NotFoundRepository;
+import io.katharsis.core.engine.internal.registry.DirectResponseResourceEntry;
+import io.katharsis.core.engine.internal.repository.NotFoundRepository;
 import io.katharsis.legacy.locator.JsonServiceLocator;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.resource.registry.ResourceEntry;
-import io.katharsis.resource.registry.ResourceLookup;
-import io.katharsis.resource.registry.ResponseRelationshipEntry;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.engine.registry.ResourceEntry;
+import io.katharsis.core.module.discovery.ResourceLookup;
+import io.katharsis.core.engine.registry.ResponseRelationshipEntry;
 
 /**
  * Contains a strategy to decide which implementation of an entry will be provided. Keep in mind that there can be a

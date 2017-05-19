@@ -11,25 +11,23 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import io.katharsis.core.resource.registry.ResourceRegistryBuilderTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.katharsis.core.internal.resource.AnnotationResourceInformationBuilder;
-import io.katharsis.core.internal.utils.JsonApiUrlBuilder;
+import io.katharsis.core.engine.internal.information.resource.AnnotationResourceInformationBuilder;
+import io.katharsis.core.engine.internal.utils.JsonApiUrlBuilder;
 import io.katharsis.legacy.locator.JsonServiceLocator;
 import io.katharsis.legacy.locator.SampleJsonServiceLocator;
-import io.katharsis.legacy.queryParams.DefaultQueryParamsParser;
-import io.katharsis.legacy.queryParams.QueryParams;
-import io.katharsis.legacy.queryParams.QueryParamsBuilder;
 import io.katharsis.legacy.registry.ResourceRegistryBuilder;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.resource.information.ResourceFieldNameTransformer;
-import io.katharsis.resource.information.ResourceInformationBuilder;
-import io.katharsis.resource.mock.models.Task;
-import io.katharsis.resource.registry.ConstantServiceUrlProvider;
-import io.katharsis.resource.registry.DefaultResourceLookup;
-import io.katharsis.resource.registry.RegistryEntry;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.engine.information.resource.ResourceFieldNameTransformer;
+import io.katharsis.core.engine.information.resource.ResourceInformationBuilder;
+import io.katharsis.core.mock.models.Task;
+import io.katharsis.core.engine.url.ConstantServiceUrlProvider;
+import io.katharsis.core.module.discovery.DefaultResourceLookup;
+import io.katharsis.core.engine.registry.RegistryEntry;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 
 public class DefaultQueryParamsSerializerTest {
 
@@ -46,7 +44,7 @@ public class DefaultQueryParamsSerializerTest {
 				new ResourceFieldNameTransformer());
 		ModuleRegistry moduleRegistry = new ModuleRegistry();
 		resourceRegistryBuilder = new ResourceRegistryBuilder(moduleRegistry, jsonServiceLocator, resourceInformationBuilder);
-		resourceLookup = new DefaultResourceLookup("io.katharsis.resource.mock");
+		resourceLookup = new DefaultResourceLookup(ResourceRegistryBuilderTest.TEST_MODELS_PACKAGE);
 		resourceRegistry = resourceRegistryBuilder.build(resourceLookup, moduleRegistry, new ConstantServiceUrlProvider("http://127.0.0.1"));
 		urlBuilder = new JsonApiUrlBuilder(resourceRegistry);
 	}

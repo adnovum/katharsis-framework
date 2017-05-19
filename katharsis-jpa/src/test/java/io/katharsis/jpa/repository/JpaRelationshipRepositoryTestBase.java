@@ -16,11 +16,11 @@ import io.katharsis.jpa.JpaRepositoryConfig;
 import io.katharsis.jpa.model.RelatedEntity;
 import io.katharsis.jpa.model.TestEntity;
 import io.katharsis.jpa.query.AbstractJpaTest;
-import io.katharsis.queryspec.FilterOperator;
-import io.katharsis.queryspec.FilterSpec;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.resource.list.ResourceList;
-import io.katharsis.resource.meta.PagedMetaInformation;
+import io.katharsis.core.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.resource.list.ResourceList;
+import io.katharsis.core.resource.meta.PagedMetaInformation;
 
 @Transactional
 public abstract class JpaRelationshipRepositoryTestBase extends AbstractJpaTest {

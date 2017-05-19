@@ -5,11 +5,11 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryBase;
-import io.katharsis.resource.list.DefaultResourceList;
-import io.katharsis.resource.list.ResourceList;
-import io.katharsis.resource.meta.MetaInformation;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryBase;
+import io.katharsis.core.resource.list.DefaultResourceList;
+import io.katharsis.core.resource.list.ResourceList;
+import io.katharsis.core.resource.meta.MetaInformation;
 import io.katharsis.spring.domain.model.Task;
 
 @Component

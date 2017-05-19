@@ -11,7 +11,7 @@ import io.katharsis.client.http.HttpAdapter;
 import io.katharsis.client.http.apache.HttpClientAdapter;
 import io.katharsis.client.http.okhttp.OkHttpAdapter;
 import io.katharsis.client.module.HttpAdapterAware;
-import io.katharsis.module.Module;
+import io.katharsis.core.module.Module;
 
 /**
  * Integrates Brave into katharsis client and server:

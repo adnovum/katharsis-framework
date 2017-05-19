@@ -11,14 +11,14 @@ import io.katharsis.legacy.queryParams.QueryParams;
 
 /**
  * <p>
- * Method annotated with this annotation will be used to perform find one relationship resource on a particular
- * resource. The method must be defined in a class annotated with {@link JsonApiRelationshipRepository}.
+ * Method annotated with this annotation will be used to perform find one relationship document on a particular
+ * document. The method must be defined in a class annotated with {@link JsonApiRelationshipRepository}.
  * </p>
  * <p>
  * The requirements for the method parameters are as follows:
  * </p>
  * <ol>
- *     <li>An identifier of a source resource</li>
+ *     <li>An identifier of a source document</li>
  *     <li>Relationship's field name</li>
  * </ol>
  * <p>

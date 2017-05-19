@@ -6,7 +6,7 @@ import javax.ws.rs.client.WebTarget;
 
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
-import io.katharsis.resource.registry.ServiceUrlProvider;
+import io.katharsis.core.engine.url.ServiceUrlProvider;
 
 public class JerseyActionStubFactory implements ActionStubFactory {
 

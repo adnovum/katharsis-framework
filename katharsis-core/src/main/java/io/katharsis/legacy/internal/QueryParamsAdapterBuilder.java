@@ -3,12 +3,12 @@ package io.katharsis.legacy.internal;
 import java.util.Map;
 import java.util.Set;
 
-import io.katharsis.core.internal.query.QueryAdapterBuilder;
+import io.katharsis.core.engine.query.QueryAdapterBuilder;
 import io.katharsis.legacy.queryParams.QueryParamsBuilder;
 import io.katharsis.legacy.queryParams.context.SimpleQueryParamsParserContext;
-import io.katharsis.module.ModuleRegistry;
-import io.katharsis.repository.request.QueryAdapter;
-import io.katharsis.resource.information.ResourceInformation;
+import io.katharsis.core.module.ModuleRegistry;
+import io.katharsis.core.engine.query.QueryAdapter;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
 
 public class QueryParamsAdapterBuilder implements QueryAdapterBuilder {
 

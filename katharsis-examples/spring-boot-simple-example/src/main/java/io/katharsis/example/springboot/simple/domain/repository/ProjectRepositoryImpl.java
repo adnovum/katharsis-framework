@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Component;
 
 import io.katharsis.example.springboot.simple.domain.model.Project;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryBase;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryBase;
 
 /**
  * ResourceRepositoryBase-based example with the base class providing some base functionality.

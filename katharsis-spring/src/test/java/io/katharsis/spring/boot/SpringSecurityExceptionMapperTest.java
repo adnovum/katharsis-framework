@@ -6,8 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.security.access.AccessDeniedException;
 
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.ErrorResponse;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.engine.error.ErrorResponse;
 import io.katharsis.spring.internal.AccessDeniedExceptionMapper;
 
 public class SpringSecurityExceptionMapperTest {

@@ -1,6 +1,6 @@
 package io.katharsis.jpa.internal;
 
-import io.katharsis.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.QuerySpec;
 
 public class JpaRequestContext {
 

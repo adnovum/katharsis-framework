@@ -2,14 +2,14 @@ package io.katharsis.jpa.internal;
 
 import javax.transaction.RollbackException;
 
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
-import io.katharsis.errorhandling.mapper.JsonApiExceptionMapper;
-import io.katharsis.module.Module;
-import io.katharsis.module.Module.ModuleContext;
-import io.katharsis.repository.response.HttpStatus;
-import io.katharsis.utils.Optional;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.engine.error.ExceptionMapper;
+import io.katharsis.core.engine.error.JsonApiExceptionMapper;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.module.Module.ModuleContext;
+import io.katharsis.core.engine.http.HttpStatus;
+import io.katharsis.core.utils.Optional;
 
 /**
  * RollbackException can hide the more interesting causes.

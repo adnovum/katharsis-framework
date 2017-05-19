@@ -6,8 +6,8 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 
 import ch.adnovum.jcan.katharsis.mock.models.Task;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.queryspec.QuerySpecResourceRepositoryBase;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.queryspec.QuerySpecResourceRepositoryBase;
 
 @ApplicationScoped
 public class TaskRepository extends QuerySpecResourceRepositoryBase<Task, Long> {

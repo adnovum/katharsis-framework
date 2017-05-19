@@ -27,9 +27,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.katharsis.core.internal.boot.KatharsisBoot;
-import io.katharsis.module.http.HttpRequestContextProvider;
-import io.katharsis.module.http.HttpRequestDispatcher;
+import io.katharsis.core.boot.KatharsisBoot;
+import io.katharsis.core.engine.http.HttpRequestContextProvider;
+import io.katharsis.core.engine.dispatcher.RequestDispatcher;
 import io.katharsis.servlet.internal.FilterPropertiesProvider;
 import io.katharsis.servlet.internal.ServletModule;
 import io.katharsis.servlet.internal.ServletRequestContext;
@@ -75,7 +75,7 @@ public class KatharsisFilter implements Filter {
 			ServletContext servletContext = filterConfig.getServletContext();
 			ServletRequestContext context = new ServletRequestContext(servletContext, (HttpServletRequest) req,
 					(HttpServletResponse) res, boot.getWebPathPrefix());
-			HttpRequestDispatcher requestDispatcher = boot.getRequestDispatcher();
+			RequestDispatcher requestDispatcher = boot.getRequestDispatcher();
 			requestDispatcher.process(context);
 			if (!context.checkAbort()) {
 				chain.doFilter(req, res);

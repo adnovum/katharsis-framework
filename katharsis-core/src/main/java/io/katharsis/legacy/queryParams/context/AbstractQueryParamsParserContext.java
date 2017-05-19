@@ -1,8 +1,8 @@
 package io.katharsis.legacy.queryParams.context;
 
-import io.katharsis.core.internal.dispatcher.path.JsonPath;
-import io.katharsis.resource.information.ResourceInformation;
-import io.katharsis.resource.registry.ResourceRegistry;
+import io.katharsis.core.engine.internal.dispatcher.path.JsonPath;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
+import io.katharsis.core.engine.registry.ResourceRegistry;
 
 /**
  * @deprecated make use of QuerySpec

@@ -6,9 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.katharsis.jpa.model.NamingTestEntity;
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.list.ResourceList;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.list.ResourceList;
 
 public class AttributeNamingEndToEndTest extends AbstractJpaJerseyTest {
 

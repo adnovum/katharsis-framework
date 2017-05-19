@@ -5,12 +5,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import io.katharsis.queryspec.QuerySpec;
-import io.katharsis.repository.ResourceRepositoryV2;
-import io.katharsis.resource.links.DefaultPagedLinksInformation;
-import io.katharsis.resource.links.LinksInformation;
-import io.katharsis.resource.list.ResourceListBase;
-import io.katharsis.resource.meta.MetaInformation;
+import io.katharsis.core.queryspec.QuerySpec;
+import io.katharsis.core.repository.ResourceRepositoryV2;
+import io.katharsis.core.resource.links.DefaultPagedLinksInformation;
+import io.katharsis.core.resource.links.LinksInformation;
+import io.katharsis.core.resource.list.ResourceListBase;
+import io.katharsis.core.resource.meta.MetaInformation;
 
 @Path("schedules")
 public interface ScheduleRepository extends ResourceRepositoryV2<Schedule, Long> {

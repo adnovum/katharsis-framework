@@ -1,6 +1,6 @@
 package io.katharsis.security.model;
 
-import io.katharsis.repository.RelationshipRepositoryBase;
+import io.katharsis.core.repository.RelationshipRepositoryBase;
 
 public class TaskToProjectRepository extends RelationshipRepositoryBase<Task, Long, Project, Long> {
 

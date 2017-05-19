@@ -1,7 +1,7 @@
 package io.katharsis.client;
 
 import io.katharsis.test.mock.TestExceptionMapper;
-import io.katharsis.module.SimpleModule;
+import io.katharsis.core.module.SimpleModule;
 
 public class TestModule extends SimpleModule {
 

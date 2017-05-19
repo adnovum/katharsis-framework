@@ -1,6 +1,6 @@
 package io.katharsis.legacy.queryParams.context;
 
-import io.katharsis.resource.information.ResourceInformation;
+import io.katharsis.core.engine.information.resource.ResourceInformation;
 
 import java.util.Map;
 import java.util.Set;

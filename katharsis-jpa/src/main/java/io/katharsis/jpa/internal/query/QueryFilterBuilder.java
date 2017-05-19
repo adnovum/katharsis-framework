@@ -15,8 +15,8 @@ import io.katharsis.meta.model.MetaAttributePath;
 import io.katharsis.meta.model.MetaDataObject;
 import io.katharsis.meta.model.MetaMapType;
 import io.katharsis.meta.model.MetaType;
-import io.katharsis.queryspec.FilterOperator;
-import io.katharsis.queryspec.FilterSpec;
+import io.katharsis.core.queryspec.FilterOperator;
+import io.katharsis.core.queryspec.FilterSpec;
 
 public final class QueryFilterBuilder<P, F> {
 

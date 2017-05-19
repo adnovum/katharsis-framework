@@ -5,9 +5,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.katharsis.security.ResourcePermission;
-import io.katharsis.security.SecurityConfig;
-import io.katharsis.security.SecurityRule;
 import io.katharsis.security.SecurityConfig.Builder;
 import io.katharsis.security.model.Task;
 

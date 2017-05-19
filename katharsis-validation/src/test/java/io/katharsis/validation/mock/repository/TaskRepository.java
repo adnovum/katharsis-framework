@@ -2,16 +2,9 @@ package io.katharsis.validation.mock.repository;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
-import io.katharsis.errorhandling.exception.ResourceNotFoundException;
+import io.katharsis.core.exception.ResourceNotFoundException;
 import io.katharsis.legacy.queryParams.QueryParams;
 import io.katharsis.legacy.repository.ResourceRepository;
 import io.katharsis.validation.mock.models.Task;

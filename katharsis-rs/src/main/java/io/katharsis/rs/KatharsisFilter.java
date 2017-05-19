@@ -8,7 +8,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Response;
 
-import io.katharsis.module.http.HttpRequestDispatcher;
+import io.katharsis.core.engine.dispatcher.RequestDispatcher;
 import io.katharsis.rs.type.JsonApiMediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class KatharsisFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		try {
 			JaxrsRequestContext context = new JaxrsRequestContext(requestContext, feature);
-			HttpRequestDispatcher requestDispatcher = feature.getBoot().getRequestDispatcher();
+			RequestDispatcher requestDispatcher = feature.getBoot().getRequestDispatcher();
 			requestDispatcher.process(context);
 			context.checkAbort();
 		}

@@ -3,7 +3,7 @@ package io.katharsis.jpa.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.core.resource.annotations.JsonApiResource;
 
 @JsonApiResource(type = "tablePerClassChild")
 @Entity

@@ -7,7 +7,7 @@ import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.core.boot.KatharsisProperties;
 import io.katharsis.example.dropwizard.domain.repository.ProjectRepository;
 import io.katharsis.example.dropwizard.domain.repository.TaskRepository;
 import io.katharsis.example.dropwizard.domain.repository.TaskToProjectRepository;

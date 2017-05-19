@@ -7,6 +7,7 @@ dependencies {
     compile project(':katharsis-jpa')
     compile project(':katharsis-validation')
     compile project(':katharsis-brave')
+    compile project(':katharsis-home')
 
     compile 'org.springframework.boot:spring-boot-starter-web:1.4.2.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-test:1.4.2.RELEASE'

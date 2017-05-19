@@ -1,7 +1,7 @@
 package io.katharsis.servlet.internal;
 
-import io.katharsis.module.Module;
-import io.katharsis.module.http.HttpRequestContextProvider;
+import io.katharsis.core.module.Module;
+import io.katharsis.core.engine.http.HttpRequestContextProvider;
 
 public class ServletModule implements Module {
 

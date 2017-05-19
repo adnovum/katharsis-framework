@@ -2,7 +2,7 @@ package io.katharsis.spring.domain.repository;
 
 import org.springframework.stereotype.Component;
 
-import io.katharsis.repository.RelationshipRepositoryBase;
+import io.katharsis.core.repository.RelationshipRepositoryBase;
 import io.katharsis.spring.domain.model.Project;
 import io.katharsis.spring.domain.model.Task;
 

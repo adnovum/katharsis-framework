@@ -1,4 +1,5 @@
 include ':katharsis-core'
+include ':katharsis-home'
 include ':katharsis-test'
 include ':katharsis-rs'
 include ':katharsis-client'

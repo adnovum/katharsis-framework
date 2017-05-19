@@ -1,21 +1,21 @@
 package io.katharsis.security.internal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.katharsis.errorhandling.exception.ForbiddenException;
-import io.katharsis.repository.filter.RepositoryFilterBase;
-import io.katharsis.repository.filter.RepositoryFilterContext;
-import io.katharsis.repository.filter.RepositoryMetaFilterChain;
-import io.katharsis.repository.filter.RepositoryRequestFilterChain;
-import io.katharsis.repository.request.HttpMethod;
-import io.katharsis.repository.request.QueryAdapter;
-import io.katharsis.repository.request.RepositoryRequestSpec;
-import io.katharsis.repository.response.JsonApiResponse;
-import io.katharsis.resource.meta.MetaInformation;
 import io.katharsis.security.ResourcePermission;
 import io.katharsis.security.ResourcePermissionInformation;
 import io.katharsis.security.SecurityModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.katharsis.core.exception.ForbiddenException;
+import io.katharsis.core.engine.filter.RepositoryFilterBase;
+import io.katharsis.core.engine.filter.RepositoryFilterContext;
+import io.katharsis.core.engine.filter.RepositoryMetaFilterChain;
+import io.katharsis.core.engine.filter.RepositoryRequestFilterChain;
+import io.katharsis.core.engine.http.HttpMethod;
+import io.katharsis.core.engine.query.QueryAdapter;
+import io.katharsis.core.engine.dispatcher.RepositoryRequestSpec;
+import io.katharsis.core.repository.response.JsonApiResponse;
+import io.katharsis.core.resource.meta.MetaInformation;
 
 public class SecurityFilter extends RepositoryFilterBase {
 

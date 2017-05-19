@@ -3,10 +3,10 @@ package io.katharsis.rs.internal;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import io.katharsis.core.internal.exception.ExceptionMapperRegistry;
-import io.katharsis.errorhandling.ExceptionMapperHelper;
+import io.katharsis.core.engine.internal.exception.ExceptionMapperRegistry;
+import io.katharsis.core.engine.error.ExceptionMapperHelper;
 import io.katharsis.rs.type.JsonApiMediaType;
-import io.katharsis.utils.Optional;
+import io.katharsis.core.utils.Optional;
 
 /**
  * Maps exceptions for which a Katharsis exception mapper has been registered in
@@ -28,8 +28,8 @@ public class JsonApiExceptionMapper implements ExceptionMapper<Throwable> {
 	 */
 	@Override
 	public Response toResponse(Throwable exception) {
-		Optional<io.katharsis.errorhandling.mapper.JsonApiExceptionMapper> exceptionMapper = exceptionMapperRegistry.findMapperFor(exception.getClass());
-		io.katharsis.repository.response.Response errorResponse;
+		Optional<io.katharsis.core.engine.error.JsonApiExceptionMapper> exceptionMapper = exceptionMapperRegistry.findMapperFor(exception.getClass());
+		io.katharsis.core.engine.dispatcher.Response errorResponse;
 		if (exceptionMapper.isPresent()) {
 			errorResponse = exceptionMapper.get().toErrorResponse(exception).toResponse();
 		}

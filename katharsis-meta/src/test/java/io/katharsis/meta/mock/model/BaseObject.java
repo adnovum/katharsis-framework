@@ -1,6 +1,6 @@
 package io.katharsis.meta.mock.model;
 
-import io.katharsis.resource.annotations.JsonApiId;
+import io.katharsis.core.resource.annotations.JsonApiId;
 
 public class BaseObject {
 

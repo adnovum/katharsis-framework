@@ -2,10 +2,10 @@ package io.katharsis.test.mock;
 
 import java.util.List;
 
-import io.katharsis.errorhandling.ErrorData;
-import io.katharsis.errorhandling.ErrorResponse;
-import io.katharsis.errorhandling.mapper.ExceptionMapper;
-import io.katharsis.repository.response.JsonApiResponse;
+import io.katharsis.core.engine.document.ErrorData;
+import io.katharsis.core.engine.error.ErrorResponse;
+import io.katharsis.core.engine.error.ExceptionMapper;
+import io.katharsis.core.repository.response.JsonApiResponse;
 
 public class TestExceptionMapper implements ExceptionMapper<TestException> {
 

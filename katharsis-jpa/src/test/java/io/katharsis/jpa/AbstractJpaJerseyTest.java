@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.katharsis.client.KatharsisClient;
 import io.katharsis.client.http.okhttp.OkHttpAdapter;
 import io.katharsis.client.http.okhttp.OkHttpAdapterListenerBase;
-import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.core.boot.KatharsisProperties;
 import io.katharsis.jpa.meta.JpaMetaProvider;
 import io.katharsis.jpa.model.CountryTranslationEntity;
 import io.katharsis.jpa.model.TestEntity;
@@ -41,7 +41,7 @@ import io.katharsis.meta.model.resource.MetaJsonObject;
 import io.katharsis.meta.model.resource.MetaResource;
 import io.katharsis.meta.model.resource.MetaResourceBase;
 import io.katharsis.meta.provider.resource.ResourceMetaProvider;
-import io.katharsis.queryspec.DefaultQuerySpecDeserializer;
+import io.katharsis.core.queryspec.DefaultQuerySpecDeserializer;
 import io.katharsis.rs.KatharsisFeature;
 import okhttp3.OkHttpClient.Builder;
 

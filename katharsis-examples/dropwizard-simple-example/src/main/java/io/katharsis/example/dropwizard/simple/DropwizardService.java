@@ -2,7 +2,7 @@ package io.katharsis.example.dropwizard.simple;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
-import io.katharsis.core.properties.KatharsisProperties;
+import io.katharsis.core.boot.KatharsisProperties;
 import io.katharsis.rs.KatharsisFeature;
 
 public class DropwizardService extends Application<DropwizardConfiguration> {
